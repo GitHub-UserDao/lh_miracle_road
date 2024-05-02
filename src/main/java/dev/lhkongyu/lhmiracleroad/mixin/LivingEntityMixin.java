@@ -1,7 +1,6 @@
 package dev.lhkongyu.lhmiracleroad.mixin;
 
 
-import dev.kosmx.playerAnim.core.util.Vec3d;
 import dev.lhkongyu.lhmiracleroad.access.AttributeInstanceAccess;
 import dev.lhkongyu.lhmiracleroad.access.LHMiracleRoadAttributes;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
@@ -11,7 +10,6 @@ import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;

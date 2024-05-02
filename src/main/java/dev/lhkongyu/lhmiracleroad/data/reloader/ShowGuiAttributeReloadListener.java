@@ -2,6 +2,7 @@ package dev.lhkongyu.lhmiracleroad.data.reloader;
 
 import com.google.common.collect.Maps;
 import com.google.gson.*;
+import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
@@ -15,7 +16,7 @@ public class ShowGuiAttributeReloadListener extends SimpleJsonResourceReloadList
 
     private static final Gson GSON = (new GsonBuilder()).create();
 
-    public static final Map<String,JsonObject> SHOW_GUI_ATTRIBUTE = Maps.newHashMap();
+    public static final List<JsonObject> SHOW_GUI_ATTRIBUTE = new ArrayList<>();
 
     public ShowGuiAttributeReloadListener() {
         super(GSON, "lh_miracle_road_occupation/player/attribute/show_gui_attribute");
@@ -28,8 +29,10 @@ public class ShowGuiAttributeReloadListener extends SimpleJsonResourceReloadList
             JsonArray jsonArray  = entry.getValue().getAsJsonArray();
             for (JsonElement element : jsonArray){
                 JsonObject jsonObject = element.getAsJsonObject();
-                String attribute = jsonObject.get("attribute").getAsString();
-                SHOW_GUI_ATTRIBUTE.put(attribute,jsonObject);
+                String condition = LHMiracleRoadTool.isAsString(jsonObject.get("condition"));
+                if (condition != null)
+                    if (!LHMiracleRoadTool.isModExist(condition)) continue;
+                SHOW_GUI_ATTRIBUTE.add(jsonObject);
             }
         }
     }

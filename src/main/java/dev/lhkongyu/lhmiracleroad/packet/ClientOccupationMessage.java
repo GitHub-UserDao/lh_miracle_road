@@ -48,11 +48,11 @@ public record ClientOccupationMessage(JsonObject playerOccupationAttributeObject
                 double offhandHeavy = LHMiracleRoadTool.isAsDouble(playerOccupationAttributeObject.get("offhandHeavy"));
                 String empiricalCalculationFormula = LHMiracleRoadTool.isAsString(playerOccupationAttributeObject.get("empiricalCalculationFormula"));
 
-                JsonObject attributeModifierObject = LHMiracleRoadTool.isAsJsonObject(playerOccupationAttributeObject.get("attributeModifier"));
-                Map<String, AttributeModifier> attributeModifierMap = jsonObjectConversionAttributeModifier(attributeModifierObject);
+//                JsonObject attributeModifierObject = LHMiracleRoadTool.isAsJsonObject(playerOccupationAttributeObject.get("attributeModifier"));
+//                Map<String, AttributeModifier> attributeModifierMap = jsonObjectConversionAttributeModifier(attributeModifierObject);
 
-                JsonObject punishmentAttributeModifierObject = LHMiracleRoadTool.isAsJsonObject(playerOccupationAttributeObject.get("punishmentAttributeModifier"));
-                Map<String, AttributeModifier> punishmentAttributeModifierMap = jsonObjectConversionAttributeModifier(punishmentAttributeModifierObject);
+//                JsonObject punishmentAttributeModifierObject = LHMiracleRoadTool.isAsJsonObject(playerOccupationAttributeObject.get("punishmentAttributeModifier"));
+//                Map<String, AttributeModifier> punishmentAttributeModifierMap = jsonObjectConversionAttributeModifier(punishmentAttributeModifierObject);
 
                 JsonObject occupationAttributeLevelObject = LHMiracleRoadTool.isAsJsonObject(playerOccupationAttributeObject.get("occupationAttributeLevel"));
                 Map<String, Integer> occupationAttributeLevelMap = Maps.newHashMap();
@@ -62,15 +62,15 @@ public record ClientOccupationMessage(JsonObject playerOccupationAttributeObject
                     }
                 }
 
-                JsonObject heavyAttributeModifierObject = LHMiracleRoadTool.isAsJsonObject(playerOccupationAttributeObject.get("heavyAttributeModifier"));
-                AttributeModifier heavyAttributeModifier = null;
-                if (heavyAttributeModifierObject != null) {
-                    UUID uuid = UUID.fromString(LHMiracleRoadTool.isAsString(heavyAttributeModifierObject.get("uuid")));
-                    String name = LHMiracleRoadTool.isAsString(heavyAttributeModifierObject.get("name"));
-                    double amount = LHMiracleRoadTool.isAsDouble(heavyAttributeModifierObject.get("amount"));
-                    AttributeModifier.Operation operation = AttributeModifier.Operation.fromValue(LHMiracleRoadTool.isAsInt(heavyAttributeModifierObject.get("operation")));
-                    heavyAttributeModifier = new AttributeModifier(uuid, name, amount, operation);
-                }
+//                JsonObject heavyAttributeModifierObject = LHMiracleRoadTool.isAsJsonObject(playerOccupationAttributeObject.get("heavyAttributeModifier"));
+//                AttributeModifier heavyAttributeModifier = null;
+//                if (heavyAttributeModifierObject != null) {
+//                    UUID uuid = UUID.fromString(LHMiracleRoadTool.isAsString(heavyAttributeModifierObject.get("uuid")));
+//                    String name = LHMiracleRoadTool.isAsString(heavyAttributeModifierObject.get("name"));
+//                    double amount = LHMiracleRoadTool.isAsDouble(heavyAttributeModifierObject.get("amount"));
+//                    AttributeModifier.Operation operation = AttributeModifier.Operation.fromValue(LHMiracleRoadTool.isAsInt(heavyAttributeModifierObject.get("operation")));
+//                    heavyAttributeModifier = new AttributeModifier(uuid, name, amount, operation);
+//                }
 
                 JsonObject showAttributeObject = LHMiracleRoadTool.isAsJsonObject(playerOccupationAttributeObject.get("showAttribute"));
                 Map<String, JsonObject> showAttributeMap = Maps.newHashMap();
@@ -85,10 +85,10 @@ public record ClientOccupationMessage(JsonObject playerOccupationAttributeObject
                 playerOccupationAttribute.setOccupationExperience(occupationExperience);
                 playerOccupationAttribute.setOccupationId(occupationId);
                 playerOccupationAttribute.setOffhandHeavy(offhandHeavy);
-                playerOccupationAttribute.setAttributeModifier(attributeModifierMap);
-                playerOccupationAttribute.setPunishmentAttributeModifier(punishmentAttributeModifierMap);
+//                playerOccupationAttribute.setAttributeModifier(attributeModifierMap);
+//                playerOccupationAttribute.setPunishmentAttributeModifier(punishmentAttributeModifierMap);
                 playerOccupationAttribute.setOccupationAttributeLevel(occupationAttributeLevelMap);
-                playerOccupationAttribute.setHeavyAttributeModifier(heavyAttributeModifier);
+//                playerOccupationAttribute.setHeavyAttributeModifier(heavyAttributeModifier);
                 playerOccupationAttribute.setShowAttribute(showAttributeMap);
                 playerOccupationAttribute.setEmpiricalCalculationFormula(empiricalCalculationFormula);
                 playerOccupationAttribute.setPoints(points);

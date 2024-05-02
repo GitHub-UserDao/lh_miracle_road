@@ -23,6 +23,8 @@ public class AttributePointsRewardsReloadListener extends SimpleJsonResourceRelo
 
     public static final Map<String, Attribute> recordAttribute = Maps.newHashMap();
 
+    public static final Map<String, JsonObject> POINTS_REWARDS = Maps.newHashMap();
+
     public AttributePointsRewardsReloadListener() {
         super(GSON, "lh_miracle_road_occupation/player/attribute/attribute_points_rewards");
     }
@@ -53,14 +55,8 @@ public class AttributePointsRewardsReloadListener extends SimpleJsonResourceRelo
                         Attribute instanceAttribute = ForgeRegistries.ATTRIBUTES.getValue(resourceLocation);
                         if (instanceAttribute == null) continue;
                         recordAttribute.put(attributeName, instanceAttribute);
-//                        Attribute instanceAttribute = ForgeRegistries.ATTRIBUTES.getValues()
-//                                .stream()
-//                                .filter(p -> p.getDescriptionId().equals(attributeName) || LHMiracleRoadTool.isAttributeName(p.getDescriptionId(), attributeName))
-//                                .findFirst()
-//                                .orElse(null);
-//                        if (instanceAttribute == null) continue;
-//                        recordAttribute.put(attributeName, instanceAttribute);
                     }
+                    POINTS_REWARDS.put(attributeName,pointsRewardObj);
                 }
             }
 

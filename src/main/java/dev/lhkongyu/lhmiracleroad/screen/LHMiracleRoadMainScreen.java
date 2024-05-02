@@ -1,12 +1,16 @@
 package dev.lhkongyu.lhmiracleroad.screen;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import dev.lhkongyu.lhmiracleroad.access.LHMiracleRoadAttributes;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.data.reloader.AttributeReloadListener;
 import dev.lhkongyu.lhmiracleroad.data.reloader.OccupationReloadListener;
+import dev.lhkongyu.lhmiracleroad.data.reloader.ShowGuiAttributeReloadListener;
 import dev.lhkongyu.lhmiracleroad.packet.PlayerAttributeChannel;
 import dev.lhkongyu.lhmiracleroad.packet.PlayerOccupationMessage;
+import dev.lhkongyu.lhmiracleroad.tool.AttributesNameTool;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import dev.lhkongyu.lhmiracleroad.tool.ResourceLocationTool;
 import net.minecraft.client.Minecraft;
@@ -16,6 +20,8 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -24,7 +30,10 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
+import javax.print.attribute.Attribute;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -60,7 +69,7 @@ public class LHMiracleRoadMainScreen extends Screen {
 
     private final PlayerOccupationAttribute playerOccupationAttribute;
 
-    private int totalPage = 0;
+    private int totalPage;
 
 
     public LHMiracleRoadMainScreen(PlayerOccupationAttribute playerOccupationAttribute, int totalPage, int current) {
@@ -80,6 +89,7 @@ public class LHMiracleRoadMainScreen extends Screen {
             currentGuiScale = minecraft.options.guiScale().get();
             initCoordinate = new InitCoordinate(widthCore,heightCore,backgroundWidth,backgroundHeight,font,playerOccupationAttribute.getOccupationId());
             initMainCoordinate = new InitMainCoordinate(widthCore,heightCore,backgroundWidth,backgroundWidth,font,playerOccupationAttribute);
+            totalPage += initMainCoordinate.setShowDetailedAttributePage();
             if (current == 0) showButton(false,true);
             else showButton(true, current != totalPage - 1);
         }
@@ -109,12 +119,15 @@ public class LHMiracleRoadMainScreen extends Screen {
             if (itemHoverTooltip != null) {
                 graphics.renderComponentTooltip(font, itemHoverTooltip, itemHoverTooltipX, itemHoverTooltipY);
             }
-
-            if (detailsHoverTooltip != null) {
-                graphics.renderComponentTooltip(font, detailsHoverTooltip, detailsHoverTooltipX, detailsHoverTooltipY);
-            }
         }else if (current == 1){
             showLevelInformation(graphics);
+            showAttributePoints(graphics, mouseX, mouseY);
+            showBurden(graphics, mouseX, mouseY);
+        }
+        showDetailedAttribute(graphics);
+
+        if (detailsHoverTooltip != null) {
+            graphics.renderComponentTooltip(font, detailsHoverTooltip, detailsHoverTooltipX, detailsHoverTooltipY);
         }
     }
 
@@ -189,25 +202,21 @@ public class LHMiracleRoadMainScreen extends Screen {
         int initAttributeLevelX = (int) (initNameTextX + (backgroundWidth * 0.18));
         Component details = Component.translatable("lhmiracleroad.gui.attribute.text.details");
         int textWidth = font.width(details);
-        int textHeight = font.lineHeight;
         int initDetailsX = initCoordinate.getPageRightX() - (textWidth / 2);
         int initY = (int) (initCoordinate.getInitAttributeY() + (lineHeight * 1.75));
         int initLevel = 0;
         int attributeSize = 0;
-        for (JsonObject attributeObject : AttributeReloadListener.ATTRIBUTE_TYPES) {
-            //判断是否有前置mod的要求
-            if(LHMiracleRoadTool.isJsonArrayModIdsExist(LHMiracleRoadTool.isAsJsonArray(attributeObject.get("conditions")))) continue;
-            String id = LHMiracleRoadTool.isAsString(attributeObject.get("id"));
+        for (String key : AttributeReloadListener.ATTRIBUTE_TYPES.keySet()) {
+            JsonObject attributeObject = AttributeReloadListener.ATTRIBUTE_TYPES.get(key);
             String nameText = LHMiracleRoadTool.isAsString(attributeObject.get("name_text_id"));
-            int level = initCoordinate.getInitAttributeLevel().get(id);
+            int level = initCoordinate.getInitAttributeLevel().get(key);
             graphics.drawString(font, Component.translatable(nameText), initNameTextX, initY, 0x6C5734, false);
             graphics.drawString(font, String.valueOf(level), initAttributeLevelX, initY, 0x6C5734, false);
             graphics.drawString(font, details, initDetailsX, initY, 0xC58360, false);
 
-            // 检查鼠标是否悬停在物品上
-            if (mouseX >= initDetailsX && mouseX <= initDetailsX + textWidth && mouseY >= initY && mouseY <= initY + textHeight) {
-                List<Component> components = LHMiracleRoadTool.getDescribeText(LHMiracleRoadTool.isAsJsonArray(attributeObject.get("describes")),level,id,initCoordinate.getAttributePromoteValueShow());
-                detailsHoverTooltip =  components;
+            // 检查鼠标是否悬停在指定位置上
+            if (mouseX >= initDetailsX && mouseX <= initDetailsX + textWidth && mouseY >= initY && mouseY <= initY + lineHeight) {
+                detailsHoverTooltip = LHMiracleRoadTool.getDescribeText(LHMiracleRoadTool.isAsJsonArray(attributeObject.get("describes")),level,key,initCoordinate.getAttributePromoteValueShow());
                 detailsHoverTooltipX = mouseX;
                 detailsHoverTooltipY = mouseY;
             }
@@ -251,9 +260,115 @@ public class LHMiracleRoadMainScreen extends Screen {
 
     private void showLevelInformation(GuiGraphics graphics){
         graphics.drawString(font, initMainCoordinate.getLevelComponent(), initMainCoordinate.getLevelX(), initMainCoordinate.getLevelY(), 0x6C5734, false);
-        graphics.drawString(font, initMainCoordinate.getAttributeLevelComponent(), initMainCoordinate.getAttributeLevelX(), initMainCoordinate.getLevelY(), 0x6C5734, false);
+        graphics.drawString(font, initMainCoordinate.getPointsComponent(), initMainCoordinate.getPointsX(), initMainCoordinate.getLevelY(), 0x6C5734, false);
         graphics.drawString(font, initMainCoordinate.getHoldExperienceComponent(), initMainCoordinate.getLevelX(), initMainCoordinate.getHoldExperienceY(), 0x6C5734, false);
         graphics.drawString(font, initMainCoordinate.getDemandExperienceComponent(), initMainCoordinate.getLevelX(), initMainCoordinate.getDemandExperienceY(), 0x6C5734, false);
+
+        graphics.drawString(font, String.valueOf(initMainCoordinate.getHoldExperienceValue()), initMainCoordinate.getPointsX(), initMainCoordinate.getHoldExperienceY(), 0x6C5734, false);
+        graphics.drawString(font, String.valueOf(initMainCoordinate.getDemandExperienceValue()), initMainCoordinate.getPointsX(), initMainCoordinate.getDemandExperienceY(), 0x6C5734, false);
+
+
+    }
+
+    private void showAttributePoints(GuiGraphics graphics,int mouseX, int mouseY){
+        int lineHeight = font.lineHeight;
+        detailsHoverTooltip = null;
+        detailsHoverTooltipX = 0;
+        detailsHoverTooltipY = 0;
+        int initNameTextX = initMainCoordinate.getLevelX();
+        int initY = initMainCoordinate.getAttributePointsY();
+        int initAttributeLevelX = initMainCoordinate.getAttributePointsLevelX();
+
+        for (String key : AttributeReloadListener.ATTRIBUTE_TYPES.keySet()) {
+            JsonObject attributeObject = AttributeReloadListener.ATTRIBUTE_TYPES.get(key);
+            Integer level = playerOccupationAttribute.getOccupationAttributeLevel().get(key);
+            Component nameText = Component.translatable(LHMiracleRoadTool.isAsString(attributeObject.get("name_text_id")));
+
+            graphics.drawString(font, nameText, initNameTextX, initY, 0x6C5734, false);
+            graphics.drawString(font, String.valueOf(level), initAttributeLevelX, initY, 0x6C5734, false);
+
+            int textWidth = font.width(nameText);
+            // 检查鼠标是否悬停在指定位置上
+            if (mouseX >= initNameTextX && mouseX <= initNameTextX + textWidth && mouseY >= initY && mouseY <= initY + lineHeight) {
+                detailsHoverTooltip = LHMiracleRoadTool.getDescribeText(LHMiracleRoadTool.isAsJsonArray(attributeObject.get("describes")),level,key,initCoordinate.getAttributePromoteValueShow());
+                detailsHoverTooltipX = mouseX;
+                detailsHoverTooltipY = mouseY;
+            }
+
+            initY += (int) (lineHeight * 1.5);
+        }
+    }
+
+    private void showDetailedAttribute(GuiGraphics graphics){
+        int current = this.current - 1;
+        if (current < 0) return;
+        if (current > initMainCoordinate.getShowDetailedAttributePages().size() - 1) return;
+        Map<String,List<JsonObject>> showDetailedAttributePage = initMainCoordinate.getShowDetailedAttributePages().get(this.current - 1);
+        if (showDetailedAttributePage == null) return;
+        for (String key : showDetailedAttributePage.keySet()) {
+
+            int initX = initCoordinate.getInitAttributeX();
+            //如果为左边的话改一下x的位置
+            if (key.equals("left")) initX = initMainCoordinate.getLevelX();
+
+            int initY = initCoordinate.getInitAttributeY();
+            int lineHeight = font.lineHeight;
+
+            for (JsonObject showGuiAttribute : showDetailedAttributePage.get(key)) {
+
+                String attributeName = LHMiracleRoadTool.isAsString(showGuiAttribute.get("attribute"));
+                JsonObject attributeObject = playerOccupationAttribute.getShowAttribute().get(attributeName);
+
+                String attributeText = LHMiracleRoadTool.isAsString(attributeObject.get("attribute_text"));
+                String showValueType = LHMiracleRoadTool.isAsString(attributeObject.get("show_value_type"));
+                double value = LHMiracleRoadTool.isAsDouble(attributeObject.get("value"));
+                double baseValue = LHMiracleRoadTool.isAsDouble(attributeObject.get("base_value"));
+                JsonArray modifiers = LHMiracleRoadTool.isAsJsonArray(attributeObject.get("modifiers"));
+
+                String showValue = "";
+                int percentageBase = 100;
+                if (attributeName.equals(AttributesNameTool.MOVEMENT_SPEED)) percentageBase = 1000;
+                if (LHMiracleRoadTool.isLHMiracleRoadAttribute(attributeName)) {
+                    showValue = LHMiracleRoadTool.getShowLHMiracleRoadValueType(modifiers, attributeName, percentageBase, initMainCoordinate.getDetailedAttribute());
+                } else {
+                    showValue = LHMiracleRoadTool.getShowValueType(showValueType, value, baseValue, percentageBase, attributeName, initMainCoordinate.getDetailedAttribute());
+                }
+                Component showText = Component.translatable(attributeText, showValue);
+                graphics.drawString(font, showText, initX, initY, 0x6C5734, false);
+                initY += (int) (lineHeight * 1.4);
+            }
+        }
+    }
+
+    private void showBurden(GuiGraphics graphics,int mouseX, int mouseY){
+        int lineHeight = font.lineHeight;
+        int initY = initCoordinate.getSelectY() + lineHeight;
+        AttributeInstance burden = getPlayer().getAttribute(LHMiracleRoadAttributes.BURDEN);
+        int burdenValue = (int) burden.getValue();
+        AttributeInstance heavy = getPlayer().getAttribute(LHMiracleRoadAttributes.HEAVY);
+        int heavyValue = (int) heavy.getValue();
+        heavyValue += (int) playerOccupationAttribute.getOffhandHeavy();
+        Component component = Component.translatable("lhmiracleroad.gui.attribute.text.heavy",heavyValue,burdenValue);
+        int textWidth = font.width(component);
+        int initX = (int) (initCoordinate.getInitAttributeX() + (backgroundWidth * 0.18)) - (textWidth / 2);
+        graphics.drawString(font, component, initX, initY, 0x6C5734, false);
+        // 检查鼠标是否悬停在指定位置上
+        if (mouseX >= initX && mouseX <= initX + textWidth && mouseY >= initY && mouseY <= initY + lineHeight) {
+            List<Component> components = new ArrayList<>();
+            double proportion = ((double) heavyValue / burdenValue) * 100;
+            if (proportion > 100){
+                components.add(Component.translatable("lhmiracleroad.gui.attribute.text.details.heavy.overweight"));
+            }else if (proportion >= 75){
+                components.add(Component.translatable("lhmiracleroad.gui.attribute.text.details.heavy.biased_weight"));
+            }else if (proportion >= 40){
+                components.add(Component.translatable("lhmiracleroad.gui.attribute.text.details.heavy.normal"));
+            }else {
+                components.add(Component.translatable("lhmiracleroad.gui.attribute.text.details.heavy.light"));
+            }
+            detailsHoverTooltip = components;
+            detailsHoverTooltipX = mouseX;
+            detailsHoverTooltipY = mouseY;
+        }
     }
 
     private @Nonnull LocalPlayer getPlayer() {

@@ -199,24 +199,21 @@ public class LHMiracleRoadOccupationScreen extends Screen {
         int initAttributeLevelX = (int) (initNameTextX + (backgroundWidth * 0.18));
         Component details = Component.translatable("lhmiracleroad.gui.attribute.text.details");
         int textWidth = font.width(details);
-        int textHeight = font.lineHeight;
         int initDetailsX = initCoordinate.getPageRightX() - (textWidth / 2);
         int initY = initCoordinate.getInitAttributeY() + (lineHeight * 2);
         int initLevel = 0;
         int attributeSize = 0;
-        for (JsonObject attributeObject : AttributeReloadListener.ATTRIBUTE_TYPES) {
-            //判断是否有前置mod的要求
-            if(LHMiracleRoadTool.isJsonArrayModIdsExist(LHMiracleRoadTool.isAsJsonArray(attributeObject.get("conditions")))) continue;
-            String id = LHMiracleRoadTool.isAsString(attributeObject.get("id"));
+        for (String key : AttributeReloadListener.ATTRIBUTE_TYPES.keySet()) {
+            JsonObject attributeObject = AttributeReloadListener.ATTRIBUTE_TYPES.get(key);
             String nameText = LHMiracleRoadTool.isAsString(attributeObject.get("name_text_id"));
-            int level = initCoordinate.getInitAttributeLevel().get(id);
+            int level = initCoordinate.getInitAttributeLevel().get(key);
             graphics.drawString(font, Component.translatable(nameText), initNameTextX, initY, 0x6C5734, false);
             graphics.drawString(font, String.valueOf(level), initAttributeLevelX, initY, 0x6C5734, false);
             graphics.drawString(font, details, initDetailsX, initY, 0xC58360, false);
 
             // 检查鼠标是否悬停在物品上
-            if (mouseX >= initDetailsX && mouseX <= initDetailsX + textWidth && mouseY >= initY && mouseY <= initY + textHeight) {
-                List<Component> components = LHMiracleRoadTool.getDescribeText(LHMiracleRoadTool.isAsJsonArray(attributeObject.get("describes")),level,id,initCoordinate.getAttributePromoteValueShow());
+            if (mouseX >= initDetailsX && mouseX <= initDetailsX + textWidth && mouseY >= initY && mouseY <= initY + lineHeight) {
+                List<Component> components = LHMiracleRoadTool.getDescribeText(LHMiracleRoadTool.isAsJsonArray(attributeObject.get("describes")),level,key,initCoordinate.getAttributePromoteValueShow());
                 detailsHoverTooltip =  components;
                 detailsHoverTooltipX = mouseX;
                 detailsHoverTooltipY = mouseY;
@@ -277,8 +274,6 @@ public class LHMiracleRoadOccupationScreen extends Screen {
         }
 
     }
-
-
 
     private void showButton(boolean leftShow,boolean rightShow){
         //选择按钮

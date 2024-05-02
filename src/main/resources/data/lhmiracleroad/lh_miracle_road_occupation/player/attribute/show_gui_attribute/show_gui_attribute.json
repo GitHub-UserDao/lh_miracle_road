@@ -7,14 +7,16 @@
   {
     "attribute": "healing",
     "attribute_text": "lhmiracleroad.gui.attribute.text.details.hp_healing",
-    "show_value_type": "base_base_percentage"
+    "show_value_type": "base_percentage"
   },
   {
+    "condition": "irons_spellbooks",
     "attribute": "irons_spellbooks:max_mana",
     "attribute_text": "lhmiracleroad.gui.attribute.text.details.focus_iron",
     "show_value_type": "base"
   },
   {
+    "condition": "ars_nouveau",
     "attribute": "ars_nouveau:ars_nouveau.perk.max_mana",
     "attribute_text": "lhmiracleroad.gui.attribute.text.details.focus_ars_nouveau",
     "show_value_type": "base"
@@ -35,6 +37,7 @@
     "show_value_type": "extra_percentage"
   },
   {
+    "condition": "epicfight",
     "attribute": "epicfight:staminar",
     "attribute_text": "lhmiracleroad.gui.attribute.text.details.sturdy_sturdy",
     "show_value_type": "base"
@@ -50,14 +53,16 @@
     "show_value_type": "base"
   },
   {
+    "condition": "irons_spellbooks",
     "attribute": "irons_spellbooks:spell_power",
     "attribute_text": "lhmiracleroad.gui.attribute.text.details.brain_iron",
     "show_value_type": "base_percentage"
   },
   {
+    "condition": "ars_nouveau",
     "attribute": "ars_nouveau:ars_nouveau.perk.spell_damage",
     "attribute_text": "lhmiracleroad.gui.attribute.text.details.brain_ars_nouveau",
-    "show_value_type": "base_percentage"
+    "show_value_type": "extra_base"
   },
   {
     "attribute": "attack_speed",
@@ -67,7 +72,7 @@
   {
     "attribute": "movement_speed",
     "attribute_text": "lhmiracleroad.gui.attribute.text.details.agile_movement_speed",
-    "show_value_type": "base"
+    "show_value_type": "extra_percentage"
   },
   {
     "attribute": "jump",
@@ -75,11 +80,13 @@
     "show_value_type": "extra_percentage"
   },
   {
+    "condition": "irons_spellbooks",
     "attribute": "irons_spellbooks:cast_time_reduction",
     "attribute_text": "lhmiracleroad.gui.attribute.text.details.trick_cooling_cd",
     "show_value_type": "extra_percentage"
   },
   {
+    "condition": "irons_spellbooks",
     "attribute": "irons_spellbooks:cooldown_reduction",
     "attribute_text": "lhmiracleroad.gui.attribute.text.details.trick_chanting_cd",
     "show_value_type": "extra_percentage"

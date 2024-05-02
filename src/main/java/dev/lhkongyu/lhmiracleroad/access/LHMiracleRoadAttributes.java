@@ -2,14 +2,8 @@ package dev.lhkongyu.lhmiracleroad.access;
 
 
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
-import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.tool.AttributesNameTool;
-import io.redspace.ironsspellbooks.api.registry.AttributeRegistry;
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraftforge.registries.ForgeRegistries;
 

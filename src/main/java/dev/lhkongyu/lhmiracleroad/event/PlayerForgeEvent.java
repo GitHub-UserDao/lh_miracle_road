@@ -1,11 +1,13 @@
 package dev.lhkongyu.lhmiracleroad.event;
 
+import com.google.gson.JsonObject;
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
 import dev.lhkongyu.lhmiracleroad.access.LHMiracleRoadAttributes;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
+import dev.lhkongyu.lhmiracleroad.tool.PlayerAttributeTool;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -73,7 +75,7 @@ public class PlayerForgeEvent {
     public static void playerLoggedInEvent(PlayerEvent.PlayerLoggedInEvent event){
         Player player = event.getEntity();
         player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).ifPresent(playerOccupationAttribute -> {
-            againAttachAttribute(playerOccupationAttribute,player);
+            loggedInSyncAttribute(playerOccupationAttribute, (ServerPlayer) player);
             LHMiracleRoadTool.synchronizationClient(playerOccupationAttribute, (ServerPlayer) player);
         });
 //        player.sendSystemMessage(Component.translatable("lhmiracleroad.gui.prompt"));
@@ -81,8 +83,6 @@ public class PlayerForgeEvent {
 
     private static void againAttachAttribute(PlayerOccupationAttribute playerOccupationAttribute,Player player){
         if (playerOccupationAttribute.getOccupationId() != null) {
-            player.getAttribute(LHMiracleRoadAttributes.BURDEN).setBaseValue(LHMiracleRoadConfig.COMMON.INIT_BURDEN.get());
-            playerOccupationAttribute.setEmpiricalCalculationFormula(LHMiracleRoadConfig.COMMON.EMPIRICAL_CALCULATION_FORMULA.get());
             Map<String, AttributeModifier> modifierMap = playerOccupationAttribute.getAttributeModifier();
             if (modifierMap == null || modifierMap.isEmpty()) return;
             for (String key : modifierMap.keySet()) {
@@ -92,7 +92,25 @@ public class PlayerForgeEvent {
                     player.setHealth((float) player.getAttribute(attribute).getValue());
                 }
             }
-            playerOccupationAttribute.setShowAttribute(LHMiracleRoadTool.setShowAttribute((ServerPlayer) player));
+        }
+    }
+
+    /**
+     * 登录时 配置文件有可能进行修改之类的，或加上属性所需要的mod，需根据现有的条件下进行重新计算属性来达到同步
+     * @param playerOccupationAttribute
+     * @param player
+     */
+    private static void loggedInSyncAttribute(PlayerOccupationAttribute playerOccupationAttribute,ServerPlayer player){
+        if (playerOccupationAttribute.getOccupationId() != null) {
+            JsonObject occupation = LHMiracleRoadTool.getOccupation(playerOccupationAttribute.getOccupationId());
+            Map<String,Integer> newAttributeLevel = LHMiracleRoadTool.setInitAttributeLevel(occupation);
+            Map<String,Integer> attributeLevel = playerOccupationAttribute.getOccupationAttributeLevel();
+            for (String key : newAttributeLevel.keySet()){
+                Integer attributeLevelValue = attributeLevel.get(key);
+                if (attributeLevelValue != null) newAttributeLevel.put(key,attributeLevelValue);
+            }
+            //重新附上属性值
+            PlayerAttributeTool.calculateAttribute(player,newAttributeLevel,playerOccupationAttribute);
         }
     }
 }

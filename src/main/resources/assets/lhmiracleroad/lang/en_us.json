@@ -60,7 +60,7 @@
   "attribute.name.lhmiracleroad.hunger": "hunger",
   "attribute.name.lhmiracleroad.init_difficulty_level": "Init difficulty level",
   "attribute.name.lhmiracleroad.jump": "jump",
-  "lhmiracleroad.gui.attribute.text.heavy": "burden/heavy %s/%s",
+  "lhmiracleroad.gui.attribute.text.heavy": "burden / heavy %s / %s",
   "lhmiracleroad.gui.attribute.text.details.heavy.light": "light",
   "lhmiracleroad.gui.attribute.text.details.heavy.normal": "normal",
   "lhmiracleroad.gui.attribute.text.details.heavy.biased_weight": "Biased weight",

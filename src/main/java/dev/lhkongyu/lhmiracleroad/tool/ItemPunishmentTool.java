@@ -127,9 +127,9 @@ public class ItemPunishmentTool {
         UUID uuid = UUID.randomUUID();
         if (proportion > 100){
             attributeModifier = new AttributeModifier(uuid, "", LHMiracleRoadConfig.COMMON.PUNISHMENT_OVERWEIGHT.get(), AttributeModifier.Operation.MULTIPLY_TOTAL);
-        }else if (proportion >= 80){
+        }else if (proportion >= 75){
             attributeModifier = new AttributeModifier(uuid, "",  LHMiracleRoadConfig.COMMON.PUNISHMENT_BIASED_WEIGHT.get(), AttributeModifier.Operation.MULTIPLY_TOTAL);
-        }else if (proportion >= 50){
+        }else if (proportion >= 40){
             attributeModifier = new AttributeModifier(uuid, "", LHMiracleRoadConfig.COMMON.PUNISHMENT_NORMAL.get(), AttributeModifier.Operation.MULTIPLY_BASE);
         }else {
             attributeModifier = new AttributeModifier(uuid, "", LHMiracleRoadConfig.COMMON.PUNISHMENT_LIGHT.get(), AttributeModifier.Operation.MULTIPLY_BASE);

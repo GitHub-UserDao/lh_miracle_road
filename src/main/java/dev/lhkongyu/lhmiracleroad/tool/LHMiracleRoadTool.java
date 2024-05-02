@@ -10,6 +10,7 @@ import dev.lhkongyu.lhmiracleroad.capability.ItemStackPunishmentAttributeProvide
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.data.reloader.AttributePointsRewardsReloadListener;
+import dev.lhkongyu.lhmiracleroad.data.reloader.AttributeReloadListener;
 import dev.lhkongyu.lhmiracleroad.data.reloader.OccupationReloadListener;
 import dev.lhkongyu.lhmiracleroad.data.reloader.ShowGuiAttributeReloadListener;
 import dev.lhkongyu.lhmiracleroad.packet.ClientOccupationMessage;
@@ -82,11 +83,12 @@ public class LHMiracleRoadTool {
             String modId = isAsString(object.get("condition"));
             String describe = isAsString(object.get("describe"));
             String attribute = isAsString(object.get("attribute"));
+            int percentageBase = 100;
             if (modId != null && !modId.isEmpty()) {
                 if (isModExist(modId))
-                    components.add(Component.translatable(describe, getDescribeTextValue(level, id, attribute, attributePromoteValueShow)));
+                    components.add(Component.translatable(describe, getDescribeTextValue(level, id, attribute, attributePromoteValueShow,percentageBase)));
             } else
-                components.add(Component.translatable(describe, getDescribeTextValue(level, id, attribute, attributePromoteValueShow)));
+                components.add(Component.translatable(describe, getDescribeTextValue(level, id, attribute, attributePromoteValueShow,percentageBase)));
         }
         return components;
     }
@@ -100,7 +102,7 @@ public class LHMiracleRoadTool {
      * @param attributePromoteValueShow
      * @return
      */
-    private static String getDescribeTextValue(int level, String id, String attribute, Map<String, Map<String, String>> attributePromoteValueShow) {
+    private static String getDescribeTextValue(int level, String id, String attribute, Map<String, Map<String, String>> attributePromoteValueShow,int percentageBase) {
         String showValue = null;
         Map<String, String> valueMap = attributePromoteValueShow.get(id);
         if (valueMap != null) {
@@ -124,7 +126,7 @@ public class LHMiracleRoadTool {
                 double attributeValue = LHMiracleRoadTool.calculateTotalIncrease(level, value, levelPromote, levelPromote_value);
                 showValue = switch (operation) {
                     case ADDITION -> "+ " + attributeValue;
-                    case MULTIPLY_BASE, MULTIPLY_TOTAL -> "+ " + attributeValue + "%";
+                    case MULTIPLY_BASE, MULTIPLY_TOTAL -> "+ " + new BigDecimal(attributeValue * percentageBase).setScale(4, RoundingMode.HALF_UP).doubleValue() + "%";
                 };
                 Map<String, String> map = Maps.newHashMap();
                 map.put(attribute, showValue);
@@ -228,7 +230,11 @@ public class LHMiracleRoadTool {
         for (JsonElement jsonElement : initAttribute) {
             JsonObject object = LHMiracleRoadTool.isAsJsonObject(jsonElement);
             if (object == null) continue;
-            map.put(object.get("id").getAsString(), object.get("level").getAsInt());
+            String id = object.get("id").getAsString();
+            JsonObject attributeObject = AttributeReloadListener.ATTRIBUTE_TYPES.get(id);
+            if (attributeObject == null) continue;
+            int level = object.get("level").getAsInt();
+            map.put(id, level);
         }
 
         return map;
@@ -314,6 +320,19 @@ public class LHMiracleRoadTool {
     }
 
     /**
+     * 判断是否是本模组的属性对象
+     * @param attributeName
+     * @return
+     */
+    public static boolean isLHMiracleRoadAttribute(String attributeName){
+        if (attributeName == null) return false;
+        return switch (attributeName) {
+            case AttributesNameTool.RANGED_DAMAGE, AttributesNameTool.JUMP, AttributesNameTool.HUNGER, AttributesNameTool.HEALING, AttributesNameTool.HEAVY, AttributesNameTool.BURDEN -> true;
+            default -> false;
+        };
+    }
+
+    /**
      * 判断该属性名称是否符合属性对象的 descriptionId
      *
      * @param descriptionId
@@ -381,28 +400,21 @@ public class LHMiracleRoadTool {
      * @return
      */
     public static Map<String, JsonObject> setShowAttribute(ServerPlayer player) {
-        Map<String, JsonObject> showAttribute = Maps.newHashMap();
-        for (String key : ShowGuiAttributeReloadListener.SHOW_GUI_ATTRIBUTE.keySet()) {
+        Map<String, JsonObject> showAttribute = Maps.newLinkedHashMap();
+        for (JsonObject attributeObject : ShowGuiAttributeReloadListener.SHOW_GUI_ATTRIBUTE) {
+            String attributeName = LHMiracleRoadTool.isAsString(attributeObject.get("attribute"));
             JsonObject showAttributeObject = new JsonObject();
 
-            Attribute attribute = stringConversionAttribute(key);
+            Attribute attribute = stringConversionAttribute(attributeName);
             if (attribute == null) continue;
             AttributeInstance attributeInstance = player.getAttribute(attribute);
             if (attributeInstance == null) continue;
 
-            JsonObject jsonObject = ShowGuiAttributeReloadListener.SHOW_GUI_ATTRIBUTE.get(key);
-            String attributeText = isAsString(jsonObject.get("attribute_text"));
-            String showValueType = isAsString(jsonObject.get("show_value_type"));
+            String attributeText = isAsString(attributeObject.get("attribute_text"));
+            String showValueType = isAsString(attributeObject.get("show_value_type"));
 
             showAttributeObject.addProperty("attribute_text", attributeText);
             showAttributeObject.addProperty("show_value_type", showValueType);
-
-//            String showValue = "";
-//            if (showValueType.equals("base_percentage")){
-//                showValue = (attributeInstance.getValue() * 100) + "%";
-//            }else if (showValueType.equals("extra_percentage")){
-//                showValue = ((attributeInstance.getValue() - attributeInstance.getBaseValue()) * 100) + "%";
-//            }else showValue = String.valueOf(attributeInstance.getValue());
 
             showAttributeObject.addProperty("value", attributeInstance.getValue());
             showAttributeObject.addProperty("base_value", attributeInstance.getBaseValue());
@@ -416,7 +428,7 @@ public class LHMiracleRoadTool {
                 jsonArray.add(modifierObject);
             });
             showAttributeObject.add("modifiers", jsonArray);
-            showAttribute.put(key, showAttributeObject);
+            showAttribute.put(attributeName, showAttributeObject);
         }
 
         return showAttribute;
@@ -495,6 +507,60 @@ public class LHMiracleRoadTool {
             }
         }
         return occupation;
+    }
+
+    /**
+     * 显示的value格式
+     * @return
+     */
+    public static String getShowValueType(String showValueType,double value,double baseValue,int percentageBase,String attributeName,Map<String,String> detailedAttribute){
+        String showValue = "";
+        if (detailedAttribute != null) {
+            showValue = detailedAttribute.get(attributeName);
+            if (showValue != null) return showValue;
+        }
+        double base = new BigDecimal(value).setScale(4, RoundingMode.HALF_UP).doubleValue();
+        double extra = new BigDecimal(value - baseValue).setScale(4, RoundingMode.HALF_UP).doubleValue();
+        showValue = switch (showValueType){
+            case "base" -> String.valueOf(base);
+            case "extra_base" -> "+" + extra;
+            case "base_percentage" ->  new BigDecimal(value * percentageBase).setScale(4, RoundingMode.HALF_UP).doubleValue() + "%";
+            case "extra_percentage" -> "+" + new BigDecimal((value - baseValue) * percentageBase).setScale(4, RoundingMode.HALF_UP).doubleValue() + "%";
+            default -> "";
+        };
+        detailedAttribute.put(attributeName,showValue);
+        return showValue;
+    }
+
+    /**
+     * 显示的由本模组自定义属性的value格式
+     * @return
+     */
+    public static String getShowLHMiracleRoadValueType(JsonArray modifiers,String attributeName,int percentageBase,Map<String,String> detailedAttribute){
+        String showValue = "";
+        if (detailedAttribute != null) {
+            showValue = detailedAttribute.get(attributeName);
+            if (showValue != null) return showValue;
+        }
+        for (String key : AttributePointsRewardsReloadListener.POINTS_REWARDS.keySet()){
+            if (key.equals(attributeName)){
+                JsonObject pointsReward = AttributePointsRewardsReloadListener.POINTS_REWARDS.get(key);
+                String operation = isAsString(pointsReward.get("operation"));
+                double amount = 0.0;
+;                for (JsonElement jsonElement: modifiers){
+                    JsonObject object = isAsJsonObject(jsonElement);
+                    amount += isAsDouble(object.get("amount"));
+                }
+                showValue = switch (operation) {
+                    case "addition" -> "+" + amount;
+                    case "multiply_base", "multiply_total" -> "+" + (amount * percentageBase) + "%";
+                    default -> "";
+                };
+                detailedAttribute.put(attributeName,showValue);
+                return showValue;
+            }
+        }
+        return showValue;
     }
 
 //    public static int getAttributeLevel(PlayerOccupationAttribute playerOccupationAttribute){

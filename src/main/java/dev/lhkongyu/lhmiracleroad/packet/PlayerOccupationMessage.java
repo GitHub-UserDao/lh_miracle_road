@@ -30,6 +30,9 @@ public record PlayerOccupationMessage(String occupationId) {
                 PlayerAttributeTool.initOccupation(player, occupationId);
             }
             PlayerOccupationAttribute playerOccupationAttribute = player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).resolve().get();
+            //设置一下在gui渲染的属性
+            playerOccupationAttribute.setShowAttribute(LHMiracleRoadTool.setShowAttribute(player));
+
             LHMiracleRoadTool.synchronizationClient(playerOccupationAttribute, player);
         });
         context.setPacketHandled(true);
