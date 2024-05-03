@@ -4,7 +4,7 @@
   "minVersion": "0.8",
   "package": "dev.lhkongyu.lhmiracleroad.mixin",
   "compatibilityLevel": "JAVA_17",
-  "refmap": "lhmobdifficultyincrease.refmap.json",
+  "refmap": "lhmiracleroad.refmap.json",
   "mixins": [
     "AttributeInstanceMixin",
     "LivingEntityMixin",

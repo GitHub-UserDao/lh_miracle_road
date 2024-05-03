@@ -104,6 +104,10 @@ public class PlayerForgeEvent {
     private static void loggedInSyncAttribute(PlayerOccupationAttribute playerOccupationAttribute,ServerPlayer player){
         if (playerOccupationAttribute.getOccupationId() != null) {
             JsonObject occupation = LHMiracleRoadTool.getOccupation(playerOccupationAttribute.getOccupationId());
+            if (occupation == null){
+                PlayerAttributeTool.resetOccupation(player,playerOccupationAttribute);
+                return;
+            }
             Map<String,Integer> newAttributeLevel = LHMiracleRoadTool.setInitAttributeLevel(occupation);
             Map<String,Integer> attributeLevel = playerOccupationAttribute.getOccupationAttributeLevel();
             for (String key : newAttributeLevel.keySet()){

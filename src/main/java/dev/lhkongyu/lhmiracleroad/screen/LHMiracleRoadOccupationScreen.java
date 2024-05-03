@@ -250,6 +250,7 @@ public class LHMiracleRoadOccupationScreen extends Screen {
             if (item == null) continue;
             int quantity = LHMiracleRoadTool.isAsInt(object.get("quantity"));
             ItemStack itemStack = new ItemStack(item, quantity);
+            if (itemStack.isEmpty()) continue;
             JsonObject tag = LHMiracleRoadTool.isAsJsonObject(object.get("tag"));
             LHMiracleRoadTool.setTag(itemStack,tag);
             graphics.renderItem(itemStack, x + spacing, y + lineSpacing);
