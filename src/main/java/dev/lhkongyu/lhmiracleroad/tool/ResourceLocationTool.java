@@ -7,6 +7,7 @@ public class ResourceLocationTool {
 
     public static class Gui{
         public static final ResourceLocation add = new ResourceLocation(LHMiracleRoad.MODID, "textures/gui/add.png");
+        public static final ResourceLocation addTouch = new ResourceLocation(LHMiracleRoad.MODID, "textures/gui/add_touch.png");
         public static final ResourceLocation background = new ResourceLocation(LHMiracleRoad.MODID, "textures/gui/background.png");
         public static final ResourceLocation frame = new ResourceLocation(LHMiracleRoad.MODID, "textures/gui/frame.png");
         public static final ResourceLocation pageLeft = new ResourceLocation(LHMiracleRoad.MODID, "textures/gui/page_left.png");

@@ -41,12 +41,18 @@ public class PlayerOccupationAttribute {
 
     private int points = 0;
 
+    private int burden = 0;
+
     public int getOccupationLevel() {
         return occupationLevel;
     }
 
     public void setOccupationLevel(int occupationLevel) {
         this.occupationLevel = occupationLevel;
+    }
+
+    public void upgrade(){
+        this.occupationLevel += 1;
     }
 
     public int getOccupationExperience() {
@@ -91,6 +97,10 @@ public class PlayerOccupationAttribute {
 
     public void setOccupationAttributeLevel(Map<String, Integer> occupationAttributeLevel) {
         this.occupationAttributeLevel = occupationAttributeLevel;
+    }
+
+    public void putOccupationAttributeLevel(String key,Integer value){
+        this.occupationAttributeLevel.put(key,value);
     }
 
     public Map<String, AttributeModifier> getPunishmentAttributeModifier() {
@@ -149,11 +159,20 @@ public class PlayerOccupationAttribute {
         this.points = points;
     }
 
+    public int getBurden() {
+        return burden;
+    }
+
+    public void setBurden(int burden) {
+        this.burden = burden;
+    }
+
     public void saveNBTData(CompoundTag compoundTag){
         compoundTag.putInt("occupationLevel",occupationLevel);
         compoundTag.putInt("occupationExperience",occupationExperience);
         compoundTag.putDouble("offhandHeavy",offhandHeavy);
         compoundTag.putInt("points",points);
+        compoundTag.putInt("burden",burden);
         if (attributeModifier != null) {
             CompoundTag attributeModifierTags = new CompoundTag();
             for (Map.Entry<String, AttributeModifier> entry : attributeModifier.entrySet()) {
@@ -200,6 +219,7 @@ public class PlayerOccupationAttribute {
         occupationExperience = compoundTag.getInt("occupationExperience");
         offhandHeavy = compoundTag.getDouble("offhandHeavy");
         points = compoundTag.getInt("points");
+        burden = compoundTag.getInt("burden");
         if (compoundTag.contains("attributeModifier", Tag.TAG_COMPOUND)) {
             CompoundTag initAttributeTags = compoundTag.getCompound("attributeModifier");
             attributeModifier = Maps.newHashMap();
@@ -256,6 +276,7 @@ public class PlayerOccupationAttribute {
         playerOccupationAttributeObject.addProperty("occupationExperience",this.occupationExperience);
         playerOccupationAttributeObject.addProperty("points",this.points);
         playerOccupationAttributeObject.addProperty("offhandHeavy",this.offhandHeavy);
+        playerOccupationAttributeObject.addProperty("burden",this.burden);
         if (this.occupationId != null && !this.occupationId.isEmpty()) playerOccupationAttributeObject.addProperty("occupationId",this.occupationId);
         if (this.empiricalCalculationFormula != null && !this.empiricalCalculationFormula.isEmpty()) playerOccupationAttributeObject.addProperty("empiricalCalculationFormula",this.empiricalCalculationFormula);
 

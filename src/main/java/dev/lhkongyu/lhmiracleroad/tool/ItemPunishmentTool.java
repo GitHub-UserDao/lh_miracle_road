@@ -62,7 +62,7 @@ public class ItemPunishmentTool {
 
         attributeNeed.addProperty("attribute_id", "power");
         attributeNeed.addProperty("describe_text", "lhmiracleroad.tooltip.describe.power");
-        attributeNeed.addProperty("need_points", Integer.min((int) (attackDamageAmount * 1.5),60));
+        attributeNeed.addProperty("need_points", Integer.min((int) (attackDamageAmount * 1.5),80));
         JsonObject punishment = new JsonObject();
         punishment.addProperty("attribute","attack_damage");
         punishment.addProperty("value", "-0.8");
@@ -153,7 +153,7 @@ public class ItemPunishmentTool {
             Attribute attribute = LHMiracleRoadTool.stringConversionAttribute(key);
             AttributeInstance attributeInstance = player.getAttribute(attribute);
             if (attributeInstance != null){
-                attributeInstance.removeModifier(attributeModifier);
+                player.getAttribute(attribute).removeModifier(attributeModifier);
                 playerOccupationAttribute.removePunishmentAttributeModifier(attributeModifier.getId().toString());
             }
 

@@ -1,12 +1,12 @@
 {
-  "heavy": 8,
+  "heavy": 14,
   "attribute_need": [
     {
       "attribute_id": "power",
       "describe_text": "lhmiracleroad.tooltip.describe.power",
-      "need_points": 12,
+      "need_points": 10,
       "punishment": {
-        "attribute": "attack_damage",
+        "attribute": "ranged_damage",
         "value": -0.8,
         "operation": "multiply_total"
       }

@@ -3,11 +3,13 @@ package dev.lhkongyu.lhmiracleroad.event;
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
 import dev.lhkongyu.lhmiracleroad.capability.ItemStackPunishmentAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
+import dev.lhkongyu.lhmiracleroad.command.GetPlayerOccupationLevelCommand;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -37,6 +39,15 @@ public class RegisterEvent {
         if (event.getObject() instanceof  Player){
             event.addCapability(new ResourceLocation(LHMiracleRoad.MODID, "player_occupation_attribute"),new PlayerOccupationAttributeProvider());
         }
+    }
+
+    /**
+     * 注册指令
+     * @param event
+     */
+    @SubscribeEvent
+    public static void registerCommand(RegisterCommandsEvent event){
+        GetPlayerOccupationLevelCommand.register(event.getDispatcher());
     }
 
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)

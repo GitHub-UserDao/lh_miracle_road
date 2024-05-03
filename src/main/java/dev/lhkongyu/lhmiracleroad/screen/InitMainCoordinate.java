@@ -19,11 +19,11 @@ public class InitMainCoordinate {
 
     private final int levelX;
 
-    private final MutableComponent levelComponent;
+    private MutableComponent levelComponent;
 
     private final int pointsX;
 
-    private final MutableComponent pointsComponent;
+    private MutableComponent pointsComponent;
 
     private final int holdExperienceY;
 
@@ -43,7 +43,7 @@ public class InitMainCoordinate {
 
     private final int attributePointsButtonX;
 
-    private final Map<String,String> detailedAttribute = Maps.newHashMap();
+//    private final Map<String,String> detailedAttribute = Maps.newHashMap();
 
     private List<Map<String,List<JsonObject>>> showDetailedAttributePages;
 
@@ -103,10 +103,6 @@ public class InitMainCoordinate {
         return attributePointsButtonX;
     }
 
-    public Map<String, String> getDetailedAttribute() {
-        return detailedAttribute;
-    }
-
     public List<Map<String, List<JsonObject>>> getShowDetailedAttributePages() {
         return showDetailedAttributePages;
     }
@@ -120,8 +116,6 @@ public class InitMainCoordinate {
         holdExperienceY = levelY + (lineHeight * 2);
         demandExperienceY = (int) (holdExperienceY + (lineHeight * 1.75));
 
-        levelComponent = Component.translatable("lhmiracleroad.gui.attribute.text.level",playerOccupationAttribute.getOccupationLevel());
-        pointsComponent = Component.translatable("lhmiracleroad.gui.attribute.text.points", playerOccupationAttribute.getPoints());
         holdExperienceComponent = Component.translatable("lhmiracleroad.gui.attribute.text.hold_soul");
         demandExperienceComponent = Component.translatable("lhmiracleroad.gui.attribute.text.demand_soul");
         attributePointsY = demandExperienceY + (lineHeight * 2);
@@ -135,6 +129,8 @@ public class InitMainCoordinate {
     public void calculateAttribute(PlayerOccupationAttribute playerOccupationAttribute){
         holdExperienceValue = playerOccupationAttribute.getOccupationExperience();
         demandExperienceValue = LHMiracleRoadTool.evaluateFormula(playerOccupationAttribute.getEmpiricalCalculationFormula(),playerOccupationAttribute.getOccupationLevel());
+        pointsComponent = Component.translatable("lhmiracleroad.gui.attribute.text.points", playerOccupationAttribute.getPoints());
+        levelComponent = Component.translatable("lhmiracleroad.gui.attribute.text.level",playerOccupationAttribute.getOccupationLevel());
     }
 
     public int setShowDetailedAttributePage(){

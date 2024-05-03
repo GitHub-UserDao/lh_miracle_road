@@ -169,9 +169,16 @@ public class ItemEvent {
 
             if (itemFromPunishmentAttribute.isEmpty() && itemToPunishmentAttribute.isEmpty()) return;
 
-            //清除还没切换成功前的物品所设置的惩罚
+            //清除物品所设置的惩罚
             if (!itemFrom.isEmpty() && itemFromPunishmentAttribute.isPresent()){
-                ItemPunishmentTool.cleanItemFromPunishmentAttributeModifier(player,playerOccupationAttribute,itemFromPunishmentAttribute.get());
+                /*
+                    清除 前物品记录的惩罚能力和解除对玩家的惩罚
+                    有时会出现需要修改物品的能力的需求，这样也会触发切换物品事件，导致玩家对象里的惩罚跟前一个物品记录的不一样 从而出现bug,所以将前后两个物品都进行记录上的清除更为稳妥
+                 */
+                ItemPunishmentTool.cleanItemFromPunishmentAttributeModifier(player, playerOccupationAttribute, itemFromPunishmentAttribute.get());
+                if (!itemTo.isEmpty() && itemToPunishmentAttribute.isPresent()){
+                    ItemPunishmentTool.cleanItemFromPunishmentAttributeModifier(player, playerOccupationAttribute, itemToPunishmentAttribute.get());
+                }
             }
             //设置切换后的惩罚
             if (!itemTo.isEmpty() && itemToPunishmentAttribute.isPresent()) {

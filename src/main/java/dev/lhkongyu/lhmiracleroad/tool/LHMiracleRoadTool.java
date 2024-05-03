@@ -73,10 +73,9 @@ public class LHMiracleRoadTool {
      * @param jsonArray
      * @param level
      * @param id
-     * @param attributePromoteValueShow
      * @return
      */
-    public static List<Component> getDescribeText(JsonArray jsonArray, int level, String id, Map<String, Map<String, String>> attributePromoteValueShow) {
+    public static List<Component> getDescribeText(JsonArray jsonArray, int level, String id) {
         List<Component> components = new ArrayList<>();
         for (JsonElement jsonElement : jsonArray) {
             JsonObject object = jsonElement.getAsJsonObject();
@@ -86,9 +85,9 @@ public class LHMiracleRoadTool {
             int percentageBase = 100;
             if (modId != null && !modId.isEmpty()) {
                 if (isModExist(modId))
-                    components.add(Component.translatable(describe, getDescribeTextValue(level, id, attribute, attributePromoteValueShow,percentageBase)));
+                    components.add(Component.translatable(describe, getDescribeTextValue(level, id, attribute,percentageBase)));
             } else
-                components.add(Component.translatable(describe, getDescribeTextValue(level, id, attribute, attributePromoteValueShow,percentageBase)));
+                components.add(Component.translatable(describe, getDescribeTextValue(level, id, attribute,percentageBase)));
         }
         return components;
     }
@@ -99,16 +98,15 @@ public class LHMiracleRoadTool {
      * @param level
      * @param id
      * @param attribute
-     * @param attributePromoteValueShow
      * @return
      */
-    private static String getDescribeTextValue(int level, String id, String attribute, Map<String, Map<String, String>> attributePromoteValueShow,int percentageBase) {
+    private static String getDescribeTextValue(int level, String id, String attribute,int percentageBase) {
         String showValue = null;
-        Map<String, String> valueMap = attributePromoteValueShow.get(id);
-        if (valueMap != null) {
-            showValue = valueMap.get(attribute);
-            if (showValue != null) return showValue;
-        }
+//        Map<String, String> valueMap = attributePromoteValueShow.get(id);
+//        if (valueMap != null) {
+//            showValue = valueMap.get(attribute);
+//            if (showValue != null) return showValue;
+//        }
         JsonObject data = AttributePointsRewardsReloadListener.ATTRIBUTE_POINTS_REWARDS.get(id);
         if (data == null) return "";
         JsonArray pointsRewards = isAsJsonArray(data.get("points_rewards"));
@@ -119,18 +117,18 @@ public class LHMiracleRoadTool {
             if (rewardsAttribute == null) return "";
             if (attribute.equals(rewardsAttribute)) {
                 double value = isAsDouble(jsonObject.get("value"));
-                double levelPromote = isAsDouble(jsonObject.get("level_promote"));
-                int levelPromote_value = isAsInt(jsonObject.get("level_promote_value"));
+                int levelPromote = isAsInt(jsonObject.get("level_promote"));
+                double levelPromoteValue = isAsDouble(jsonObject.get("level_promote_value"));
                 AttributeModifier.Operation operation = stringConversionOperation(isAsString(jsonObject.get("operation")));
                 if (operation == null) return "";
-                double attributeValue = LHMiracleRoadTool.calculateTotalIncrease(level, value, levelPromote, levelPromote_value);
+                double attributeValue = LHMiracleRoadTool.calculateTotalIncrease(level, value, levelPromoteValue, levelPromote);
                 showValue = switch (operation) {
                     case ADDITION -> "+ " + attributeValue;
                     case MULTIPLY_BASE, MULTIPLY_TOTAL -> "+ " + new BigDecimal(attributeValue * percentageBase).setScale(4, RoundingMode.HALF_UP).doubleValue() + "%";
                 };
-                Map<String, String> map = Maps.newHashMap();
-                map.put(attribute, showValue);
-                attributePromoteValueShow.put(id, map);
+//                Map<String, String> map = Maps.newHashMap();
+//                map.put(attribute, showValue);
+//                attributePromoteValueShow.put(id, map);
                 return showValue;
             }
 
@@ -376,6 +374,12 @@ public class LHMiracleRoadTool {
      * @param player
      */
     public static void synchronizationClient(PlayerOccupationAttribute playerOccupationAttribute, ServerPlayer player) {
+        AttributeInstance burden = player.getAttribute(LHMiracleRoadAttributes.BURDEN);
+        int burdenValue = 0;
+        if (burden != null) {
+            burdenValue = (int) burden.getValue();
+        }
+        playerOccupationAttribute.setBurden(burdenValue);
         JsonObject playerOccupationAttributeObject = playerOccupationAttribute.getPlayerOccupationAttribute();
         ClientOccupationMessage message = new ClientOccupationMessage(playerOccupationAttributeObject);
         PlayerAttributeChannel.sendToClient(message, player);
@@ -513,12 +517,12 @@ public class LHMiracleRoadTool {
      * 显示的value格式
      * @return
      */
-    public static String getShowValueType(String showValueType,double value,double baseValue,int percentageBase,String attributeName,Map<String,String> detailedAttribute){
+    public static String getShowValueType(String showValueType,double value,double baseValue,int percentageBase,String attributeName){
         String showValue = "";
-        if (detailedAttribute != null) {
-            showValue = detailedAttribute.get(attributeName);
-            if (showValue != null) return showValue;
-        }
+//        if (detailedAttribute != null) {
+//            showValue = detailedAttribute.get(attributeName);
+//            if (showValue != null) return showValue;
+//        }
         double base = new BigDecimal(value).setScale(4, RoundingMode.HALF_UP).doubleValue();
         double extra = new BigDecimal(value - baseValue).setScale(4, RoundingMode.HALF_UP).doubleValue();
         showValue = switch (showValueType){
@@ -528,7 +532,7 @@ public class LHMiracleRoadTool {
             case "extra_percentage" -> "+" + new BigDecimal((value - baseValue) * percentageBase).setScale(4, RoundingMode.HALF_UP).doubleValue() + "%";
             default -> "";
         };
-        detailedAttribute.put(attributeName,showValue);
+//        detailedAttribute.put(attributeName,showValue);
         return showValue;
     }
 
@@ -536,12 +540,12 @@ public class LHMiracleRoadTool {
      * 显示的由本模组自定义属性的value格式
      * @return
      */
-    public static String getShowLHMiracleRoadValueType(JsonArray modifiers,String attributeName,int percentageBase,Map<String,String> detailedAttribute){
+    public static String getShowLHMiracleRoadValueType(JsonArray modifiers,String attributeName,int percentageBase){
         String showValue = "";
-        if (detailedAttribute != null) {
-            showValue = detailedAttribute.get(attributeName);
-            if (showValue != null) return showValue;
-        }
+//        if (detailedAttribute != null) {
+//            showValue = detailedAttribute.get(attributeName);
+//            if (showValue != null) return showValue;
+//        }
         for (String key : AttributePointsRewardsReloadListener.POINTS_REWARDS.keySet()){
             if (key.equals(attributeName)){
                 JsonObject pointsReward = AttributePointsRewardsReloadListener.POINTS_REWARDS.get(key);
@@ -552,11 +556,11 @@ public class LHMiracleRoadTool {
                     amount += isAsDouble(object.get("amount"));
                 }
                 showValue = switch (operation) {
-                    case "addition" -> "+" + amount;
-                    case "multiply_base", "multiply_total" -> "+" + (amount * percentageBase) + "%";
+                    case "addition" -> "+" + new BigDecimal(amount).setScale(4, RoundingMode.HALF_UP).doubleValue();
+                    case "multiply_base", "multiply_total" -> "+" + new BigDecimal(amount * percentageBase).setScale(4, RoundingMode.HALF_UP).doubleValue() + "%";
                     default -> "";
                 };
-                detailedAttribute.put(attributeName,showValue);
+//                detailedAttribute.put(attributeName,showValue);
                 return showValue;
             }
         }

@@ -64,5 +64,10 @@
   "lhmiracleroad.gui.attribute.text.details.heavy.light": "轻",
   "lhmiracleroad.gui.attribute.text.details.heavy.normal": "正常",
   "lhmiracleroad.gui.attribute.text.details.heavy.biased_weight": "偏重",
-  "lhmiracleroad.gui.attribute.text.details.heavy.overweight": "超重"
+  "lhmiracleroad.gui.attribute.text.details.heavy.overweight": "超重",
+  "lhmiracleroad.instructions.points.add": "%s 技能点数增加 %s",
+  "lhmiracleroad.instructions.points.clear": "%s 技能点已清除",
+  "lhmiracleroad.instructions.reset.level": "%s 重置等级成功",
+  "lhmiracleroad.instructions.reset.occupation": "%s 重置职业成功",
+  "lhmiracleroad.instructions.prompt": "%s 请先选择职业"
 }

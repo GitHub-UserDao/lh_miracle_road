@@ -4,11 +4,14 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dev.lhkongyu.lhmiracleroad.access.LHMiracleRoadAttributes;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
+import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
+import dev.lhkongyu.lhmiracleroad.data.reloader.AttributePointsRewardsReloadListener;
 import dev.lhkongyu.lhmiracleroad.data.reloader.AttributeReloadListener;
 import dev.lhkongyu.lhmiracleroad.data.reloader.OccupationReloadListener;
 import dev.lhkongyu.lhmiracleroad.data.reloader.ShowGuiAttributeReloadListener;
 import dev.lhkongyu.lhmiracleroad.packet.PlayerAttributeChannel;
+import dev.lhkongyu.lhmiracleroad.packet.PlayerAttributePointsMessage;
 import dev.lhkongyu.lhmiracleroad.packet.PlayerOccupationMessage;
 import dev.lhkongyu.lhmiracleroad.tool.AttributesNameTool;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
@@ -31,10 +34,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.print.attribute.Attribute;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class LHMiracleRoadMainScreen extends Screen {
@@ -42,8 +42,6 @@ public class LHMiracleRoadMainScreen extends Screen {
     private InitCoordinate initCoordinate;
 
     private InitMainCoordinate initMainCoordinate;
-
-    private int currentGuiScale;
 
     private int current;
 
@@ -67,31 +65,35 @@ public class LHMiracleRoadMainScreen extends Screen {
 
     private int heightCore;
 
-    private final PlayerOccupationAttribute playerOccupationAttribute;
+    private PlayerOccupationAttribute playerOccupationAttribute;
 
     private int totalPage;
 
+    private boolean isShowPointsButton;
 
-    public LHMiracleRoadMainScreen(PlayerOccupationAttribute playerOccupationAttribute, int totalPage, int current) {
+
+    public LHMiracleRoadMainScreen(int totalPage, int current) {
         super(Component.empty());
         super.minecraft = Minecraft.getInstance();
         this.totalPage = totalPage;
         this.current = current;
-        this.playerOccupationAttribute = playerOccupationAttribute;
+        this.isShowPointsButton = true;
     }
 
     @Override
     public void init() {
         if (minecraft != null) {
+            syncAbility();
             widthCore = (super.width - backgroundWidth) / 2;
             heightCore = (super.height - backgroundHeight) / 2;
 
-            currentGuiScale = minecraft.options.guiScale().get();
+//            currentGuiScale = minecraft.options.guiScale().get();
             initCoordinate = new InitCoordinate(widthCore,heightCore,backgroundWidth,backgroundHeight,font,playerOccupationAttribute.getOccupationId());
             initMainCoordinate = new InitMainCoordinate(widthCore,heightCore,backgroundWidth,backgroundWidth,font,playerOccupationAttribute);
             totalPage += initMainCoordinate.setShowDetailedAttributePage();
             if (current == 0) showButton(false,true);
             else showButton(true, current != totalPage - 1);
+            showPointsButton();
         }
     }
 
@@ -108,6 +110,7 @@ public class LHMiracleRoadMainScreen extends Screen {
     public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         renderBackground(graphics); // 渲染背景
         super.render(graphics, mouseX, mouseY, partialTick);
+        syncAbility();
         if (current == 0) {
             // 渲染文字
             showTitle(graphics);
@@ -129,6 +132,12 @@ public class LHMiracleRoadMainScreen extends Screen {
         if (detailsHoverTooltip != null) {
             graphics.renderComponentTooltip(font, detailsHoverTooltip, detailsHoverTooltipX, detailsHoverTooltipY);
         }
+        if ((initMainCoordinate.getHoldExperienceValue() > initMainCoordinate.getDemandExperienceValue() || playerOccupationAttribute.getPoints() > 0) && isShowPointsButton) {
+            this.clearWidgets();
+            showPointsButton();
+            if (current == 0) showButton(false,true);
+            else showButton(true, current != totalPage - 1);
+        }
     }
 
     private void lastPage() {
@@ -140,6 +149,7 @@ public class LHMiracleRoadMainScreen extends Screen {
             }else {
                 showButton(true,true);
             }
+            showPointsButton();
         }
     }
 
@@ -152,6 +162,7 @@ public class LHMiracleRoadMainScreen extends Screen {
             }else {
                 showButton(true,true);
             }
+            showPointsButton();
         }
     }
 
@@ -216,12 +227,12 @@ public class LHMiracleRoadMainScreen extends Screen {
 
             // 检查鼠标是否悬停在指定位置上
             if (mouseX >= initDetailsX && mouseX <= initDetailsX + textWidth && mouseY >= initY && mouseY <= initY + lineHeight) {
-                detailsHoverTooltip = LHMiracleRoadTool.getDescribeText(LHMiracleRoadTool.isAsJsonArray(attributeObject.get("describes")),level,key,initCoordinate.getAttributePromoteValueShow());
+                detailsHoverTooltip = LHMiracleRoadTool.getDescribeText(LHMiracleRoadTool.isAsJsonArray(attributeObject.get("describes")),level,key);
                 detailsHoverTooltipX = mouseX;
                 detailsHoverTooltipY = mouseY;
             }
 
-            initY += (int) (lineHeight * 1.5);
+            initY += (int) (lineHeight * 1.75);
             initLevel += level;
             attributeSize ++;
         }
@@ -243,7 +254,7 @@ public class LHMiracleRoadMainScreen extends Screen {
             ImageButton showPageLeftButton =
                     new ImageButton(initCoordinate.getPageLeftX(), initCoordinate.getPageY(), initCoordinate.getPageWidth(), initCoordinate.getPageHeight(), Component.empty(),
                             true, false, ResourceLocationTool.Gui.pageLeft, ResourceLocationTool.Gui.pageLeftButton, 0, 0, initCoordinate.getPageWidth(), initCoordinate.getPageHeight(),
-                            initCoordinate.getPageWidth(), initCoordinate.getPageHeight(), currentGuiScale);
+                            initCoordinate.getPageWidth(), initCoordinate.getPageHeight());
             showPageLeftButton.setPressFunc(b -> lastPage());
             addRenderableWidget(showPageLeftButton);
         }
@@ -252,7 +263,7 @@ public class LHMiracleRoadMainScreen extends Screen {
             ImageButton showPageRightButton =
                     new ImageButton(initCoordinate.getPageRightX(), initCoordinate.getPageY(), initCoordinate.getPageWidth(), initCoordinate.getPageHeight(), Component.empty(),
                             true, false, ResourceLocationTool.Gui.pageRight, ResourceLocationTool.Gui.pageRightButton, 0, 0, initCoordinate.getPageWidth(), initCoordinate.getPageHeight(),
-                            initCoordinate.getPageWidth(), initCoordinate.getPageHeight(), currentGuiScale);
+                            initCoordinate.getPageWidth(), initCoordinate.getPageHeight());
             showPageRightButton.setPressFunc(b -> nextPage());
             addRenderableWidget(showPageRightButton);
         }
@@ -290,12 +301,12 @@ public class LHMiracleRoadMainScreen extends Screen {
             int textWidth = font.width(nameText);
             // 检查鼠标是否悬停在指定位置上
             if (mouseX >= initNameTextX && mouseX <= initNameTextX + textWidth && mouseY >= initY && mouseY <= initY + lineHeight) {
-                detailsHoverTooltip = LHMiracleRoadTool.getDescribeText(LHMiracleRoadTool.isAsJsonArray(attributeObject.get("describes")),level,key,initCoordinate.getAttributePromoteValueShow());
+                detailsHoverTooltip = LHMiracleRoadTool.getDescribeText(LHMiracleRoadTool.isAsJsonArray(attributeObject.get("describes")),level,key);
                 detailsHoverTooltipX = mouseX;
                 detailsHoverTooltipY = mouseY;
             }
 
-            initY += (int) (lineHeight * 1.5);
+            initY += (int) (lineHeight * 1.55);
         }
     }
 
@@ -329,9 +340,9 @@ public class LHMiracleRoadMainScreen extends Screen {
                 int percentageBase = 100;
                 if (attributeName.equals(AttributesNameTool.MOVEMENT_SPEED)) percentageBase = 1000;
                 if (LHMiracleRoadTool.isLHMiracleRoadAttribute(attributeName)) {
-                    showValue = LHMiracleRoadTool.getShowLHMiracleRoadValueType(modifiers, attributeName, percentageBase, initMainCoordinate.getDetailedAttribute());
+                    showValue = LHMiracleRoadTool.getShowLHMiracleRoadValueType(modifiers, attributeName, percentageBase);
                 } else {
-                    showValue = LHMiracleRoadTool.getShowValueType(showValueType, value, baseValue, percentageBase, attributeName, initMainCoordinate.getDetailedAttribute());
+                    showValue = LHMiracleRoadTool.getShowValueType(showValueType, value, baseValue, percentageBase, attributeName);
                 }
                 Component showText = Component.translatable(attributeText, showValue);
                 graphics.drawString(font, showText, initX, initY, 0x6C5734, false);
@@ -342,9 +353,8 @@ public class LHMiracleRoadMainScreen extends Screen {
 
     private void showBurden(GuiGraphics graphics,int mouseX, int mouseY){
         int lineHeight = font.lineHeight;
-        int initY = initCoordinate.getSelectY() + lineHeight;
-        AttributeInstance burden = getPlayer().getAttribute(LHMiracleRoadAttributes.BURDEN);
-        int burdenValue = (int) burden.getValue();
+        int initY = initCoordinate.getSelectY();
+        int burdenValue = playerOccupationAttribute.getBurden();
         AttributeInstance heavy = getPlayer().getAttribute(LHMiracleRoadAttributes.HEAVY);
         int heavyValue = (int) heavy.getValue();
         heavyValue += (int) playerOccupationAttribute.getOffhandHeavy();
@@ -371,7 +381,48 @@ public class LHMiracleRoadMainScreen extends Screen {
         }
     }
 
+    private void showPointsButton(){
+        if (current != 1) return;
+        if (initMainCoordinate.getHoldExperienceValue() < initMainCoordinate.getDemandExperienceValue() && playerOccupationAttribute.getPoints() < 1) return;
+        int initY = initMainCoordinate.getAttributePointsY();
+        int initAttributeLevelX = initMainCoordinate.getAttributePointsButtonX();
+        int lineHeight = font.lineHeight;
+        for (String key : AttributeReloadListener.ATTRIBUTE_TYPES.keySet()){
+            JsonObject data = AttributePointsRewardsReloadListener.ATTRIBUTE_POINTS_REWARDS.get(key);
+            int maxLevel = LHMiracleRoadTool.isAsInt(data.get("max_level"));
+            int currentLevel = playerOccupationAttribute.getOccupationAttributeLevel().get(key);
+            if (currentLevel < maxLevel ){
+                ImageButton showPointsButton =
+                        new ImageButton(initAttributeLevelX, initY, 12, 12, Component.empty(),
+                                true, false, ResourceLocationTool.Gui.add, ResourceLocationTool.Gui.addTouch, 0, 0, 12, 12,
+                                12, 12);
+                showPointsButton.setPressFunc(b -> pointsAttributeName(key));
+                addRenderableWidget(showPointsButton);
+            }
+            initY += (int) (lineHeight * 1.55);
+        }
+        isShowPointsButton = false;
+    }
+
+    private void pointsAttributeName(String attributeTypeName){
+        PlayerAttributeChannel.sendToServer(new PlayerAttributePointsMessage(attributeTypeName));
+        PlayerOccupationAttribute occupationAttribute = getPlayer().getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).resolve().get();
+        occupationAttribute.setOccupationExperience(0);
+        occupationAttribute.setPoints(0);
+        isShowPointsButton = true;
+        this.clearWidgets();
+        if (current == 0) showButton(false,true);
+        else showButton(true, current != totalPage - 1);
+        syncAbility();
+    }
+
     private @Nonnull LocalPlayer getPlayer() {
         return Objects.requireNonNull(getMinecraft().player);
+    }
+
+    private void syncAbility(){
+        Optional<PlayerOccupationAttribute> optionalPlayerOccupationAttribute = getPlayer().getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).resolve();
+        optionalPlayerOccupationAttribute.ifPresent(occupationAttribute -> this.playerOccupationAttribute = occupationAttribute);
+        if (initMainCoordinate != null) initMainCoordinate.calculateAttribute(playerOccupationAttribute);
     }
 }

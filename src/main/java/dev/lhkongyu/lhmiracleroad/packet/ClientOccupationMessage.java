@@ -40,11 +40,16 @@ public record ClientOccupationMessage(JsonObject playerOccupationAttributeObject
         context.enqueueWork(() -> {
             Player clientPlayer = Minecraft.getInstance().player;
             if (clientPlayer != null) {
+                PlayerOccupationAttribute playerOccupationAttribute = clientPlayer.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).resolve().get();
                 String occupationId = LHMiracleRoadTool.isAsString(playerOccupationAttributeObject.get("occupationId"));
-                if (occupationId == null || occupationId.isEmpty()) return;
+                if (occupationId == null || occupationId.isEmpty()){
+                    playerOccupationAttribute.setOccupationId(null);
+                    return;
+                }
                 int occupationLevel = LHMiracleRoadTool.isAsInt(playerOccupationAttributeObject.get("occupationLevel"));
                 int occupationExperience = LHMiracleRoadTool.isAsInt(playerOccupationAttributeObject.get("occupationExperience"));
                 int points = LHMiracleRoadTool.isAsInt(playerOccupationAttributeObject.get("points"));
+                int burden = LHMiracleRoadTool.isAsInt(playerOccupationAttributeObject.get("burden"));
                 double offhandHeavy = LHMiracleRoadTool.isAsDouble(playerOccupationAttributeObject.get("offhandHeavy"));
                 String empiricalCalculationFormula = LHMiracleRoadTool.isAsString(playerOccupationAttributeObject.get("empiricalCalculationFormula"));
 
@@ -80,7 +85,6 @@ public record ClientOccupationMessage(JsonObject playerOccupationAttributeObject
                     }
                 }
 
-                PlayerOccupationAttribute playerOccupationAttribute = clientPlayer.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).resolve().get();
                 playerOccupationAttribute.setOccupationLevel(occupationLevel);
                 playerOccupationAttribute.setOccupationExperience(occupationExperience);
                 playerOccupationAttribute.setOccupationId(occupationId);
@@ -92,24 +96,9 @@ public record ClientOccupationMessage(JsonObject playerOccupationAttributeObject
                 playerOccupationAttribute.setShowAttribute(showAttributeMap);
                 playerOccupationAttribute.setEmpiricalCalculationFormula(empiricalCalculationFormula);
                 playerOccupationAttribute.setPoints(points);
+                playerOccupationAttribute.setBurden(burden);
             }
         });
         context.setPacketHandled(true);
-    }
-
-    private Map<String, AttributeModifier> jsonObjectConversionAttributeModifier(JsonObject jsonObject){
-        Map<String, AttributeModifier> map = Maps.newHashMap();
-        if (jsonObject != null){
-            for (Map.Entry<String, JsonElement> entry:jsonObject.entrySet()){
-                JsonObject object = LHMiracleRoadTool.isAsJsonObject(entry.getValue());
-                UUID uuid = UUID.fromString(LHMiracleRoadTool.isAsString(object.get("uuid")));
-                String name = LHMiracleRoadTool.isAsString(object.get("name"));
-                double amount = LHMiracleRoadTool.isAsDouble(object.get("amount"));
-                AttributeModifier.Operation operation = AttributeModifier.Operation.fromValue(LHMiracleRoadTool.isAsInt(object.get("operation")));
-                AttributeModifier attributeModifier = new AttributeModifier(uuid,name,amount,operation);
-                map.put(entry.getKey(),attributeModifier);
-            }
-        }
-        return map;
     }
 }

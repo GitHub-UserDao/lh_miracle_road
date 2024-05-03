@@ -31,8 +31,6 @@ public class LHMiracleRoadOccupationScreen extends Screen {
 
     private InitCoordinate initCoordinate;
 
-    private int currentGuiScale;
-
     private int current;
 
     private List<Component> itemHoverTooltip = null;
@@ -68,7 +66,6 @@ public class LHMiracleRoadOccupationScreen extends Screen {
             widthCore = (super.width - backgroundWidth) / 2;
             heightCore = (super.height - backgroundHeight) / 2;
 
-            currentGuiScale = minecraft.options.guiScale().get();
             initCoordinate = new InitCoordinate(widthCore,heightCore,backgroundWidth,backgroundHeight,font,current);
             if (current == 0) showButton(false,true);
             else showButton(true, current != OccupationReloadListener.OCCUPATION.size() - 1);
@@ -213,13 +210,13 @@ public class LHMiracleRoadOccupationScreen extends Screen {
 
             // 检查鼠标是否悬停在物品上
             if (mouseX >= initDetailsX && mouseX <= initDetailsX + textWidth && mouseY >= initY && mouseY <= initY + lineHeight) {
-                List<Component> components = LHMiracleRoadTool.getDescribeText(LHMiracleRoadTool.isAsJsonArray(attributeObject.get("describes")),level,key,initCoordinate.getAttributePromoteValueShow());
+                List<Component> components = LHMiracleRoadTool.getDescribeText(LHMiracleRoadTool.isAsJsonArray(attributeObject.get("describes")),level,key);
                 detailsHoverTooltip =  components;
                 detailsHoverTooltipX = mouseX;
                 detailsHoverTooltipY = mouseY;
             }
 
-            initY += (int) (lineHeight * 1.85);
+            initY += (int) (lineHeight * 1.75);
             initLevel += level;
             attributeSize ++;
         }
@@ -280,7 +277,7 @@ public class LHMiracleRoadOccupationScreen extends Screen {
         ImageButton showSelectButton =
                 new ImageButton(initCoordinate.getSelectX(), initCoordinate.getSelectY(), initCoordinate.getSelectWidth(), initCoordinate.getSelectHeight(), initCoordinate.getSelectComponent(),
                         true,true,ResourceLocationTool.Gui.select,ResourceLocationTool.Gui.selectButton,0,0,initCoordinate.getSelectWidth(),initCoordinate.getSelectHeight(),
-                        initCoordinate.getSelectWidth(),initCoordinate.getSelectHeight(),currentGuiScale);
+                        initCoordinate.getSelectWidth(),initCoordinate.getSelectHeight());
         showSelectButton.setPressFunc(b -> select());
         addRenderableWidget(showSelectButton);
 
@@ -289,7 +286,7 @@ public class LHMiracleRoadOccupationScreen extends Screen {
             ImageButton showPageLeftButton =
                     new ImageButton(initCoordinate.getPageLeftX(), initCoordinate.getPageY(), initCoordinate.getPageWidth(), initCoordinate.getPageHeight(), Component.empty(),
                             true, false, ResourceLocationTool.Gui.pageLeft, ResourceLocationTool.Gui.pageLeftButton, 0, 0, initCoordinate.getPageWidth(), initCoordinate.getPageHeight(),
-                            initCoordinate.getPageWidth(), initCoordinate.getPageHeight(), currentGuiScale);
+                            initCoordinate.getPageWidth(), initCoordinate.getPageHeight());
             showPageLeftButton.setPressFunc(b -> lastPage());
             addRenderableWidget(showPageLeftButton);
         }
@@ -298,7 +295,7 @@ public class LHMiracleRoadOccupationScreen extends Screen {
             ImageButton showPageRightButton =
                     new ImageButton(initCoordinate.getPageRightX(), initCoordinate.getPageY(), initCoordinate.getPageWidth(), initCoordinate.getPageHeight(), Component.empty(),
                             true, false, ResourceLocationTool.Gui.pageRight, ResourceLocationTool.Gui.pageRightButton, 0, 0, initCoordinate.getPageWidth(), initCoordinate.getPageHeight(),
-                            initCoordinate.getPageWidth(), initCoordinate.getPageHeight(), currentGuiScale);
+                            initCoordinate.getPageWidth(), initCoordinate.getPageHeight());
             showPageRightButton.setPressFunc(b -> nextPage());
             addRenderableWidget(showPageRightButton);
         }

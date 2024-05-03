@@ -47,6 +47,7 @@ public class PlayerForgeEvent {
             playerOccupationAttribute.setHeavyAttributeModifier(optional.getHeavyAttributeModifier());
             playerOccupationAttribute.setShowAttribute(optional.getShowAttribute());
             playerOccupationAttribute.setEmpiricalCalculationFormula(optional.getEmpiricalCalculationFormula());
+            playerOccupationAttribute.setBurden(optional.getBurden());
 
             LHMiracleRoadTool.synchronizationClient(playerOccupationAttribute, (ServerPlayer) player);
         });

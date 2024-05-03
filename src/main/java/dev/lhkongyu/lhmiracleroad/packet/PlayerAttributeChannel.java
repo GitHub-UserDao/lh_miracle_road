@@ -31,6 +31,12 @@ public class PlayerAttributeChannel {
                 .encoder(ClientOccupationMessage::encode)
                 .consumerMainThread(ClientOccupationMessage::handle)
                 .add();
+
+        channel.messageBuilder(PlayerAttributePointsMessage.class,3,NetworkDirection.PLAY_TO_SERVER)
+                .decoder(PlayerAttributePointsMessage::new)
+                .encoder(PlayerAttributePointsMessage::encode)
+                .consumerMainThread(PlayerAttributePointsMessage::handle)
+                .add();
     }
 
     public static <MSG> void sendToServer(MSG msg) {

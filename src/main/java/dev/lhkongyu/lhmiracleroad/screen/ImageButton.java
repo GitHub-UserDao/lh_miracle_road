@@ -35,10 +35,8 @@ public class ImageButton extends Button {
 
     private final boolean isText;
 
-    private final int currentGuiScale;
-
     public ImageButton(int x, int y, int width, int height, Component message, boolean isPage, boolean isText, ResourceLocation backgroundImage,ResourceLocation hoveredFocusedImage,
-                       int initWidth, int initHeight, int imageWidthBase, int imageHeightBase, int imageWidth, int imageHeight,int currentGuiScale) {
+                       int initWidth, int initHeight, int imageWidthBase, int imageHeightBase, int imageWidth, int imageHeight) {
         super(x, y, width, height, message, b -> {}, Supplier::get);
         this.isPage = isPage;
         this.isText = isText;
@@ -51,7 +49,6 @@ public class ImageButton extends Button {
         this.imageWidth = imageWidth;
         this.imageHeight = imageHeight;
         this.pressFunc = b -> {};
-        this.currentGuiScale = currentGuiScale;
     }
 
     public void setPressFunc(OnPress pressFunc) {

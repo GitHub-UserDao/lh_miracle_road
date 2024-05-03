@@ -64,5 +64,10 @@
   "lhmiracleroad.gui.attribute.text.details.heavy.light": "light",
   "lhmiracleroad.gui.attribute.text.details.heavy.normal": "normal",
   "lhmiracleroad.gui.attribute.text.details.heavy.biased_weight": "Biased weight",
-  "lhmiracleroad.gui.attribute.text.details.heavy.overweight": "overweight"
+  "lhmiracleroad.gui.attribute.text.details.heavy.overweight": "overweight",
+  "lhmiracleroad.instructions.points.add": "%s Point increase %s",
+  "lhmiracleroad.instructions.points.clear": "%s Points clear",
+  "lhmiracleroad.instructions.reset.level": "%s reset level success",
+  "lhmiracleroad.instructions.reset.occupation": "%s reset occupation success",
+  "lhmiracleroad.instructions.prompt": "%s Select first occupation"
 }

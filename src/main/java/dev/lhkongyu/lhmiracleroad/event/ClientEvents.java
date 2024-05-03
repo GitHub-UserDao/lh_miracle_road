@@ -43,7 +43,7 @@ public class ClientEvents {
                 if (optionalPlayerOccupationAttribute.isPresent()) {
                     PlayerOccupationAttribute playerOccupationAttribute = optionalPlayerOccupationAttribute.get();
                     if (playerOccupationAttribute.getOccupationId() != null && !playerOccupationAttribute.getOccupationId().isEmpty()) {
-                        minecraft.setScreen(new LHMiracleRoadMainScreen(playerOccupationAttribute,2,1));
+                        minecraft.setScreen(new LHMiracleRoadMainScreen(2,1));
                         return;
                     }
                 }

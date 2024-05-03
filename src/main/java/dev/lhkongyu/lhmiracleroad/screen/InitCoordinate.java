@@ -89,7 +89,7 @@ public class InitCoordinate {
 
     private List<JsonObject> initItem;
 
-    private final Map<String,Map<String,String>> attributePromoteValueShow = Maps.newHashMap();
+//    private final Map<String,Map<String,String>> attributePromoteValueShow = Maps.newHashMap();
 
     public int getPageY() {
         return pageY;
@@ -231,19 +231,15 @@ public class InitCoordinate {
         return initItem;
     }
 
-    public Map<String, Map<String,String>> getAttributePromoteValueShow() {
-        return attributePromoteValueShow;
-    }
-
     public InitCoordinate(int widthCore, int heightCore,int backgroundWidth,int backgroundHeight,Font font,int current){
         int lineHeight = font.lineHeight;
         int lineWidth = font.width("测试");
         //计算切换页数的位置
-        pageWidth = 35;
-        pageHeight = 33;
-        pageY = heightCore + backgroundHeight - 45;
-        pageLeftX = widthCore + 12;
-        pageRightX = widthCore + backgroundWidth - 46;
+        pageWidth = 16;
+        pageHeight = 16;
+        pageY = heightCore + backgroundHeight - 35;
+        pageLeftX = widthCore + pageWidth + 6;
+        pageRightX = widthCore + backgroundWidth - 37;
 
         //计算职业相框的位置
         frameWidth = backgroundWidth / 3;
@@ -254,7 +250,7 @@ public class InitCoordinate {
         selectWidth = (int) (backgroundWidth * 0.1);
         selectHeight = (int) (backgroundHeight * 0.055 );
         selectX = widthCore + (backgroundWidth / 6 + selectWidth / 2);
-        selectY = pageY + (selectHeight / 2);
+        selectY = pageY - 5;
         selectComponent = Component.translatable("lhmiracleroad.gui.text.select");
         //计算职业图片的位置
         occupationWidth = (int) (backgroundWidth * 0.225);
@@ -282,11 +278,11 @@ public class InitCoordinate {
         int lineHeight = font.lineHeight;
         int lineWidth = font.width("测试");
         //计算切换页数的位置
-        pageWidth = 35;
-        pageHeight = 33;
-        pageY = heightCore + backgroundHeight - 45;
-        pageLeftX = widthCore + 12;
-        pageRightX = widthCore + backgroundWidth - 46;
+        pageWidth = 16;
+        pageHeight = 16;
+        pageY = heightCore + backgroundHeight - 35;
+        pageLeftX = widthCore + pageWidth + 6;
+        pageRightX = widthCore + backgroundWidth - 37;
 
         //计算职业相框的位置
         frameWidth = backgroundWidth / 3;
@@ -307,7 +303,7 @@ public class InitCoordinate {
         describeOtherLnInitX = (int) (widthCore + lineWidth * 1.5);
         describeInitY = heightCore + frameHeight - lineHeight * 2;
         //选择框y
-        selectY = pageY + (selectHeight / 2);
+        selectY = pageY - 5;
         //设置职业基本数据
         setOccupation(widthCore,heightCore,backgroundWidth,backgroundHeight,font,occupationId);
     }
