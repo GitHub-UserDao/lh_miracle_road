@@ -213,6 +213,8 @@ public class PlayerAttributeTool {
         LHMiracleRoadTool.setConfigBaseAttribute(player,initDifficultyLevel);
         //设置初始属性等级所带来的提升值
         calculateAttribute(player,initAttributeLevel,occupationId,playerOccupationAttribute);
+        //更新玩家奖惩状态
+        LHMiracleRoadTool.playerPunishmentStateUpdate(player,playerOccupationAttribute);
     }
 
     public static void resetOccupation(ServerPlayer player,PlayerOccupationAttribute playerOccupationAttribute){
@@ -225,5 +227,7 @@ public class PlayerAttributeTool {
             }
         }
         LHMiracleRoadTool.synchronizationClient(playerOccupationAttribute,player);
+        //更新玩家奖惩状态
+        LHMiracleRoadTool.playerPunishmentStateUpdate(player,playerOccupationAttribute);
     }
 }

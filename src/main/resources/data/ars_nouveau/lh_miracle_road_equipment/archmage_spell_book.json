@@ -1,0 +1,14 @@
+{
+  "attribute_need": [
+    {
+      "attribute_id": "brain",
+      "describe_text": "lhmiracleroad.tooltip.describe.brain",
+      "need_points": 41,
+      "punishment": {
+        "attribute": "ars_nouveau:ars_nouveau.perk.spell_damage",
+        "value": -40,
+        "operation": "addition"
+      }
+    }
+  ]
+}

@@ -53,6 +53,7 @@
   "lhmiracleroad.tooltip.describe.heavy": "+%s heavy",
   "lhmiracleroad.tooltip.describe.power": "need power %s",
   "lhmiracleroad.tooltip.describe.agile": "need agile %s",
+  "lhmiracleroad.tooltip.describe.brain": "need brain %s",
   "attribute.name.lhmiracleroad.heavy": "heavy",
   "attribute.name.lhmiracleroad.burden": "burden",
   "attribute.name.lhmiracleroad.ranged_damage": "Ranged damage",

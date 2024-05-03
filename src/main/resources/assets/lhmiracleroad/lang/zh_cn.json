@@ -53,6 +53,7 @@
   "lhmiracleroad.tooltip.describe.heavy": "+%s 沉重",
   "lhmiracleroad.tooltip.describe.power": "需要力量 %s",
   "lhmiracleroad.tooltip.describe.agile": "需要敏捷 %s",
+  "lhmiracleroad.tooltip.describe.brain": "需要智力 %s",
   "attribute.name.lhmiracleroad.heavy": "沉重",
   "attribute.name.lhmiracleroad.burden": "负担",
   "attribute.name.lhmiracleroad.ranged_damage": "远程攻击力",
