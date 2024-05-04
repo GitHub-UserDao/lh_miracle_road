@@ -2,12 +2,12 @@ package dev.lhkongyu.lhmiracleroad.event;
 
 import com.google.gson.JsonObject;
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
-import dev.lhkongyu.lhmiracleroad.access.LHMiracleRoadAttributes;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import dev.lhkongyu.lhmiracleroad.tool.PlayerAttributeTool;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -79,7 +79,6 @@ public class PlayerForgeEvent {
             loggedInSyncAttribute(playerOccupationAttribute, (ServerPlayer) player);
             LHMiracleRoadTool.synchronizationClient(playerOccupationAttribute, (ServerPlayer) player);
         });
-//        player.sendSystemMessage(Component.translatable("lhmiracleroad.gui.prompt"));
     }
 
     private static void againAttachAttribute(PlayerOccupationAttribute playerOccupationAttribute,Player player){
@@ -112,10 +111,16 @@ public class PlayerForgeEvent {
             Map<String,Integer> attributeLevel = playerOccupationAttribute.getOccupationAttributeLevel();
             for (String key : newAttributeLevel.keySet()){
                 Integer attributeLevelValue = attributeLevel.get(key);
-                if (attributeLevelValue != null) newAttributeLevel.put(key,attributeLevelValue);
+                if (attributeLevelValue != null) {
+                    Integer actualValue = newAttributeLevel.get(key);
+                    actualValue = Integer.max(attributeLevelValue,actualValue);
+                    newAttributeLevel.put(key,actualValue);
+                }
             }
             //重新附上属性值
             PlayerAttributeTool.calculateAttribute(player,newAttributeLevel,playerOccupationAttribute);
+        }else {
+            player.sendSystemMessage(Component.translatable("lhmiracleroad.gui.prompt"));
         }
     }
 }

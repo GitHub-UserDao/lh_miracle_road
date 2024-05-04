@@ -75,13 +75,16 @@ public class ItemPunishmentTool {
 
     /**
      * 计算玩家把该物品穿上或拿在手上时的重量，根据重量进行属性上的奖惩
+     * @param itemFrom
+     * @param itemTo
      * @param itemFromPunishmentAttributeOptional
      * @param itemToPunishmentAttributeOptional
      * @param player
      * @param playerOccupationAttribute
      * @param slot
      */
-    public static void heavyPunishmentAttributeModifier(Optional<ItemStackPunishmentAttribute> itemFromPunishmentAttributeOptional,
+    public static void heavyPunishmentAttributeModifier(ItemStack itemFrom,ItemStack itemTo,
+                                                         Optional<ItemStackPunishmentAttribute> itemFromPunishmentAttributeOptional,
                                                          Optional<ItemStackPunishmentAttribute> itemToPunishmentAttributeOptional,
                                                          ServerPlayer player, PlayerOccupationAttribute playerOccupationAttribute,
                                                          EquipmentSlot slot){
@@ -89,9 +92,9 @@ public class ItemPunishmentTool {
         AttributeInstance burdenAttributeInstance = player.getAttribute(LHMiracleRoadAttributes.BURDEN);
 
         ItemStackPunishmentAttribute itemFromPunishmentAttribute = null;
-        if (itemFromPunishmentAttributeOptional.isPresent()) itemFromPunishmentAttribute = itemFromPunishmentAttributeOptional.get();
+        if (itemFromPunishmentAttributeOptional.isPresent() && !itemFrom.isEmpty()) itemFromPunishmentAttribute = itemFromPunishmentAttributeOptional.get();
         ItemStackPunishmentAttribute itemToPunishmentAttribute = null;
-        if (itemToPunishmentAttributeOptional.isPresent()) itemToPunishmentAttribute = itemToPunishmentAttributeOptional.get();
+        if (itemToPunishmentAttributeOptional.isPresent() && !itemTo.isEmpty()) itemToPunishmentAttribute = itemToPunishmentAttributeOptional.get();
 
         double itemFromHeavy = itemFromPunishmentAttribute == null ? 0 : itemFromPunishmentAttribute.getHeavy();
         double itemToHeavy = itemToPunishmentAttribute == null ? 0 : itemToPunishmentAttribute.getHeavy();
@@ -103,7 +106,7 @@ public class ItemPunishmentTool {
             playerOccupationAttribute.setOffhandHeavy(itemToHeavy);
         }
         else heavyValue = Double.max(heavy - itemFromHeavy,0) + itemToHeavy + playerOccupationAttribute.getOffhandHeavy();
-        double burden = Double.max(burdenAttributeInstance.getValue(), LHMiracleRoadConfig.COMMON.INIT_BURDEN.get());
+        double burden = burdenAttributeInstance.getValue();
 
         setHeavyAttributeModifier(playerOccupationAttribute,player,heavyValue,burden);
 
@@ -125,7 +128,7 @@ public class ItemPunishmentTool {
         }
         AttributeModifier attributeModifier = null;
         UUID uuid = UUID.randomUUID();
-        if (proportion > 100){
+        if (proportion >= 100){
             attributeModifier = new AttributeModifier(uuid, "", LHMiracleRoadConfig.COMMON.PUNISHMENT_OVERWEIGHT.get(), AttributeModifier.Operation.MULTIPLY_TOTAL);
         }else if (proportion >= 75){
             attributeModifier = new AttributeModifier(uuid, "",  LHMiracleRoadConfig.COMMON.PUNISHMENT_BIASED_WEIGHT.get(), AttributeModifier.Operation.MULTIPLY_TOTAL);

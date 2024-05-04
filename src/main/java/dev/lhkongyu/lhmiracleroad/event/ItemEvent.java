@@ -165,7 +165,7 @@ public class ItemEvent {
                     .resolve();
 
             //沉重值计算
-            ItemPunishmentTool.heavyPunishmentAttributeModifier(itemFromPunishmentAttribute,itemToPunishmentAttribute,player,playerOccupationAttribute,slot);
+            ItemPunishmentTool.heavyPunishmentAttributeModifier(itemFrom,itemTo,itemFromPunishmentAttribute,itemToPunishmentAttribute,player,playerOccupationAttribute,slot);
 
             if (itemFromPunishmentAttribute.isEmpty() && itemToPunishmentAttribute.isEmpty()) return;
 

@@ -366,7 +366,7 @@ public class LHMiracleRoadMainScreen extends Screen {
         if (mouseX >= initX && mouseX <= initX + textWidth && mouseY >= initY && mouseY <= initY + lineHeight) {
             List<Component> components = new ArrayList<>();
             double proportion = ((double) heavyValue / burdenValue) * 100;
-            if (proportion > 100){
+            if (proportion >= 100){
                 components.add(Component.translatable("lhmiracleroad.gui.attribute.text.details.heavy.overweight"));
             }else if (proportion >= 75){
                 components.add(Component.translatable("lhmiracleroad.gui.attribute.text.details.heavy.biased_weight"));

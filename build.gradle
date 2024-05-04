@@ -155,25 +155,25 @@ dependencies {
     implementation fg.deobf("curse.maven:jade-324717:4986594")
     //mixin
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-//    // lhmobdifficultyincrease
-//    implementation fg.deobf("curse.maven:mob-difficulty-increase-999584:5243499")
-//    // epicfight
-//    implementation fg.deobf("curse.maven:epic-fight-mod-405076:5159623")
-//    // irons_spellbooks
-//    implementation fg.deobf("curse.maven:irons-spells-n-spellbooks-855414:5061897")
-//    // caelus
-//    implementation fg.deobf("curse.maven:caelus-308989:4581481")
-//    // curios
-//    implementation fg.deobf("curse.maven:curios-309927:5175956")
-//    //geckolib
-//    implementation fg.deobf("curse.maven:geckolib-388172:5188427")
-//    //playeranimator
-//    implementation fg.deobf("curse.maven:playeranimator-658587:4587214")
-//    // ars_nouveau
-//    implementation fg.deobf("curse.maven:ars-nouveau-401955:5190105")
-//    // patchouli
-//    implementation fg.deobf("curse.maven:ars-nouveau-306770:4966125")
-//    implementation fg.deobf("curse.maven:attributefix-280510:4911083")
+    // lhmobdifficultyincrease
+    implementation fg.deobf("curse.maven:mob-difficulty-increase-999584:5243499")
+    // epicfight
+    implementation fg.deobf("curse.maven:epic-fight-mod-405076:5159623")
+    // irons_spellbooks
+    implementation fg.deobf("curse.maven:irons-spells-n-spellbooks-855414:5061897")
+    // caelus
+    implementation fg.deobf("curse.maven:caelus-308989:4581481")
+    // curios
+    implementation fg.deobf("curse.maven:curios-309927:5175956")
+    //geckolib
+    implementation fg.deobf("curse.maven:geckolib-388172:5188427")
+    //playeranimator
+    implementation fg.deobf("curse.maven:playeranimator-658587:4587214")
+    // ars_nouveau
+    implementation fg.deobf("curse.maven:ars-nouveau-401955:5190105")
+    // patchouli
+    implementation fg.deobf("curse.maven:ars-nouveau-306770:4966125")
+    implementation fg.deobf("curse.maven:attributefix-280510:4911083")
     // Specify the version of Minecraft to use.
     // Any artifact can be supplied so long as it has a "userdev" classifier artifact and is a compatible patcher artifact.
     // The "userdev" classifier will be requested and setup by ForgeGradle.

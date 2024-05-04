@@ -82,13 +82,13 @@
   {
     "condition": "irons_spellbooks",
     "attribute": "irons_spellbooks:cast_time_reduction",
-    "attribute_text": "lhmiracleroad.gui.attribute.text.details.trick_cooling_cd",
+    "attribute_text": "lhmiracleroad.gui.attribute.text.details.trick_chanting_cd",
     "show_value_type": "extra_percentage"
   },
   {
     "condition": "irons_spellbooks",
     "attribute": "irons_spellbooks:cooldown_reduction",
-    "attribute_text": "lhmiracleroad.gui.attribute.text.details.trick_chanting_cd",
+    "attribute_text": "lhmiracleroad.gui.attribute.text.details.trick_cooling_cd",
     "show_value_type": "extra_percentage"
   },
   {

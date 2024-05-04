@@ -92,15 +92,15 @@
       },
       {
         "id": "power",
-        "level": 14
+        "level": 15
       },
       {
         "id": "sturdy",
-        "level": 13
+        "level": 15
       },
       {
         "id": "endurance",
-        "level": 13
+        "level": 12
       },
       {
         "id": "brain",
@@ -108,7 +108,7 @@
       },
       {
         "id": "agile",
-        "level": 14
+        "level": 12
       },
       {
         "id": "trick",
