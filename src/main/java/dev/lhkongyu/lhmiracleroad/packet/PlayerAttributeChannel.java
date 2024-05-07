@@ -26,16 +26,22 @@ public class PlayerAttributeChannel {
                 .consumerMainThread(PlayerOccupationMessage::handle)
                 .add();
 
-        channel.messageBuilder(ClientOccupationMessage.class,2,NetworkDirection.PLAY_TO_CLIENT)
+        channel.messageBuilder(PlayerAttributePointsMessage.class,2,NetworkDirection.PLAY_TO_SERVER)
+                .decoder(PlayerAttributePointsMessage::new)
+                .encoder(PlayerAttributePointsMessage::encode)
+                .consumerMainThread(PlayerAttributePointsMessage::handle)
+                .add();
+
+        channel.messageBuilder(ClientOccupationMessage.class,3,NetworkDirection.PLAY_TO_CLIENT)
                 .decoder(ClientOccupationMessage::new)
                 .encoder(ClientOccupationMessage::encode)
                 .consumerMainThread(ClientOccupationMessage::handle)
                 .add();
 
-        channel.messageBuilder(PlayerAttributePointsMessage.class,3,NetworkDirection.PLAY_TO_SERVER)
-                .decoder(PlayerAttributePointsMessage::new)
-                .encoder(PlayerAttributePointsMessage::encode)
-                .consumerMainThread(PlayerAttributePointsMessage::handle)
+        channel.messageBuilder(ClientDataMessage.class,4,NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(ClientDataMessage::new)
+                .encoder(ClientDataMessage::encode)
+                .consumerMainThread(ClientDataMessage::handle)
                 .add();
     }
 

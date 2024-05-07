@@ -1,22 +1,22 @@
 package dev.lhkongyu.lhmiracleroad.packet;
 
 import com.google.common.collect.Maps;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
+import dev.lhkongyu.lhmiracleroad.data.ClientData;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
-import dev.lhkongyu.lhmiracleroad.tool.PlayerAttributeTool;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.function.Supplier;
 
@@ -38,7 +38,11 @@ public record ClientOccupationMessage(JsonObject playerOccupationAttributeObject
     public void handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context context = supplier.get();
         context.enqueueWork(() -> {
-            Player clientPlayer = Minecraft.getInstance().player;
+            Minecraft mc = Minecraft.getInstance();
+            ClientLevel clientLevel = mc.level;
+            if (clientLevel == null) return;
+            String playerUUID = LHMiracleRoadTool.isAsString(playerOccupationAttributeObject.get("playerUUID"));
+            Player clientPlayer = clientLevel.getPlayerByUUID(UUID.fromString(playerUUID));
             if (clientPlayer != null) {
                 PlayerOccupationAttribute playerOccupationAttribute = clientPlayer.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).resolve().get();
                 String occupationId = LHMiracleRoadTool.isAsString(playerOccupationAttributeObject.get("occupationId"));

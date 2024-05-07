@@ -270,13 +270,14 @@ public class PlayerOccupationAttribute {
         }
     }
 
-    public JsonObject getPlayerOccupationAttribute(){
+    public JsonObject getPlayerOccupationAttribute(UUID playerUUID){
         JsonObject playerOccupationAttributeObject = new JsonObject();
         playerOccupationAttributeObject.addProperty("occupationLevel",this.occupationLevel);
         playerOccupationAttributeObject.addProperty("occupationExperience",this.occupationExperience);
         playerOccupationAttributeObject.addProperty("points",this.points);
         playerOccupationAttributeObject.addProperty("offhandHeavy",this.offhandHeavy);
         playerOccupationAttributeObject.addProperty("burden",this.burden);
+        playerOccupationAttributeObject.addProperty("playerUUID",playerUUID.toString());
         if (this.occupationId != null && !this.occupationId.isEmpty()) playerOccupationAttributeObject.addProperty("occupationId",this.occupationId);
         if (this.empiricalCalculationFormula != null && !this.empiricalCalculationFormula.isEmpty()) playerOccupationAttributeObject.addProperty("empiricalCalculationFormula",this.empiricalCalculationFormula);
 

@@ -5,6 +5,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
+import dev.lhkongyu.lhmiracleroad.data.ClientData;
 import dev.lhkongyu.lhmiracleroad.data.reloader.OccupationReloadListener;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import net.minecraft.client.Minecraft;
@@ -317,7 +318,8 @@ public class InitCoordinate {
     public void setOccupation(int widthCore, int heightCore,int backgroundWidth,int backgroundHeight, Font font, int current){
         int lineHeight = font.lineHeight;
         //获取职业基本数据
-        occupation = OccupationReloadListener.OCCUPATION.get(current);
+        if (ClientData.OCCUPATION.isEmpty()) return;
+        occupation = ClientData.OCCUPATION.get(current);
 
         //设置职业图片
         occupationImage = new ResourceLocation(LHMiracleRoad.MODID, LHMiracleRoadTool.isAsString(occupation.get("occupation_avatar")));
@@ -328,7 +330,7 @@ public class InitCoordinate {
         occupationNameX = widthCore + (backgroundWidth / 6 + frameWidth / 3) - (textWidth / 2);
         occupationNameY = (int) (heightCore + frameHeight - lineHeight * 3.75);
         //填充初始属性等级数据
-        initAttributeLevel = LHMiracleRoadTool.setInitAttributeLevel(occupation);
+        initAttributeLevel = LHMiracleRoadTool.setInitAttributeLevelClient(occupation);
         //设置描述文本
         describeTexts = setDescribeTexts(backgroundWidth,font);
         //填充初始物品信息
@@ -338,7 +340,7 @@ public class InitCoordinate {
     public void setOccupation(int widthCore, int heightCore,int backgroundWidth,int backgroundHeight, Font font,String occupationId){
         int lineHeight = font.lineHeight;
         //获取职业基本数据
-        occupation = LHMiracleRoadTool.getOccupation(occupationId);
+        occupation = LHMiracleRoadTool.getOccupationClient(occupationId);
         //设置职业图片
         occupationImage = new ResourceLocation(LHMiracleRoad.MODID, LHMiracleRoadTool.isAsString(occupation.get("occupation_avatar")));
         //设置职业名称
@@ -348,7 +350,7 @@ public class InitCoordinate {
         occupationNameX = widthCore + (backgroundWidth / 6 + frameWidth / 3) - (textWidth / 2);
         occupationNameY = (int) (heightCore + frameHeight - lineHeight * 3.75);
         //填充初始属性等级数据
-        initAttributeLevel = LHMiracleRoadTool.setInitAttributeLevel(occupation);
+        initAttributeLevel = LHMiracleRoadTool.setInitAttributeLevelClient(occupation);
         //设置描述文本
         describeTexts = setDescribeTexts(backgroundWidth,font);
     }

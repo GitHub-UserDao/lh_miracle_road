@@ -33,6 +33,7 @@ public class AttributePointsRewardsReloadListener extends SimpleJsonResourceRelo
     protected void apply(Map<ResourceLocation, JsonElement> obj, @NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profilerFiller) {
         ATTRIBUTE_POINTS_REWARDS.clear();
         recordAttribute.clear();
+        POINTS_REWARDS.clear();
         for (Map.Entry<ResourceLocation, JsonElement> entry : obj.entrySet()) {
             JsonElement jsonElement = entry.getValue();
             JsonArray jsonArray = jsonElement.getAsJsonArray();

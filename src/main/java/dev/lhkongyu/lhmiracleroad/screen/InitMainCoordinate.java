@@ -1,8 +1,10 @@
 package dev.lhkongyu.lhmiracleroad.screen;
 
 import com.google.common.collect.Maps;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
+import dev.lhkongyu.lhmiracleroad.data.ClientData;
 import dev.lhkongyu.lhmiracleroad.data.reloader.ShowGuiAttributeReloadListener;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import net.minecraft.client.gui.Font;
@@ -136,7 +138,8 @@ public class InitMainCoordinate {
     public int setShowDetailedAttributePage(){
         showDetailedAttributePages = new ArrayList<>();
 
-        List<JsonObject> showGuiAttributeList = ShowGuiAttributeReloadListener.SHOW_GUI_ATTRIBUTE;
+        List<JsonObject> showGuiAttributeList = ClientData.SHOW_GUI_ATTRIBUTE;
+
         //设置每一面能放多少条数据
         int eachPageMaxSize = 15;
 

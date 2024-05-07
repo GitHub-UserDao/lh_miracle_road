@@ -2,6 +2,7 @@ package dev.lhkongyu.lhmiracleroad.screen;
 
 import com.google.gson.JsonObject;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
+import dev.lhkongyu.lhmiracleroad.data.ClientData;
 import dev.lhkongyu.lhmiracleroad.data.reloader.AttributeReloadListener;
 import dev.lhkongyu.lhmiracleroad.data.reloader.OccupationReloadListener;
 import dev.lhkongyu.lhmiracleroad.packet.PlayerAttributeChannel;
@@ -9,11 +10,9 @@ import dev.lhkongyu.lhmiracleroad.packet.PlayerOccupationMessage;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import dev.lhkongyu.lhmiracleroad.tool.ResourceLocationTool;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.OptionInstance;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -22,9 +21,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 public class LHMiracleRoadOccupationScreen extends Screen {
@@ -68,7 +65,7 @@ public class LHMiracleRoadOccupationScreen extends Screen {
 
             initCoordinate = new InitCoordinate(widthCore,heightCore,backgroundWidth,backgroundHeight,font,current);
             if (current == 0) showButton(false,true);
-            else showButton(true, current != OccupationReloadListener.OCCUPATION.size() - 1);
+            else showButton(true, current != ClientData.OCCUPATION.size() - 1);
         }
     }
 
@@ -116,10 +113,10 @@ public class LHMiracleRoadOccupationScreen extends Screen {
     }
 
     private void nextPage() {
-        if (current < OccupationReloadListener.OCCUPATION.size() - 1) {
+        if (current < ClientData.OCCUPATION.size() - 1) {
             current++;
             this.clearWidgets();
-            if (current == OccupationReloadListener.OCCUPATION.size() - 1){
+            if (current == ClientData.OCCUPATION.size() - 1){
                 showButton(true,false);
             }else {
                 showButton(true,true);
@@ -200,8 +197,8 @@ public class LHMiracleRoadOccupationScreen extends Screen {
         int initY = initCoordinate.getInitAttributeY() + (lineHeight * 2);
         int initLevel = 0;
         int attributeSize = 0;
-        for (String key : AttributeReloadListener.ATTRIBUTE_TYPES.keySet()) {
-            JsonObject attributeObject = AttributeReloadListener.ATTRIBUTE_TYPES.get(key);
+        for (String key : ClientData.ATTRIBUTE_TYPES.keySet()) {
+            JsonObject attributeObject = ClientData.ATTRIBUTE_TYPES.get(key);
             String nameText = LHMiracleRoadTool.isAsString(attributeObject.get("name_text_id"));
             int level = initCoordinate.getInitAttributeLevel().get(key);
             graphics.drawString(font, Component.translatable(nameText), initNameTextX, initY, 0x6C5734, false);
@@ -300,9 +297,5 @@ public class LHMiracleRoadOccupationScreen extends Screen {
             showPageRightButton.setPressFunc(b -> nextPage());
             addRenderableWidget(showPageRightButton);
         }
-    }
-
-    private @Nonnull LocalPlayer getPlayer() {
-        return Objects.requireNonNull(getMinecraft().player);
     }
 }

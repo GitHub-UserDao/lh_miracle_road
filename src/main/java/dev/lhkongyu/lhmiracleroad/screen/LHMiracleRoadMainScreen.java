@@ -1,18 +1,17 @@
 package dev.lhkongyu.lhmiracleroad.screen;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.lhkongyu.lhmiracleroad.access.LHMiracleRoadAttributes;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
+import dev.lhkongyu.lhmiracleroad.data.ClientData;
 import dev.lhkongyu.lhmiracleroad.data.reloader.AttributePointsRewardsReloadListener;
 import dev.lhkongyu.lhmiracleroad.data.reloader.AttributeReloadListener;
-import dev.lhkongyu.lhmiracleroad.data.reloader.OccupationReloadListener;
-import dev.lhkongyu.lhmiracleroad.data.reloader.ShowGuiAttributeReloadListener;
 import dev.lhkongyu.lhmiracleroad.packet.PlayerAttributeChannel;
 import dev.lhkongyu.lhmiracleroad.packet.PlayerAttributePointsMessage;
-import dev.lhkongyu.lhmiracleroad.packet.PlayerOccupationMessage;
 import dev.lhkongyu.lhmiracleroad.tool.AttributesNameTool;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import dev.lhkongyu.lhmiracleroad.tool.ResourceLocationTool;
@@ -20,20 +19,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
-import javax.print.attribute.Attribute;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -217,8 +208,8 @@ public class LHMiracleRoadMainScreen extends Screen {
         int initY = (int) (initCoordinate.getInitAttributeY() + (lineHeight * 1.75));
         int initLevel = 0;
         int attributeSize = 0;
-        for (String key : AttributeReloadListener.ATTRIBUTE_TYPES.keySet()) {
-            JsonObject attributeObject = AttributeReloadListener.ATTRIBUTE_TYPES.get(key);
+        for (String key : ClientData.ATTRIBUTE_TYPES.keySet()) {
+            JsonObject attributeObject = ClientData.ATTRIBUTE_TYPES.get(key);
             String nameText = LHMiracleRoadTool.isAsString(attributeObject.get("name_text_id"));
             int level = initCoordinate.getInitAttributeLevel().get(key);
             graphics.drawString(font, Component.translatable(nameText), initNameTextX, initY, 0x6C5734, false);
@@ -290,8 +281,8 @@ public class LHMiracleRoadMainScreen extends Screen {
         int initY = initMainCoordinate.getAttributePointsY();
         int initAttributeLevelX = initMainCoordinate.getAttributePointsLevelX();
 
-        for (String key : AttributeReloadListener.ATTRIBUTE_TYPES.keySet()) {
-            JsonObject attributeObject = AttributeReloadListener.ATTRIBUTE_TYPES.get(key);
+        for (String key : ClientData.ATTRIBUTE_TYPES.keySet()) {
+            JsonObject attributeObject = ClientData.ATTRIBUTE_TYPES.get(key);
             Integer level = playerOccupationAttribute.getOccupationAttributeLevel().get(key);
             Component nameText = Component.translatable(LHMiracleRoadTool.isAsString(attributeObject.get("name_text_id")));
 
@@ -325,8 +316,8 @@ public class LHMiracleRoadMainScreen extends Screen {
             int initY = initCoordinate.getInitAttributeY();
             int lineHeight = font.lineHeight;
 
-            for (JsonObject showGuiAttribute : showDetailedAttributePage.get(key)) {
-
+            for (JsonElement showGuiAttributeJsonElement : showDetailedAttributePage.get(key)) {
+                JsonObject showGuiAttribute = LHMiracleRoadTool.isAsJsonObject(showGuiAttributeJsonElement);
                 String attributeName = LHMiracleRoadTool.isAsString(showGuiAttribute.get("attribute"));
                 JsonObject attributeObject = playerOccupationAttribute.getShowAttribute().get(attributeName);
 
@@ -387,8 +378,8 @@ public class LHMiracleRoadMainScreen extends Screen {
         int initY = initMainCoordinate.getAttributePointsY();
         int initAttributeLevelX = initMainCoordinate.getAttributePointsButtonX();
         int lineHeight = font.lineHeight;
-        for (String key : AttributeReloadListener.ATTRIBUTE_TYPES.keySet()){
-            JsonObject data = AttributePointsRewardsReloadListener.ATTRIBUTE_POINTS_REWARDS.get(key);
+        for (String key : ClientData.ATTRIBUTE_TYPES.keySet()){
+            JsonObject data = ClientData.ATTRIBUTE_POINTS_REWARDS.get(key);
             int maxLevel = LHMiracleRoadTool.isAsInt(data.get("max_level"));
             int currentLevel = playerOccupationAttribute.getOccupationAttributeLevel().get(key);
             if (currentLevel < maxLevel ){
@@ -416,7 +407,8 @@ public class LHMiracleRoadMainScreen extends Screen {
         syncAbility();
     }
 
-    private @Nonnull LocalPlayer getPlayer() {
+    private @Nonnull Player getPlayer() {
+
         return Objects.requireNonNull(getMinecraft().player);
     }
 

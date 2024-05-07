@@ -11,6 +11,7 @@ import dev.lhkongyu.lhmiracleroad.capability.ItemStackPunishmentAttributeProvide
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
+import dev.lhkongyu.lhmiracleroad.data.ClientData;
 import dev.lhkongyu.lhmiracleroad.data.reloader.EquipmentReloadListener;
 import dev.lhkongyu.lhmiracleroad.tool.AttributesNameTool;
 import dev.lhkongyu.lhmiracleroad.tool.ItemPunishmentTool;
@@ -87,6 +88,7 @@ public class ItemEvent {
             ItemStackPunishmentAttribute itemStackPunishmentAttribute = new ItemStackPunishmentAttribute();
             Item item = stack.getItem();
             JsonObject equipment = EquipmentReloadListener.EQUIPMENT.get(item.getDescriptionId());
+            equipment = equipment != null ? equipment : ClientData.EQUIPMENT.get(item.getDescriptionId());
             if (equipment != null){
                 int heavy = LHMiracleRoadTool.isAsInt(equipment.get(AttributesNameTool.HEAVY));
                 JsonArray attributeNeed = LHMiracleRoadTool.isAsJsonArray(equipment.get("attribute_need"));

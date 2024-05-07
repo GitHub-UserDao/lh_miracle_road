@@ -3,8 +3,10 @@ package dev.lhkongyu.lhmiracleroad.access;
 
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
 import dev.lhkongyu.lhmiracleroad.tool.AttributesNameTool;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
+import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class LHMiracleRoadAttributes {
@@ -98,5 +100,15 @@ public class LHMiracleRoadAttributes {
 		ForgeRegistries.ATTRIBUTES.register(AttributesNameTool.HUNGER, HUNGER);
 		ForgeRegistries.ATTRIBUTES.register(AttributesNameTool.INIT_DIFFICULTY_LEVEL, INIT_DIFFICULTY_LEVEL);
 		ForgeRegistries.ATTRIBUTES.register(AttributesNameTool.JUMP, JUMP);
+	}
+
+	public static void registerPlayerAttribute(EntityAttributeModificationEvent event){
+		event.add(EntityType.PLAYER, BURDEN);
+		event.add(EntityType.PLAYER, HEAVY);
+		event.add(EntityType.PLAYER, RANGED_DAMAGE);
+		event.add(EntityType.PLAYER, HEALING);
+		event.add(EntityType.PLAYER, HUNGER);
+		event.add(EntityType.PLAYER, INIT_DIFFICULTY_LEVEL);
+		event.add(EntityType.PLAYER, JUMP);
 	}
 }

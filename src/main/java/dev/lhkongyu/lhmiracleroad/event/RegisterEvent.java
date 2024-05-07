@@ -4,11 +4,14 @@ import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
 import dev.lhkongyu.lhmiracleroad.capability.ItemStackPunishmentAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.command.GetPlayerOccupationLevelCommand;
+import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.OnDatapackSyncEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -48,6 +51,15 @@ public class RegisterEvent {
     @SubscribeEvent
     public static void registerCommand(RegisterCommandsEvent event){
         GetPlayerOccupationLevelCommand.register(event.getDispatcher());
+    }
+
+    @SubscribeEvent
+    public static void onDataPackSync(final OnDatapackSyncEvent event) {
+        if (event.getPlayer() != null) {
+            LHMiracleRoadTool.synchronizationClientData(event.getPlayer());
+        } else {
+            event.getPlayerList().getPlayers().forEach(LHMiracleRoadTool::synchronizationClientData);
+        }
     }
 
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)

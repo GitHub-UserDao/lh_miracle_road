@@ -15,17 +15,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Player.class)
 public abstract class PlayerMixin {
 
-	@Inject(method = "createAttributes", at = @At("RETURN"))
-	private static void createAttributes(CallbackInfoReturnable<AttributeSupplier.Builder> cir) {
-		cir.getReturnValue()
-				.add(LHMiracleRoadAttributes.BURDEN)
-				.add(LHMiracleRoadAttributes.HEAVY)
-				.add(LHMiracleRoadAttributes.RANGED_DAMAGE)
-				.add(LHMiracleRoadAttributes.HEALING)
-				.add(LHMiracleRoadAttributes.HUNGER)
-				.add(LHMiracleRoadAttributes.INIT_DIFFICULTY_LEVEL)
-				.add(LHMiracleRoadAttributes.JUMP);
-	}
+//	@Inject(method = "createAttributes", at = @At("RETURN"))
+//	private static void createAttributes(CallbackInfoReturnable<AttributeSupplier.Builder> cir) {
+//		cir.getReturnValue()
+//				.add(LHMiracleRoadAttributes.BURDEN)
+//				.add(LHMiracleRoadAttributes.HEAVY)
+//				.add(LHMiracleRoadAttributes.RANGED_DAMAGE)
+//				.add(LHMiracleRoadAttributes.HEALING)
+//				.add(LHMiracleRoadAttributes.HUNGER)
+//				.add(LHMiracleRoadAttributes.INIT_DIFFICULTY_LEVEL)
+//				.add(LHMiracleRoadAttributes.JUMP);
+//	}
 
 	@ModifyVariable(method = "causeFoodExhaustion", at = @At("HEAD"), ordinal = 0, argsOnly = true)
 	private float causeFoodExhaustionUpdate(float amount) {
