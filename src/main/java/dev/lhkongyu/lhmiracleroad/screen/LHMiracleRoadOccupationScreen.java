@@ -199,7 +199,7 @@ public class LHMiracleRoadOccupationScreen extends Screen {
         int attributeSize = 0;
         for (String key : ClientData.ATTRIBUTE_TYPES.keySet()) {
             JsonObject attributeObject = ClientData.ATTRIBUTE_TYPES.get(key);
-            String nameText = LHMiracleRoadTool.isAsString(attributeObject.get("name_text_id"));
+            String nameText = ResourceLocationTool.ATTRIBUTE_NAME_PREFIX + LHMiracleRoadTool.isAsString(attributeObject.get("id"));
             int level = initCoordinate.getInitAttributeLevel().get(key);
             graphics.drawString(font, Component.translatable(nameText), initNameTextX, initY, 0x6C5734, false);
             graphics.drawString(font, String.valueOf(level), initAttributeLevelX, initY, 0x6C5734, false);

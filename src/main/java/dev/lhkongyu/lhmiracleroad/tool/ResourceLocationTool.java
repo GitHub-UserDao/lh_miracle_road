@@ -18,4 +18,19 @@ public class ResourceLocationTool {
         public static final ResourceLocation selectButton = new ResourceLocation(LHMiracleRoad.MODID, "textures/gui/select_button.png");
     }
 
+    public static final String OCCUPATION_IMAGE_PREFIX = "textures/occupation/";
+
+    public static final String OCCUPATION_IMAGE_SUFFIX = ".png";
+
+    public static final String OCCUPATION_NAME_PREFIX = "lhmiracleroad.gui.occupation.name.";
+
+    public static final String OCCUPATION_DESCRIBE_PREFIX = "lhmiracleroad.gui.occupation.describe.";
+
+    public static final String ATTRIBUTE_NAME_PREFIX = "lhmiracleroad.gui.attribute.name.";
+
+    public static final String ATTRIBUTE_DETAILS_TEXT_PREFIX = "lhmiracleroad.gui.attribute.text.details.";
+
+    public static final String ATTRIBUTE_TOOLTIP_DETAILS_PREFIX = "lhmiracleroad.tooltip.describe.";
+
+    public static final String DEFAULT = "default";
 }

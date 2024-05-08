@@ -53,6 +53,10 @@ public class RegisterEvent {
         GetPlayerOccupationLevelCommand.register(event.getDispatcher());
     }
 
+    /**
+     * 同步数据包事件
+     * @param event
+     */
     @SubscribeEvent
     public static void onDataPackSync(final OnDatapackSyncEvent event) {
         if (event.getPlayer() != null) {

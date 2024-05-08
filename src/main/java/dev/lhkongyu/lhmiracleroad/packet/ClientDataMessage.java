@@ -82,6 +82,14 @@ public record ClientDataMessage(JsonObject data) {
                     ClientData.SHOW_GUI_ATTRIBUTE.add(object);
                 }
             }
+
+            JsonObject initItem = LHMiracleRoadTool.isAsJsonObject(data.get("initItem"));
+            if (initItem != null) {
+                ClientData.INIT_ITEM.clear();
+                for (Map.Entry<String, JsonElement> jsonElement : initItem.entrySet()) {
+                    ClientData.INIT_ITEM.put(jsonElement.getKey(), LHMiracleRoadTool.isAsJsonArray(jsonElement.getValue()));
+                }
+            }
         });
         context.setPacketHandled(true);
     }

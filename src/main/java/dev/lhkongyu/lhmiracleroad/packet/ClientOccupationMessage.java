@@ -54,6 +54,7 @@ public record ClientOccupationMessage(JsonObject playerOccupationAttributeObject
                 int occupationExperience = LHMiracleRoadTool.isAsInt(playerOccupationAttributeObject.get("occupationExperience"));
                 int points = LHMiracleRoadTool.isAsInt(playerOccupationAttributeObject.get("points"));
                 int burden = LHMiracleRoadTool.isAsInt(playerOccupationAttributeObject.get("burden"));
+                int attributeMaxLevel = LHMiracleRoadTool.isAsInt(playerOccupationAttributeObject.get("attributeMaxLevel"));
                 double offhandHeavy = LHMiracleRoadTool.isAsDouble(playerOccupationAttributeObject.get("offhandHeavy"));
                 String empiricalCalculationFormula = LHMiracleRoadTool.isAsString(playerOccupationAttributeObject.get("empiricalCalculationFormula"));
 
@@ -101,6 +102,7 @@ public record ClientOccupationMessage(JsonObject playerOccupationAttributeObject
                 playerOccupationAttribute.setEmpiricalCalculationFormula(empiricalCalculationFormula);
                 playerOccupationAttribute.setPoints(points);
                 playerOccupationAttribute.setBurden(burden);
+                playerOccupationAttribute.setAttributeMaxLevel(attributeMaxLevel);
             }
         });
         context.setPacketHandled(true);

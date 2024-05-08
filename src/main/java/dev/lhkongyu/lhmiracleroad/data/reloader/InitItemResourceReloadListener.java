@@ -7,33 +7,30 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraft.world.item.Item;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Map;
 
-public class EquipmentReloadListener extends SimpleJsonResourceReloadListener {
+public class InitItemResourceReloadListener extends SimpleJsonResourceReloadListener {
 
     private static final Gson GSON = (new GsonBuilder()).create();
 
-    public static final Map<String,JsonObject> EQUIPMENT = Maps.newHashMap();
+    public static final Map<String,JsonArray> INIT_ITEM = Maps.newHashMap();
 
-    public EquipmentReloadListener() {
-        super(GSON, "lh_miracle_road_equipment");
+    public InitItemResourceReloadListener() {
+        super(GSON, "lh_miracle_road_occupation/player/init_item");
     }
-
     @Override
     protected void apply(Map<ResourceLocation, JsonElement> obj, ResourceManager resourceManager, ProfilerFiller profilerFiller) {
-        EQUIPMENT.clear();
+        INIT_ITEM.clear();
         for (Map.Entry<ResourceLocation, JsonElement> entry : obj.entrySet()) {
-            String key = entry.getKey().toString();
-            String modId = entry.getKey().getNamespace();
-            if(!LHMiracleRoadTool.isModExist(modId)) continue;
             JsonElement jsonElement = entry.getValue();
-            JsonObject jsonObject = jsonElement.getAsJsonObject();
-            Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(key));
-            if (item == null) continue;
-            EQUIPMENT.put(item.getDescriptionId(),jsonObject);
+            JsonArray jsonArray = jsonElement.getAsJsonArray();
+            for (JsonElement element:jsonArray) {
+                JsonObject object = element.getAsJsonObject();
+                String id = LHMiracleRoadTool.isAsString(object.get("id"));
+                JsonArray items = LHMiracleRoadTool.isAsJsonArray(object.get("items"));
+                INIT_ITEM.put(id, items);
+            }
         }
     }
 }

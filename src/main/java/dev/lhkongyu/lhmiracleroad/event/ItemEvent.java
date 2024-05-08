@@ -16,6 +16,7 @@ import dev.lhkongyu.lhmiracleroad.data.reloader.EquipmentReloadListener;
 import dev.lhkongyu.lhmiracleroad.tool.AttributesNameTool;
 import dev.lhkongyu.lhmiracleroad.tool.ItemPunishmentTool;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
+import dev.lhkongyu.lhmiracleroad.tool.ResourceLocationTool;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -61,7 +62,7 @@ public class ItemEvent {
                JsonObject jsonObject = LHMiracleRoadTool.isAsJsonObject(jsonElement);
                if (jsonObject == null) continue;
                String attributeId = LHMiracleRoadTool.isAsString(jsonObject.get("attribute_id"));
-               String describeText = LHMiracleRoadTool.isAsString(jsonObject.get("describe_text"));
+               String describeText = ResourceLocationTool.ATTRIBUTE_TOOLTIP_DETAILS_PREFIX + attributeId;
                int needPoints = LHMiracleRoadTool.isAsInt(jsonObject.get("need_points"));
                Map<String, Integer> occupationAttributeLevel = playerOccupationAttribute.getOccupationAttributeLevel();
                Integer attributeLevel = 0;

@@ -10,13 +10,13 @@ import dev.lhkongyu.lhmiracleroad.capability.ItemStackPunishmentAttribute;
 import dev.lhkongyu.lhmiracleroad.capability.ItemStackPunishmentAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
+import dev.lhkongyu.lhmiracleroad.data.reloader.PunishmentReloadListener;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.ItemAttributeModifierEvent;
 
@@ -59,15 +59,8 @@ public class ItemPunishmentTool {
     public static JsonArray setAttributeNeed(double attackDamageAmount){
         JsonArray jsonArray = new JsonArray();
         JsonObject attributeNeed = new JsonObject();
-
         attributeNeed.addProperty("attribute_id", "power");
-        attributeNeed.addProperty("describe_text", "lhmiracleroad.tooltip.describe.power");
         attributeNeed.addProperty("need_points", Integer.min((int) (attackDamageAmount * 1.5),80));
-        JsonObject punishment = new JsonObject();
-        punishment.addProperty("attribute","attack_damage");
-        punishment.addProperty("value", "-0.8");
-        punishment.addProperty("operation", "multiply_total");
-        attributeNeed.add("punishment", punishment);
         jsonArray.add(attributeNeed);
 
         return jsonArray;
@@ -185,24 +178,33 @@ public class ItemPunishmentTool {
             int attributeLevel = mapAttributeLevel == null ? 0 : mapAttributeLevel;
 
             if (attributeLevel < needPoints) {
-                JsonObject punishment = LHMiracleRoadTool.isAsJsonObject(jsonObject.get("punishment"));
-                if (punishment == null) continue;
-                String attributeName = LHMiracleRoadTool.isAsString(punishment.get("attribute"));
-                String operationName = LHMiracleRoadTool.isAsString(punishment.get("operation"));
-                double punishmentValue = LHMiracleRoadTool.isAsDouble(punishment.get("value"));
-                AttributeModifier.Operation operation = LHMiracleRoadTool.stringConversionOperation(operationName);
-                if (operation == null) continue;
-                Attribute attribute = LHMiracleRoadTool.stringConversionAttribute(attributeName);
-                if (attribute != null) {
-                    UUID uuid = UUID.randomUUID();
-                    AttributeModifier attributeModifier = new AttributeModifier(uuid, "", punishmentValue, operation);
-                    player.getAttribute(attribute).addTransientModifier(attributeModifier);
-                    if (attribute.getDescriptionId().equals(Attributes.MAX_HEALTH.getDescriptionId())) {
-                        player.setHealth((float) player.getAttribute(attribute).getValue());
+                String punishmentId = LHMiracleRoadTool.isAsString(jsonObject.get("punishment_id"));
+                if (punishmentId == null || punishmentId.isEmpty()) punishmentId = ResourceLocationTool.DEFAULT;
+                JsonArray punishments = PunishmentReloadListener.DEFAULT_PUNISHMENT.get(punishmentId);
+                if (punishments == null || punishments.isEmpty()) continue;
+
+                for (JsonElement element : punishments) {
+                    JsonObject punishment = LHMiracleRoadTool.isAsJsonObject(element);
+                    String attributeName = LHMiracleRoadTool.isAsString(punishment.get("attribute"));
+                    if (itemToPunishmentAttribute.getRecordPunishmentAttributeModifier().get(attributeName) != null) continue;
+                    String operationName = LHMiracleRoadTool.isAsString(punishment.get("operation"));
+                    double punishmentValue = LHMiracleRoadTool.isAsDouble(punishment.get("value"));
+                    AttributeModifier.Operation operation = LHMiracleRoadTool.stringConversionOperation(operationName);
+                    if (operation == null) continue;
+                    Attribute attribute = LHMiracleRoadTool.stringConversionAttribute(attributeName);
+                    if (attribute != null) {
+                        UUID uuid = UUID.randomUUID();
+                        AttributeModifier attributeModifier = new AttributeModifier(uuid, "", punishmentValue, operation);
+                        player.getAttribute(attribute).addTransientModifier(attributeModifier);
+                        if (attribute.getDescriptionId().equals(Attributes.MAX_HEALTH.getDescriptionId())) {
+                            player.setHealth((float) player.getAttribute(attribute).getValue());
+                        }
+                        playerOccupationAttribute.addPunishmentAttributeModifier(uuid.toString(), attributeModifier);
+                        itemToPunishmentAttribute.addRecordPunishmentAttributeModifier(attributeName, attributeModifier);
                     }
-                    playerOccupationAttribute.addPunishmentAttributeModifier(uuid.toString(), attributeModifier);
-                    itemToPunishmentAttribute.addRecordPunishmentAttributeModifier(attributeName, attributeModifier);
                 }
+                //如果有多个属性要求也只执行一次
+                return;
             }
         }
     }

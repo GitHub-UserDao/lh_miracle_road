@@ -38,5 +38,7 @@ public class LHMiracleRoad
         event.addListener(new AttributePointsRewardsReloadListener());
         event.addListener(new EquipmentReloadListener());
         event.addListener(new ShowGuiAttributeReloadListener());
+        event.addListener(new PunishmentReloadListener());
+        event.addListener(new InitItemResourceReloadListener());
     }
 }

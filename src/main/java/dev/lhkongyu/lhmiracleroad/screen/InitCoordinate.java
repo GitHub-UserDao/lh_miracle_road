@@ -8,6 +8,7 @@ import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
 import dev.lhkongyu.lhmiracleroad.data.ClientData;
 import dev.lhkongyu.lhmiracleroad.data.reloader.OccupationReloadListener;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
+import dev.lhkongyu.lhmiracleroad.tool.ResourceLocationTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
@@ -311,7 +312,9 @@ public class InitCoordinate {
 
     private List<String> setDescribeTexts(int backgroundWidth,Font font){
         int baseMaxWidth = (int) (backgroundWidth  * 0.375);
-        MutableComponent mutableComponent = Component.translatable(LHMiracleRoadTool.isAsString(occupation.get("describe_text")));
+        //通过id获取职业描述
+        String occupationDescribe = ResourceLocationTool.OCCUPATION_DESCRIBE_PREFIX + LHMiracleRoadTool.isAsString(occupation.get("id"));
+        MutableComponent mutableComponent = Component.translatable(occupationDescribe);
         return LHMiracleRoadTool.baseTextWidthSplitText(font,mutableComponent,baseMaxWidth,describeOneLnInitX,describeOtherLnInitX);
     }
 
@@ -321,18 +324,25 @@ public class InitCoordinate {
         if (ClientData.OCCUPATION.isEmpty()) return;
         occupation = ClientData.OCCUPATION.get(current);
 
+        //通过id获取图片位置
+        String occupationImagePath = ResourceLocationTool.OCCUPATION_IMAGE_PREFIX + LHMiracleRoadTool.isAsString(occupation.get("id")) + ResourceLocationTool.OCCUPATION_IMAGE_SUFFIX;
         //设置职业图片
-        occupationImage = new ResourceLocation(LHMiracleRoad.MODID, LHMiracleRoadTool.isAsString(occupation.get("occupation_avatar")));
+        occupationImage = new ResourceLocation(LHMiracleRoad.MODID, occupationImagePath);
+
+        //通过id获取职业名称
+        String occupationName = ResourceLocationTool.OCCUPATION_NAME_PREFIX + LHMiracleRoadTool.isAsString(occupation.get("id"));
         //设置职业名称
-        occupationNameComponent = Component.translatable(LHMiracleRoadTool.isAsString(occupation.get("name")));
+        occupationNameComponent = Component.translatable(occupationName);
         //设置职业名称的位置
         int textWidth = font.width(occupationNameComponent);
         occupationNameX = widthCore + (backgroundWidth / 6 + frameWidth / 3) - (textWidth / 2);
         occupationNameY = (int) (heightCore + frameHeight - lineHeight * 3.75);
         //填充初始属性等级数据
         initAttributeLevel = LHMiracleRoadTool.setInitAttributeLevelClient(occupation);
+
         //设置描述文本
         describeTexts = setDescribeTexts(backgroundWidth,font);
+
         //填充初始物品信息
         initItem = LHMiracleRoadTool.setInitItem(occupation);
     }
@@ -341,16 +351,24 @@ public class InitCoordinate {
         int lineHeight = font.lineHeight;
         //获取职业基本数据
         occupation = LHMiracleRoadTool.getOccupationClient(occupationId);
+
+        //通过id获取图片位置
+        String occupationImagePath = ResourceLocationTool.OCCUPATION_IMAGE_PREFIX + LHMiracleRoadTool.isAsString(occupation.get("id")) + ResourceLocationTool.OCCUPATION_IMAGE_SUFFIX;
         //设置职业图片
-        occupationImage = new ResourceLocation(LHMiracleRoad.MODID, LHMiracleRoadTool.isAsString(occupation.get("occupation_avatar")));
+        occupationImage = new ResourceLocation(LHMiracleRoad.MODID, occupationImagePath);
+
+        //通过id获取职业名称
+        String occupationName = ResourceLocationTool.OCCUPATION_NAME_PREFIX + LHMiracleRoadTool.isAsString(occupation.get("id"));
         //设置职业名称
-        occupationNameComponent = Component.translatable(LHMiracleRoadTool.isAsString(occupation.get("name")));
+        occupationNameComponent = Component.translatable(occupationName);
         //设置职业名称的位置
         int textWidth = font.width(occupationNameComponent);
         occupationNameX = widthCore + (backgroundWidth / 6 + frameWidth / 3) - (textWidth / 2);
         occupationNameY = (int) (heightCore + frameHeight - lineHeight * 3.75);
+
         //填充初始属性等级数据
         initAttributeLevel = LHMiracleRoadTool.setInitAttributeLevelClient(occupation);
+
         //设置描述文本
         describeTexts = setDescribeTexts(backgroundWidth,font);
     }

@@ -3,13 +3,7 @@
   "attribute_need": [
     {
       "attribute_id": "power",
-      "describe_text": "lhmiracleroad.tooltip.describe.power",
-      "need_points": 15,
-      "punishment": {
-        "attribute": "attack_damage",
-        "value": -0.8,
-        "operation": "multiply_total"
-      }
+      "need_points": 15
     }
   ]
 }

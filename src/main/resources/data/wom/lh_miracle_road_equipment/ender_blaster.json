@@ -3,13 +3,7 @@
   "attribute_need": [
     {
       "attribute_id": "agile",
-      "describe_text": "lhmiracleroad.tooltip.describe.agile",
-      "need_points": 66,
-      "punishment": {
-        "attribute": "attack_damage",
-        "value": -0.8,
-        "operation": "multiply_total"
-      }
+      "need_points": 66
     }
   ]
 }

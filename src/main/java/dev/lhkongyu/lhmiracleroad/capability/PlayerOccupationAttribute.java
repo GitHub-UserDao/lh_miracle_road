@@ -43,6 +43,8 @@ public class PlayerOccupationAttribute {
 
     private int burden = 0;
 
+    private int attributeMaxLevel = 0;
+
     public int getOccupationLevel() {
         return occupationLevel;
     }
@@ -167,12 +169,21 @@ public class PlayerOccupationAttribute {
         this.burden = burden;
     }
 
+    public int getAttributeMaxLevel() {
+        return attributeMaxLevel;
+    }
+
+    public void setAttributeMaxLevel(int attributeMaxLevel) {
+        this.attributeMaxLevel = attributeMaxLevel;
+    }
+
     public void saveNBTData(CompoundTag compoundTag){
         compoundTag.putInt("occupationLevel",occupationLevel);
         compoundTag.putInt("occupationExperience",occupationExperience);
         compoundTag.putDouble("offhandHeavy",offhandHeavy);
         compoundTag.putInt("points",points);
         compoundTag.putInt("burden",burden);
+        compoundTag.putInt("attributeMaxLevel",attributeMaxLevel);
         if (attributeModifier != null) {
             CompoundTag attributeModifierTags = new CompoundTag();
             for (Map.Entry<String, AttributeModifier> entry : attributeModifier.entrySet()) {
@@ -220,6 +231,7 @@ public class PlayerOccupationAttribute {
         offhandHeavy = compoundTag.getDouble("offhandHeavy");
         points = compoundTag.getInt("points");
         burden = compoundTag.getInt("burden");
+        attributeMaxLevel = compoundTag.getInt("attributeMaxLevel");
         if (compoundTag.contains("attributeModifier", Tag.TAG_COMPOUND)) {
             CompoundTag initAttributeTags = compoundTag.getCompound("attributeModifier");
             attributeModifier = Maps.newHashMap();
@@ -278,6 +290,7 @@ public class PlayerOccupationAttribute {
         playerOccupationAttributeObject.addProperty("offhandHeavy",this.offhandHeavy);
         playerOccupationAttributeObject.addProperty("burden",this.burden);
         playerOccupationAttributeObject.addProperty("playerUUID",playerUUID.toString());
+        playerOccupationAttributeObject.addProperty("attributeMaxLevel",attributeMaxLevel);
         if (this.occupationId != null && !this.occupationId.isEmpty()) playerOccupationAttributeObject.addProperty("occupationId",this.occupationId);
         if (this.empiricalCalculationFormula != null && !this.empiricalCalculationFormula.isEmpty()) playerOccupationAttributeObject.addProperty("empiricalCalculationFormula",this.empiricalCalculationFormula);
 

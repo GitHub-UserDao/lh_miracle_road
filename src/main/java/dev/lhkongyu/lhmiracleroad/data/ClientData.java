@@ -1,6 +1,7 @@
 package dev.lhkongyu.lhmiracleroad.data;
 
 import com.google.common.collect.Maps;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
@@ -20,4 +21,6 @@ public class ClientData {
     public static final List<JsonObject> OCCUPATION = new ArrayList<>();
 
     public static final List<JsonObject> SHOW_GUI_ATTRIBUTE = new ArrayList<>();
+
+    public static final Map<String, JsonArray> INIT_ITEM = Maps.newHashMap();
 }

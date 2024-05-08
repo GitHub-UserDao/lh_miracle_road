@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
+import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import dev.lhkongyu.lhmiracleroad.tool.PlayerAttributeTool;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -94,6 +95,27 @@ public class GetPlayerOccupationLevelCommand {
                                           return 0;
                                       })
                               )
+                          )
+                  )
+                  .then(Commands.literal("attribute_max_level")
+                          .requires(e -> e.hasPermission(2))
+                          .then(Commands.literal("set")
+                                  .then(Commands.argument("players", EntityArgument.players())
+                                          .then(Commands.argument("amount", IntegerArgumentType.integer())
+                                                  .executes(context -> {
+                                                      var players = EntityArgument.getPlayers(context, "players");
+                                                      var amount = IntegerArgumentType.getInteger(context, "amount");
+                                                      for (ServerPlayer player : players){
+                                                          player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).ifPresent(playerOccupationAttribute-> {
+                                                              playerOccupationAttribute.setAttributeMaxLevel(amount);
+                                                              context.getSource().sendSuccess(() -> Component.translatable("lhmiracleroad.instructions.attribute_max_level.set",player.getScoreboardName(),amount),false);
+                                                              LHMiracleRoadTool.synchronizationClient(playerOccupationAttribute, player);
+                                                          });
+                                                      }
+                                                      return 0;
+                                                  })
+                                          )
+                                  )
                           )
                   )
           );

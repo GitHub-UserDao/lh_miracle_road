@@ -1,9 +1,6 @@
 [
   {
     "id": "assassin",
-    "name": "lhmiracleroad.gui.titles.assassin",
-    "occupation_avatar": "textures/occupation/assassin.png",
-    "describe_text": "lhmiracleroad.gui.titles.assassinDescribe",
     "init_difficulty_level": 10,
     "init_attribute": [
       {
@@ -42,44 +39,10 @@
         "id": "luck",
         "level": 10
       }
-    ],
-    "init_item": [
-      {
-        "item": "minecraft:iron_sword",
-        "quantity": "1"
-      },
-      {
-        "item": "epicfight:iron_dagger",
-        "quantity": "2",
-        "is_split": true
-      },
-      {
-        "item": "minecraft:bread",
-        "quantity": "12"
-      },
-      {
-        "item": "minecraft:chainmail_helmet",
-        "quantity": "1"
-      },
-      {
-        "item": "minecraft:chainmail_chestplate",
-        "quantity": "1"
-      },
-      {
-        "item": "minecraft:chainmail_leggings",
-        "quantity": "1"
-      },
-      {
-        "item": "minecraft:chainmail_boots",
-        "quantity": "1"
-      }
     ]
   },
   {
     "id": "knight",
-    "name": "lhmiracleroad.gui.titles.knight",
-    "occupation_avatar": "textures/occupation/knight.png",
-    "describe_text": "lhmiracleroad.gui.titles.knightDescribe",
     "init_difficulty_level": 15,
     "init_attribute": [
       {
@@ -118,47 +81,10 @@
         "id": "luck",
         "level": 9
       }
-    ],
-    "init_item": [
-      {
-        "item": "minecraft:iron_sword",
-        "quantity": "1"
-      },
-      {
-        "item": "epicfight:iron_longsword",
-        "quantity": "1"
-      },
-      {
-        "item": "minecraft:bread",
-        "quantity": "12"
-      },
-      {
-        "item": "minecraft:iron_helmet",
-        "quantity": "1"
-      },
-      {
-        "item": "minecraft:iron_chestplate",
-        "quantity": "1"
-      },
-      {
-        "item": "minecraft:iron_leggings",
-        "quantity": "1"
-      },
-      {
-        "item": "minecraft:iron_boots",
-        "quantity": "1"
-      },
-      {
-        "item": "minecraft:shield",
-        "quantity": "1"
-      }
     ]
   },
   {
     "id": "mage",
-    "name": "lhmiracleroad.gui.titles.mage",
-    "occupation_avatar": "textures/occupation/mage.png",
-    "describe_text": "lhmiracleroad.gui.titles.mageDescribe",
     "init_difficulty_level": 10,
     "conditions": [
       "irons_spellbooks",
@@ -201,58 +127,10 @@
         "id": "luck",
         "level": 11
       }
-    ],
-    "init_item": [
-      {
-        "item": "minecraft:bread",
-        "quantity": "12"
-      },
-      {
-        "item": "irons_spellbooks:copper_spell_book",
-        "quantity": "1"
-      },
-      {
-        "item": "ars_nouveau:novice_spell_book",
-        "quantity": "1"
-      },
-      {
-        "item": "irons_spellbooks:inscription_table",
-        "quantity": "1"
-      },
-      {
-        "item": "irons_spellbooks:scroll",
-        "quantity": "1",
-        "tag": {
-          "key": "ISB_spell",
-          "value": {
-            "id": "irons_spellbooks:firebolt",
-            "level": 1
-          }
-        }
-      },
-      {
-        "item": "minecraft:leather_helmet",
-        "quantity": "1"
-      },
-      {
-        "item": "minecraft:leather_chestplate",
-        "quantity": "1"
-      },
-      {
-        "item": "minecraft:leather_leggings",
-        "quantity": "1"
-      },
-      {
-        "item": "minecraft:leather_boots",
-        "quantity": "1"
-      }
     ]
   },
   {
     "id": "outcast",
-    "name": "lhmiracleroad.gui.titles.outcast",
-    "occupation_avatar": "textures/occupation/outcast.png",
-    "describe_text": "lhmiracleroad.gui.titles.outcastDescribe",
     "init_difficulty_level": 0,
     "init_attribute": [
       {
@@ -291,19 +169,10 @@
         "id": "luck",
         "level": 10
       }
-    ],
-    "init_item": [
-      {
-        "item": "minecraft:bread",
-        "quantity": "6"
-      }
     ]
   },
   {
     "id": "samurai",
-    "name": "lhmiracleroad.gui.titles.samurai",
-    "occupation_avatar": "textures/occupation/samurai.png",
-    "describe_text": "lhmiracleroad.gui.titles.samuraiDescribe",
     "init_difficulty_level": 15,
     "init_attribute": [
       {
@@ -341,36 +210,6 @@
       {
         "id": "luck",
         "level": 9
-      }
-    ],
-    "init_item": [
-      {
-        "item": "minecraft:iron_sword",
-        "quantity": "1"
-      },
-      {
-        "item": "epicfight:iron_tachi",
-        "quantity": "1"
-      },
-      {
-        "item": "minecraft:bread",
-        "quantity": "12"
-      },
-      {
-        "item": "minecraft:iron_helmet",
-        "quantity": "1"
-      },
-      {
-        "item": "minecraft:iron_chestplate",
-        "quantity": "1"
-      },
-      {
-        "item": "minecraft:iron_leggings",
-        "quantity": "1"
-      },
-      {
-        "item": "minecraft:iron_boots",
-        "quantity": "1"
       }
     ]
   }

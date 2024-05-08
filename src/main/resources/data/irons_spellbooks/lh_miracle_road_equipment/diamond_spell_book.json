@@ -2,13 +2,8 @@
   "attribute_need": [
     {
       "attribute_id": "brain",
-      "describe_text": "lhmiracleroad.tooltip.describe.brain",
       "need_points": 25,
-      "punishment": {
-        "attribute": "irons_spellbooks:spell_power",
-        "value": -0.8,
-        "operation": "multiply_total"
-      }
+      "punishment_id": "iron_magic"
     }
   ]
 }

@@ -210,7 +210,7 @@ public class LHMiracleRoadMainScreen extends Screen {
         int attributeSize = 0;
         for (String key : ClientData.ATTRIBUTE_TYPES.keySet()) {
             JsonObject attributeObject = ClientData.ATTRIBUTE_TYPES.get(key);
-            String nameText = LHMiracleRoadTool.isAsString(attributeObject.get("name_text_id"));
+            String nameText = ResourceLocationTool.ATTRIBUTE_NAME_PREFIX + LHMiracleRoadTool.isAsString(attributeObject.get("id"));
             int level = initCoordinate.getInitAttributeLevel().get(key);
             graphics.drawString(font, Component.translatable(nameText), initNameTextX, initY, 0x6C5734, false);
             graphics.drawString(font, String.valueOf(level), initAttributeLevelX, initY, 0x6C5734, false);
@@ -284,12 +284,13 @@ public class LHMiracleRoadMainScreen extends Screen {
         for (String key : ClientData.ATTRIBUTE_TYPES.keySet()) {
             JsonObject attributeObject = ClientData.ATTRIBUTE_TYPES.get(key);
             Integer level = playerOccupationAttribute.getOccupationAttributeLevel().get(key);
-            Component nameText = Component.translatable(LHMiracleRoadTool.isAsString(attributeObject.get("name_text_id")));
+            String nameText = ResourceLocationTool.ATTRIBUTE_NAME_PREFIX + LHMiracleRoadTool.isAsString(attributeObject.get("id"));
+            Component componentNameText = Component.translatable(nameText);
 
-            graphics.drawString(font, nameText, initNameTextX, initY, 0x6C5734, false);
+            graphics.drawString(font, componentNameText, initNameTextX, initY, 0x6C5734, false);
             graphics.drawString(font, String.valueOf(level), initAttributeLevelX, initY, 0x6C5734, false);
 
-            int textWidth = font.width(nameText);
+            int textWidth = font.width(componentNameText);
             // 检查鼠标是否悬停在指定位置上
             if (mouseX >= initNameTextX && mouseX <= initNameTextX + textWidth && mouseY >= initY && mouseY <= initY + lineHeight) {
                 detailsHoverTooltip = LHMiracleRoadTool.getDescribeText(LHMiracleRoadTool.isAsJsonArray(attributeObject.get("describes")),level,key);
@@ -321,7 +322,7 @@ public class LHMiracleRoadMainScreen extends Screen {
                 String attributeName = LHMiracleRoadTool.isAsString(showGuiAttribute.get("attribute"));
                 JsonObject attributeObject = playerOccupationAttribute.getShowAttribute().get(attributeName);
 
-                String attributeText = LHMiracleRoadTool.isAsString(attributeObject.get("attribute_text"));
+                String attributeText = ResourceLocationTool.ATTRIBUTE_DETAILS_TEXT_PREFIX + LHMiracleRoadTool.isAsString(attributeObject.get("attribute_text"));
                 String showValueType = LHMiracleRoadTool.isAsString(attributeObject.get("show_value_type"));
                 double value = LHMiracleRoadTool.isAsDouble(attributeObject.get("value"));
                 double baseValue = LHMiracleRoadTool.isAsDouble(attributeObject.get("base_value"));
@@ -382,7 +383,8 @@ public class LHMiracleRoadMainScreen extends Screen {
             JsonObject data = ClientData.ATTRIBUTE_POINTS_REWARDS.get(key);
             int maxLevel = LHMiracleRoadTool.isAsInt(data.get("max_level"));
             int currentLevel = playerOccupationAttribute.getOccupationAttributeLevel().get(key);
-            if (currentLevel < maxLevel ){
+            int attributeMaxLevel = playerOccupationAttribute.getAttributeMaxLevel();
+            if (LHMiracleRoadTool.isShowPointsButton(currentLevel,maxLevel,attributeMaxLevel)){
                 ImageButton showPointsButton =
                         new ImageButton(initAttributeLevelX, initY, 12, 12, Component.empty(),
                                 true, false, ResourceLocationTool.Gui.add, ResourceLocationTool.Gui.addTouch, 0, 0, 12, 12,

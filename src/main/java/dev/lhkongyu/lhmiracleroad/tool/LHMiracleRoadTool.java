@@ -79,7 +79,7 @@ public class LHMiracleRoadTool {
         for (JsonElement jsonElement : jsonArray) {
             JsonObject object = jsonElement.getAsJsonObject();
             String modId = isAsString(object.get("condition"));
-            String describe = isAsString(object.get("describe"));
+            String describe = ResourceLocationTool.ATTRIBUTE_DETAILS_TEXT_PREFIX + isAsString(object.get("describe"));
             String attribute = isAsString(object.get("attribute"));
             int percentageBase = 100;
             if (modId != null && !modId.isEmpty()) {
@@ -261,7 +261,7 @@ public class LHMiracleRoadTool {
      */
     public static List<JsonObject> setInitItem(JsonObject occupation) {
         List<JsonObject> objects = new ArrayList<>();
-        JsonArray initItem = LHMiracleRoadTool.isAsJsonArray(occupation.get("init_item"));
+        JsonArray initItem = ClientData.INIT_ITEM.get(isAsString(occupation.get("id")));
         for (JsonElement jsonElement : initItem) {
             JsonObject object = LHMiracleRoadTool.isAsJsonObject(jsonElement);
             if (object == null) continue;
@@ -446,7 +446,7 @@ public class LHMiracleRoadTool {
         ClientDataMessage occupationMessage = new ClientDataMessage(occupationData);
         PlayerAttributeChannel.sendToClient(occupationMessage, player);
 
-        //同步showGuiAttribute类的数据包
+        //同步ShowGuiAttributeReloadListener类的数据包
         JsonObject showGuiAttributeData = new JsonObject();
         JsonArray showGuiAttribute = new JsonArray();
         ShowGuiAttributeReloadListener.SHOW_GUI_ATTRIBUTE.forEach(showGuiAttribute::add);
@@ -454,6 +454,15 @@ public class LHMiracleRoadTool {
 
         ClientDataMessage showGuiAttributeMessage = new ClientDataMessage(showGuiAttributeData);
         PlayerAttributeChannel.sendToClient(showGuiAttributeMessage, player);
+
+        //同步InitItemResourceReloadListener类的数据包
+        JsonObject initItemData = new JsonObject();
+        JsonObject initItem = new JsonObject();
+        InitItemResourceReloadListener.INIT_ITEM.forEach(initItem::add);
+        initItemData.add("initItem",initItem);
+
+        ClientDataMessage initItemMessage = new ClientDataMessage(initItemData);
+        PlayerAttributeChannel.sendToClient(initItemMessage, player);
     }
 
     /**
@@ -659,5 +668,10 @@ public class LHMiracleRoadTool {
 //        attributeLevel = (attributeLevel - occupationAttributeLevel.size() * LHMiracleRoadConfig.COMMON.LEVEL_BASE.get()) + 1;
 //        return attributeLevel;
 //    }
+
+    public static boolean isShowPointsButton(int currentLevel,int maxLevel,int attributeMaxLevel){
+        if (attributeMaxLevel < 1) return currentLevel < maxLevel;
+        else return currentLevel < attributeMaxLevel;
+    }
 
 }

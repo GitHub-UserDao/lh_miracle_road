@@ -18,6 +18,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * player event 玩家事件
@@ -48,6 +49,7 @@ public class PlayerForgeEvent {
             playerOccupationAttribute.setShowAttribute(optional.getShowAttribute());
             playerOccupationAttribute.setEmpiricalCalculationFormula(optional.getEmpiricalCalculationFormula());
             playerOccupationAttribute.setBurden(optional.getBurden());
+            playerOccupationAttribute.setAttributeMaxLevel(optional.getAttributeMaxLevel());
 
             LHMiracleRoadTool.synchronizationClient(playerOccupationAttribute, (ServerPlayer) player);
         });
@@ -66,6 +68,18 @@ public class PlayerForgeEvent {
                 playerOccupationAttribute.setOccupationExperience(0);
             }
         });
+    }
+
+    /**
+     * 切换维度事件
+     * @param event
+     */
+    @SubscribeEvent
+    public static void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
+        Player player = event.getEntity();
+        Optional<PlayerOccupationAttribute> playerOccupationAttribute = event.getEntity().getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).resolve();
+        if (playerOccupationAttribute.isEmpty()) return;
+        LHMiracleRoadTool.synchronizationClient(playerOccupationAttribute.get(), (ServerPlayer) player);
     }
 
     /**
@@ -92,6 +106,7 @@ public class PlayerForgeEvent {
                     player.setHealth((float) player.getAttribute(attribute).getValue());
                 }
             }
+            LHMiracleRoadTool.synchronizationClient(playerOccupationAttribute, (ServerPlayer) player);
         }
     }
 
