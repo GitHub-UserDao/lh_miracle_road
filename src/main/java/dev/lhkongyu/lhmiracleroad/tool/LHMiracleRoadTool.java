@@ -4,7 +4,8 @@ import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.lhkongyu.lhmiracleroad.access.LHMiracleRoadAttributes;
+import dev.lhkongyu.lhmiracleroad.attributes.LHMiracleRoadAttributes;
+import dev.lhkongyu.lhmiracleroad.attributes.ShowAttributesTypes;
 import dev.lhkongyu.lhmiracleroad.capability.ItemStackPunishmentAttribute;
 import dev.lhkongyu.lhmiracleroad.capability.ItemStackPunishmentAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
@@ -262,6 +263,7 @@ public class LHMiracleRoadTool {
     public static List<JsonObject> setInitItem(JsonObject occupation) {
         List<JsonObject> objects = new ArrayList<>();
         JsonArray initItem = ClientData.INIT_ITEM.get(isAsString(occupation.get("id")));
+        if (initItem == null || initItem.isEmpty()) return objects;
         for (JsonElement jsonElement : initItem) {
             JsonObject object = LHMiracleRoadTool.isAsJsonObject(jsonElement);
             if (object == null) continue;
@@ -401,6 +403,19 @@ public class LHMiracleRoadTool {
         PlayerAttributeChannel.sendToClient(message, player);
     }
 
+    //同步显示的数据信息
+    public static void synchronizationShowAttribute(ServerPlayer player){
+        //同步显示的数据信息
+        JsonObject showAttributeData = new JsonObject();
+        Map<String, JsonObject> showAttributeMap = setShowAttribute(player);
+        JsonObject showAttribute = new JsonObject();
+        showAttributeMap.forEach(showAttribute::add);
+        showAttributeData.add("showAttribute",showAttribute);
+
+        ClientDataMessage attributeTypesMessage = new ClientDataMessage(showAttributeData);
+        PlayerAttributeChannel.sendToClient(attributeTypesMessage, player);
+    }
+
     /**
      * 将服务端数据包文件发送至客户端
      */
@@ -494,24 +509,23 @@ public class LHMiracleRoadTool {
             AttributeInstance attributeInstance = player.getAttribute(attribute);
             if (attributeInstance == null) continue;
 
-            String attributeText = isAsString(attributeObject.get("attribute_text"));
-            String showValueType = isAsString(attributeObject.get("show_value_type"));
+//            String attributeText = isAsString(attributeObject.get("attribute_text"));
+//            String showValueType = isAsString(attributeObject.get("show_value_type"));
+//            showAttributeObject.addProperty("tx", attributeText);
+//            showAttributeObject.addProperty("ty", ShowAttributesTypes.fromString(showValueType).getValue());
 
-            showAttributeObject.addProperty("attribute_text", attributeText);
-            showAttributeObject.addProperty("show_value_type", showValueType);
-
-            showAttributeObject.addProperty("value", attributeInstance.getValue());
-            showAttributeObject.addProperty("base_value", attributeInstance.getBaseValue());
+            showAttributeObject.addProperty("v", attributeInstance.getValue());
+            showAttributeObject.addProperty("b", attributeInstance.getBaseValue());
             JsonArray jsonArray = new JsonArray();
             attributeInstance.getModifiers().forEach(modifier -> {
                 JsonObject modifierObject = new JsonObject();
-                modifierObject.addProperty("uuid", modifier.getId().toString());
-                modifierObject.addProperty("name", modifier.getName());
-                modifierObject.addProperty("amount", modifier.getAmount());
-                modifierObject.addProperty("operation", modifier.getOperation().toValue());
+//                modifierObject.addProperty("u", modifier.getId().toString());
+//                modifierObject.addProperty("n", modifier.getName());
+                modifierObject.addProperty("a", modifier.getAmount());
+//                modifierObject.addProperty("o", modifier.getOperation().toValue());
                 jsonArray.add(modifierObject);
             });
-            showAttributeObject.add("modifiers", jsonArray);
+            showAttributeObject.add("m", jsonArray);
             showAttribute.put(attributeName, showAttributeObject);
         }
 
@@ -608,7 +622,7 @@ public class LHMiracleRoadTool {
      * 显示的value格式
      * @return
      */
-    public static String getShowValueType(String showValueType,double value,double baseValue,int percentageBase,String attributeName){
+    public static String getShowValueType(ShowAttributesTypes showValueType,double value,double baseValue,int percentageBase,String attributeName){
         String showValue = "";
 //        if (detailedAttribute != null) {
 //            showValue = detailedAttribute.get(attributeName);
@@ -617,11 +631,10 @@ public class LHMiracleRoadTool {
         double base = new BigDecimal(value).setScale(4, RoundingMode.HALF_UP).doubleValue();
         double extra = new BigDecimal(value - baseValue).setScale(4, RoundingMode.HALF_UP).doubleValue();
         showValue = switch (showValueType){
-            case "base" -> String.valueOf(base);
-            case "extra_base" -> "+" + extra;
-            case "base_percentage" ->  new BigDecimal(value * percentageBase).setScale(4, RoundingMode.HALF_UP).doubleValue() + "%";
-            case "extra_percentage" -> "+" + new BigDecimal((value - baseValue) * percentageBase).setScale(4, RoundingMode.HALF_UP).doubleValue() + "%";
-            default -> "";
+            case BASE -> String.valueOf(base);
+            case EXTRA_BASE -> "+" + extra;
+            case BASE_PERCENTAGE ->  new BigDecimal(value * percentageBase).setScale(4, RoundingMode.HALF_UP).doubleValue() + "%";
+            case EXTRA_PERCENTAGE -> "+" + new BigDecimal((value - baseValue) * percentageBase).setScale(4, RoundingMode.HALF_UP).doubleValue() + "%";
         };
 //        detailedAttribute.put(attributeName,showValue);
         return showValue;
@@ -644,7 +657,7 @@ public class LHMiracleRoadTool {
                 double amount = 0.0;
 ;                for (JsonElement jsonElement: modifiers){
                     JsonObject object = isAsJsonObject(jsonElement);
-                    amount += isAsDouble(object.get("amount"));
+                    amount += isAsDouble(object.get("a"));
                 }
                 showValue = switch (operation) {
                     case "addition" -> "+" + new BigDecimal(amount).setScale(4, RoundingMode.HALF_UP).doubleValue();
@@ -673,5 +686,4 @@ public class LHMiracleRoadTool {
         if (attributeMaxLevel < 1) return currentLevel < maxLevel;
         else return currentLevel < attributeMaxLevel;
     }
-
 }

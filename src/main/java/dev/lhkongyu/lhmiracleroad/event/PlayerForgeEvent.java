@@ -46,7 +46,6 @@ public class PlayerForgeEvent {
             playerOccupationAttribute.setPunishmentAttributeModifier(optional.getPunishmentAttributeModifier());
             playerOccupationAttribute.setOccupationAttributeLevel(optional.getOccupationAttributeLevel());
             playerOccupationAttribute.setHeavyAttributeModifier(optional.getHeavyAttributeModifier());
-            playerOccupationAttribute.setShowAttribute(optional.getShowAttribute());
             playerOccupationAttribute.setEmpiricalCalculationFormula(optional.getEmpiricalCalculationFormula());
             playerOccupationAttribute.setBurden(optional.getBurden());
             playerOccupationAttribute.setAttributeMaxLevel(optional.getAttributeMaxLevel());
@@ -92,6 +91,7 @@ public class PlayerForgeEvent {
         player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).ifPresent(playerOccupationAttribute -> {
             loggedInSyncAttribute(playerOccupationAttribute, (ServerPlayer) player);
             LHMiracleRoadTool.synchronizationClient(playerOccupationAttribute, (ServerPlayer) player);
+            LHMiracleRoadTool.synchronizationShowAttribute((ServerPlayer) player);
         });
     }
 

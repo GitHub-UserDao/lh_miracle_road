@@ -22,5 +22,7 @@ public class ClientData {
 
     public static final List<JsonObject> SHOW_GUI_ATTRIBUTE = new ArrayList<>();
 
+    public static final Map<String, JsonObject> SHOW_ATTRIBUTE = Maps.newHashMap();
+
     public static final Map<String, JsonArray> INIT_ITEM = Maps.newHashMap();
 }

@@ -1,6 +1,6 @@
 package dev.lhkongyu.lhmiracleroad.mixin;
 
-import dev.lhkongyu.lhmiracleroad.access.AttributeInstanceAccess;
+import dev.lhkongyu.lhmiracleroad.attributes.AttributeInstanceAccess;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;

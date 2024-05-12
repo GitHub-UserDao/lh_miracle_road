@@ -39,6 +39,7 @@ public class AttributePointsRewardsReloadListener extends SimpleJsonResourceRelo
             JsonArray jsonArray = jsonElement.getAsJsonArray();
             for (JsonElement element:jsonArray){
                 JsonObject jsonObject = element.getAsJsonObject();
+                if(LHMiracleRoadTool.isJsonArrayModIdsExist(LHMiracleRoadTool.isAsJsonArray(jsonObject.get("conditions")))) continue;
                 String id = jsonObject.get("id").getAsString();
                 JsonObject data = jsonObject.get("data").getAsJsonObject();
                 ATTRIBUTE_POINTS_REWARDS.put(id, data);

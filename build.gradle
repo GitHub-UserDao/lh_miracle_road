@@ -151,7 +151,7 @@ repositories {
 }
 
 dependencies {
-    // jade
+//    // jade
 //    implementation fg.deobf("curse.maven:jade-324717:4986594")
     //mixin
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'

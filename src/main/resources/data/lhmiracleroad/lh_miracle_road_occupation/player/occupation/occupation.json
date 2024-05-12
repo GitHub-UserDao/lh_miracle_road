@@ -212,5 +212,47 @@
         "level": 9
       }
     ]
+  },
+  {
+    "id": "ranger",
+    "init_difficulty_level": 15,
+    "init_attribute": [
+      {
+        "id": "hp",
+        "level": 12
+      },
+      {
+        "id": "focus",
+        "level": 9
+      },
+      {
+        "id": "power",
+        "level": 17
+      },
+      {
+        "id": "sturdy",
+        "level": 14
+      },
+      {
+        "id": "endurance",
+        "level": 7
+      },
+      {
+        "id": "brain",
+        "level": 10
+      },
+      {
+        "id": "agile",
+        "level": 12
+      },
+      {
+        "id": "trick",
+        "level": 8
+      },
+      {
+        "id": "luck",
+        "level": 12
+      }
+    ]
   }
 ]

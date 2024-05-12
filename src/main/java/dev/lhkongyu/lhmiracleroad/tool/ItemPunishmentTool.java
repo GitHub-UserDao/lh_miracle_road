@@ -5,7 +5,7 @@ import com.google.common.collect.Multimap;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.lhkongyu.lhmiracleroad.access.LHMiracleRoadAttributes;
+import dev.lhkongyu.lhmiracleroad.attributes.LHMiracleRoadAttributes;
 import dev.lhkongyu.lhmiracleroad.capability.ItemStackPunishmentAttribute;
 import dev.lhkongyu.lhmiracleroad.capability.ItemStackPunishmentAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;

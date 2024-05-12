@@ -23,6 +23,10 @@
   },
   {
     "id": "focus",
+    "conditions": [
+      "irons_spellbooks",
+      "ars_nouveau"
+    ],
     "data": {
       "max_level": 99,
       "points_rewards": [
@@ -39,6 +43,20 @@
           "level_promote": 0,
           "level_promote_value": 0,
           "operation": "addition"
+        },
+        {
+          "attribute": "irons_spellbooks:mana_regen",
+          "value": 0.02,
+          "level_promote": 0,
+          "level_promote_value": 0,
+          "operation": "multiply_base"
+        },
+        {
+          "attribute": "ars_nouveau:ars_nouveau.perk.mana_regen",
+          "value": 0.12,
+          "level_promote": 0,
+          "level_promote_value": 0,
+          "operation": "addition"
         }
       ]
     }
@@ -52,15 +70,17 @@
           "attribute": "attack_damage",
           "value": 0.5,
           "level_promote": 15,
-          "level_promote_value": -0.075,
-          "operation": "addition"
+          "level_promote_value": -0.05,
+          "operation": "addition",
+          "min": 0.1
         },
         {
           "attribute": "ranged_damage",
-          "value": 0.05,
+          "value": 0.4,
           "level_promote": 15,
-          "level_promote_value": -0.0075,
-          "operation": "multiply_base"
+          "level_promote_value": -0.04,
+          "operation": "addition",
+          "min": 0.1
         }
       ]
     }
@@ -72,10 +92,11 @@
       "points_rewards": [
         {
           "attribute": "burden",
-          "value": 1.5,
-          "level_promote": 35,
+          "value": 2,
+          "level_promote": 30,
           "level_promote_value": -0.5,
-          "operation": "addition"
+          "operation": "addition",
+          "min": 0.5
         },
         {
           "attribute": "hunger",
@@ -89,7 +110,8 @@
           "value": 0.5,
           "level_promote": 30,
           "level_promote_value": -0.1,
-          "operation": "addition"
+          "operation": "addition",
+          "min": 0.1
         }
       ]
     }
@@ -118,6 +140,10 @@
   },
   {
     "id": "brain",
+    "conditions": [
+      "irons_spellbooks",
+      "ars_nouveau"
+    ],
     "data": {
       "max_level": 99,
       "points_rewards": [
@@ -125,15 +151,17 @@
           "attribute": "irons_spellbooks:spell_power",
           "value": 0.03,
           "level_promote": 30,
-          "level_promote_value": -0.008,
-          "operation": "multiply_base"
+          "level_promote_value": -0.0075,
+          "operation": "multiply_base",
+          "min": 0.01
         },
         {
           "attribute": "ars_nouveau:ars_nouveau.perk.spell_damage",
           "value": 0.5,
           "level_promote": 30,
-          "level_promote_value": -0.15,
-          "operation": "addition"
+          "level_promote_value": -0.125,
+          "operation": "addition",
+          "min": 0.1
         }
       ]
     }
@@ -146,16 +174,18 @@
         {
           "attribute": "attack_speed",
           "value": 0.01,
-          "level_promote": 15,
+          "level_promote": 20,
           "level_promote_value": -0.002,
-          "operation": "multiply_base"
+          "operation": "multiply_base",
+          "min": 0.002
         },
         {
           "attribute": "movement_speed",
           "value": 0.002,
           "level_promote": 30,
           "level_promote_value": -0.0005,
-          "operation": "multiply_base"
+          "operation": "multiply_base",
+          "min": 0.0002
         },
         {
           "attribute": "jump",
@@ -169,6 +199,9 @@
   },
   {
     "id": "trick",
+    "conditions": [
+      "irons_spellbooks"
+    ],
     "data": {
       "max_level": 99,
       "points_rewards": [
@@ -177,14 +210,16 @@
           "value": 0.0125,
           "level_promote": 20,
           "level_promote_value": -0.0025,
-          "operation": "multiply_base"
+          "operation": "multiply_base",
+          "min": 0.0025
         },
         {
           "attribute": "irons_spellbooks:cooldown_reduction",
           "value": 0.0125,
           "level_promote": 20,
           "level_promote_value": -0.0025,
-          "operation": "multiply_base"
+          "operation": "multiply_base",
+          "min": 0.0025
         }
       ]
     }

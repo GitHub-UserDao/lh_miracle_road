@@ -1,8 +1,8 @@
 package dev.lhkongyu.lhmiracleroad.mixin;
 
 
-import dev.lhkongyu.lhmiracleroad.access.AttributeInstanceAccess;
-import dev.lhkongyu.lhmiracleroad.access.LHMiracleRoadAttributes;
+import dev.lhkongyu.lhmiracleroad.attributes.AttributeInstanceAccess;
+import dev.lhkongyu.lhmiracleroad.attributes.LHMiracleRoadAttributes;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import net.minecraft.server.level.ServerPlayer;

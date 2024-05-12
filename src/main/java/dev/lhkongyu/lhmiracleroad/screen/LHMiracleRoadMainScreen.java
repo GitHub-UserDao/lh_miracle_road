@@ -3,13 +3,12 @@ package dev.lhkongyu.lhmiracleroad.screen;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.lhkongyu.lhmiracleroad.access.LHMiracleRoadAttributes;
+import dev.lhkongyu.lhmiracleroad.attributes.LHMiracleRoadAttributes;
+import dev.lhkongyu.lhmiracleroad.attributes.ShowAttributesTypes;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.data.ClientData;
-import dev.lhkongyu.lhmiracleroad.data.reloader.AttributePointsRewardsReloadListener;
-import dev.lhkongyu.lhmiracleroad.data.reloader.AttributeReloadListener;
 import dev.lhkongyu.lhmiracleroad.packet.PlayerAttributeChannel;
 import dev.lhkongyu.lhmiracleroad.packet.PlayerAttributePointsMessage;
 import dev.lhkongyu.lhmiracleroad.tool.AttributesNameTool;
@@ -63,10 +62,9 @@ public class LHMiracleRoadMainScreen extends Screen {
     private boolean isShowPointsButton;
 
 
-    public LHMiracleRoadMainScreen(int totalPage, int current) {
+    public LHMiracleRoadMainScreen(int current) {
         super(Component.empty());
         super.minecraft = Minecraft.getInstance();
-        this.totalPage = totalPage;
         this.current = current;
         this.isShowPointsButton = true;
     }
@@ -81,6 +79,7 @@ public class LHMiracleRoadMainScreen extends Screen {
 //            currentGuiScale = minecraft.options.guiScale().get();
             initCoordinate = new InitCoordinate(widthCore,heightCore,backgroundWidth,backgroundHeight,font,playerOccupationAttribute.getOccupationId());
             initMainCoordinate = new InitMainCoordinate(widthCore,heightCore,backgroundWidth,backgroundWidth,font,playerOccupationAttribute);
+            totalPage = 2;
             totalPage += initMainCoordinate.setShowDetailedAttributePage();
             if (current == 0) showButton(false,true);
             else showButton(true, current != totalPage - 1);
@@ -320,13 +319,14 @@ public class LHMiracleRoadMainScreen extends Screen {
             for (JsonElement showGuiAttributeJsonElement : showDetailedAttributePage.get(key)) {
                 JsonObject showGuiAttribute = LHMiracleRoadTool.isAsJsonObject(showGuiAttributeJsonElement);
                 String attributeName = LHMiracleRoadTool.isAsString(showGuiAttribute.get("attribute"));
-                JsonObject attributeObject = playerOccupationAttribute.getShowAttribute().get(attributeName);
+                JsonObject attributeObject = ClientData.SHOW_ATTRIBUTE.get(attributeName);
+                if (attributeObject == null) continue;
 
-                String attributeText = ResourceLocationTool.ATTRIBUTE_DETAILS_TEXT_PREFIX + LHMiracleRoadTool.isAsString(attributeObject.get("attribute_text"));
-                String showValueType = LHMiracleRoadTool.isAsString(attributeObject.get("show_value_type"));
-                double value = LHMiracleRoadTool.isAsDouble(attributeObject.get("value"));
-                double baseValue = LHMiracleRoadTool.isAsDouble(attributeObject.get("base_value"));
-                JsonArray modifiers = LHMiracleRoadTool.isAsJsonArray(attributeObject.get("modifiers"));
+                String attributeText = ResourceLocationTool.ATTRIBUTE_DETAILS_TEXT_PREFIX + LHMiracleRoadTool.isAsString(showGuiAttribute.get("attribute_text"));
+                ShowAttributesTypes showValueType = ShowAttributesTypes.fromString(LHMiracleRoadTool.isAsString(showGuiAttribute.get("show_value_type")));
+                double value = LHMiracleRoadTool.isAsDouble(attributeObject.get("v"));
+                double baseValue = LHMiracleRoadTool.isAsDouble(attributeObject.get("b"));
+                JsonArray modifiers = LHMiracleRoadTool.isAsJsonArray(attributeObject.get("m"));
 
                 String showValue = "";
                 int percentageBase = 100;

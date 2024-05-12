@@ -22,6 +22,18 @@
     "show_value_type": "base"
   },
   {
+    "condition": "irons_spellbooks",
+    "attribute": "irons_spellbooks:mana_regen",
+    "attribute_text": "focus_iron_mana_regen",
+    "show_value_type": "base"
+  },
+  {
+    "condition": "ars_nouveau",
+    "attribute": "ars_nouveau:ars_nouveau.perk.mana_regen",
+    "attribute_text": "focus_ars_nouveau_mana_regen",
+    "show_value_type": "base"
+  },
+  {
     "attribute": "attack_damage",
     "attribute_text": "power_attack_damage",
     "show_value_type": "base"

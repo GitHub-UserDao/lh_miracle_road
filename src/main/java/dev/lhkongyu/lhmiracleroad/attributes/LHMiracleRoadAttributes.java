@@ -1,4 +1,4 @@
-package dev.lhkongyu.lhmiracleroad.access;
+package dev.lhkongyu.lhmiracleroad.attributes;
 
 
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;

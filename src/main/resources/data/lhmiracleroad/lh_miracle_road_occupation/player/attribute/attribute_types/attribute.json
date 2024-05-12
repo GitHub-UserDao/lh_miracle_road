@@ -28,6 +28,16 @@
         "attribute": "ars_nouveau:ars_nouveau.perk.max_mana",
         "condition": "ars_nouveau",
         "describe": "focus_ars_nouveau"
+      },
+      {
+        "attribute": "irons_spellbooks:mana_regen",
+        "condition": "irons_spellbooks",
+        "describe": "focus_iron_mana_regen"
+      },
+      {
+        "attribute": "ars_nouveau:ars_nouveau.perk.mana_regen",
+        "condition": "ars_nouveau",
+        "describe": "focus_ars_nouveau_mana_regen"
       }
     ]
   },

@@ -35,7 +35,7 @@ public class PlayerOccupationAttribute {
 
     private double offhandHeavy;
 
-    private Map<String, JsonObject> showAttribute = Maps.newLinkedHashMap();
+//    private Map<String, JsonObject> showAttribute = Maps.newLinkedHashMap();
 
     private String empiricalCalculationFormula;
 
@@ -137,14 +137,6 @@ public class PlayerOccupationAttribute {
         this.offhandHeavy = offhandHeavy;
     }
 
-    public Map<String, JsonObject> getShowAttribute() {
-        return showAttribute;
-    }
-
-    public void setShowAttribute(Map<String, JsonObject> showAttribute) {
-        this.showAttribute = showAttribute;
-    }
-
     public String getEmpiricalCalculationFormula() {
         return empiricalCalculationFormula;
     }
@@ -159,6 +151,10 @@ public class PlayerOccupationAttribute {
 
     public void setPoints(int points) {
         this.points = points;
+    }
+
+    public void addPoints(int points) {
+        this.points += points;
     }
 
     public int getBurden() {
@@ -214,14 +210,6 @@ public class PlayerOccupationAttribute {
             compoundTag.put("heavyAttributeModifier",heavyAttributeModifier.save());
         }
 
-        if (showAttribute != null) {
-            CompoundTag showAttributeTags = new CompoundTag();
-            for (Map.Entry<String, JsonObject> entry : showAttribute.entrySet()) {
-                showAttributeTags.putString(entry.getKey(), entry.getValue().toString());
-            }
-            compoundTag.put("showAttribute", showAttributeTags);
-        }
-
         if (empiricalCalculationFormula != null) compoundTag.putString("empiricalCalculationFormula", empiricalCalculationFormula);
     }
 
@@ -266,15 +254,6 @@ public class PlayerOccupationAttribute {
         if (compoundTag.contains("heavyAttributeModifier", Tag.TAG_STRING)) {
             CompoundTag heavyAttributeModifierTags = compoundTag.getCompound("heavyAttributeModifier");
             heavyAttributeModifier = AttributeModifier.load(heavyAttributeModifierTags);
-        }
-
-        if (compoundTag.contains("showAttribute", Tag.TAG_COMPOUND)) {
-            CompoundTag showAttributeTags = compoundTag.getCompound("showAttribute");
-            showAttribute = Maps.newHashMap();
-            for (String key : showAttributeTags.getAllKeys()) {
-                String value = showAttributeTags.getString(key);
-                showAttribute.put(key,JsonParser.parseString(value).getAsJsonObject());
-            }
         }
 
         if (compoundTag.contains("empiricalCalculationFormula", Tag.TAG_STRING)) {
@@ -329,11 +308,6 @@ public class PlayerOccupationAttribute {
 //            heavyAttributeModifier.addProperty("operation", this.heavyAttributeModifier.getOperation().toValue());
 //            playerOccupationAttributeObject.add("heavyAttributeModifier", heavyAttributeModifier);
 //        }
-
-        JsonObject showAttribute = new JsonObject();
-        this.showAttribute.forEach(showAttribute::add);
-        playerOccupationAttributeObject.add("showAttribute",showAttribute);
-
         return playerOccupationAttributeObject;
     }
 

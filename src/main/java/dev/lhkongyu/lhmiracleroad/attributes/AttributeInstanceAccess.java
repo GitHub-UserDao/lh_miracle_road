@@ -1,4 +1,4 @@
-package dev.lhkongyu.lhmiracleroad.access;
+package dev.lhkongyu.lhmiracleroad.attributes;
 
 public interface AttributeInstanceAccess {
 	double computeIncreasedValueForInitial(double initial);

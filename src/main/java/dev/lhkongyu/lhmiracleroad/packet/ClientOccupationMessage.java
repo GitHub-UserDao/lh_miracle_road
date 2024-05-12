@@ -98,7 +98,6 @@ public record ClientOccupationMessage(JsonObject playerOccupationAttributeObject
 //                playerOccupationAttribute.setPunishmentAttributeModifier(punishmentAttributeModifierMap);
                 playerOccupationAttribute.setOccupationAttributeLevel(occupationAttributeLevelMap);
 //                playerOccupationAttribute.setHeavyAttributeModifier(heavyAttributeModifier);
-                playerOccupationAttribute.setShowAttribute(showAttributeMap);
                 playerOccupationAttribute.setEmpiricalCalculationFormula(empiricalCalculationFormula);
                 playerOccupationAttribute.setPoints(points);
                 playerOccupationAttribute.setBurden(burden);

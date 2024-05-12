@@ -90,6 +90,14 @@ public record ClientDataMessage(JsonObject data) {
                     ClientData.INIT_ITEM.put(jsonElement.getKey(), LHMiracleRoadTool.isAsJsonArray(jsonElement.getValue()));
                 }
             }
+
+            JsonObject showAttribute = LHMiracleRoadTool.isAsJsonObject(data.get("showAttribute"));
+            if (showAttribute != null) {
+                ClientData.SHOW_ATTRIBUTE.clear();
+                for (Map.Entry<String, JsonElement> jsonElement : showAttribute.entrySet()) {
+                    ClientData.SHOW_ATTRIBUTE.put(jsonElement.getKey(), LHMiracleRoadTool.isAsJsonObject(jsonElement.getValue()));
+                }
+            }
         });
         context.setPacketHandled(true);
     }

@@ -2,21 +2,20 @@ package dev.lhkongyu.lhmiracleroad.tool;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.lhkongyu.lhmiracleroad.access.LHMiracleRoadAttributes;
+import dev.lhkongyu.lhmiracleroad.attributes.LHMiracleRoadAttributes;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.data.reloader.AttributePointsRewardsReloadListener;
-import dev.lhkongyu.lhmiracleroad.data.reloader.OccupationReloadListener;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.checkerframework.checker.units.qual.K;
 
 import java.util.List;
 import java.util.Map;
@@ -99,7 +98,8 @@ public class PlayerAttributeTool {
             int levelPromote = LHMiracleRoadTool.isAsInt(object.get("level_promote"));
             double levelPromoteValue = LHMiracleRoadTool.isAsDouble(object.get("level_promote_value"));
             String operationString = LHMiracleRoadTool.isAsString(object.get("operation"));
-            double attributeValue = LHMiracleRoadTool.calculateTotalIncrease(attributeLevel,value,levelPromoteValue,levelPromote);
+            double min = LHMiracleRoadTool.isAsDouble(object.get("min"));
+            double attributeValue = Math.max(LHMiracleRoadTool.calculateTotalIncrease(attributeLevel,value,levelPromoteValue,levelPromote),min);
             addExtraAttributes(player,attributeName,attributeValue,operationString,playerOccupationAttribute);
         }
     }
@@ -188,14 +188,14 @@ public class PlayerAttributeTool {
         //给对应属性类型进行 属性增长
         setAttribute(player, jsonObject, level, playerOccupationAttribute);
 
-        //判断优化扣除点数
-        if (points > 0){
-            points -= 1;
-            playerOccupationAttribute.setPoints(points);
-        }else {
+        //判断优化扣除经验
+        if (exp >= demandExperienceValue){
             //修改当前经验和提升当前等级
             exp -= demandExperienceValue;
             playerOccupationAttribute.setOccupationExperience(exp);
+        }else {
+            points -= 1;
+            playerOccupationAttribute.setPoints(points);
         }
         playerOccupationAttribute.upgrade();
         //更新玩家奖惩状态
@@ -213,6 +213,29 @@ public class PlayerAttributeTool {
         LHMiracleRoadTool.setConfigBaseAttribute(player,initDifficultyLevel);
         //设置初始属性等级所带来的提升值
         calculateAttribute(player,initAttributeLevel,occupationId,playerOccupationAttribute);
+        //更新玩家奖惩状态
+        LHMiracleRoadTool.playerPunishmentStateUpdate(player,playerOccupationAttribute);
+    }
+
+    public static void resetLevelReturnPoints(ServerPlayer player,PlayerOccupationAttribute playerOccupationAttribute){
+        String occupationId = playerOccupationAttribute.getOccupationId();
+        JsonObject occupation = LHMiracleRoadTool.getOccupation(occupationId);
+        //获取职业基本信息
+        int initDifficultyLevel = LHMiracleRoadTool.isAsInt(occupation.get("init_difficulty_level"));
+        Map<String,Integer> initAttributeLevel = LHMiracleRoadTool.setInitAttributeLevel(occupation);
+        int points = 0;
+        for (String key : initAttributeLevel.keySet()){
+            int from = initAttributeLevel.get(key);
+            int to = playerOccupationAttribute.getOccupationAttributeLevel().get(key);
+            points += to - from;
+        }
+
+        //设置基础属性值
+        LHMiracleRoadTool.setConfigBaseAttribute(player,initDifficultyLevel);
+        //设置初始属性等级所带来的提升值
+        calculateAttribute(player,initAttributeLevel,occupationId,playerOccupationAttribute);
+        //设置返回的技能点数
+        playerOccupationAttribute.addPoints(points);
         //更新玩家奖惩状态
         LHMiracleRoadTool.playerPunishmentStateUpdate(player,playerOccupationAttribute);
     }

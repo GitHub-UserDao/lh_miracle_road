@@ -1,9 +1,11 @@
 package dev.lhkongyu.lhmiracleroad;
 
 import com.mojang.logging.LogUtils;
-import dev.lhkongyu.lhmiracleroad.access.LHMiracleRoadAttributes;
+import dev.lhkongyu.lhmiracleroad.attributes.LHMiracleRoadAttributes;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.data.reloader.*;
+import dev.lhkongyu.lhmiracleroad.items.LHMiracleRoadItems;
+import dev.lhkongyu.lhmiracleroad.items.LHMiracleRoadTabs;
 import dev.lhkongyu.lhmiracleroad.packet.PlayerAttributeChannel;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
@@ -29,7 +31,8 @@ public class LHMiracleRoad
         LHMiracleRoadAttributes.register();
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.addListener(LHMiracleRoadAttributes::registerPlayerAttribute);
-
+        LHMiracleRoadItems.ITEMS.register(bus);
+        LHMiracleRoadTabs.TABS.register(bus);
     }
 
     private void reloadListnerEvent(final AddReloadListenerEvent event) {

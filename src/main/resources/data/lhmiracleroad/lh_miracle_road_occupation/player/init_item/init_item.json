@@ -159,5 +159,38 @@
         "quantity": "1"
       }
     ]
+  },
+  {
+    "id": "ranger",
+    "items": [
+      {
+        "item": "minecraft:bow",
+        "quantity": "1"
+      },
+      {
+        "item": "minecraft:arrow",
+        "quantity": "24"
+      },
+      {
+        "item": "minecraft:bread",
+        "quantity": "12"
+      },
+      {
+        "item": "minecraft:leather_helmet",
+        "quantity": "1"
+      },
+      {
+        "item": "minecraft:leather_chestplate",
+        "quantity": "1"
+      },
+      {
+        "item": "minecraft:leather_leggings",
+        "quantity": "1"
+      },
+      {
+        "item": "minecraft:leather_boots",
+        "quantity": "1"
+      }
+    ]
   }
 ]

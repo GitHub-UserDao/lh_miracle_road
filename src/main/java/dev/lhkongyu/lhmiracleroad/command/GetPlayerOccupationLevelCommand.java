@@ -6,6 +6,7 @@ import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import dev.lhkongyu.lhmiracleroad.tool.PlayerAttributeTool;
+import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -69,9 +70,9 @@ public class GetPlayerOccupationLevelCommand {
                                               if (occupationAttribute.isPresent()){
                                                   PlayerOccupationAttribute playerOccupationAttribute = occupationAttribute.get();
                                                   if (playerOccupationAttribute.getOccupationId() == null)
-                                                      context.getSource().sendSuccess(() -> Component.translatable("lhmiracleroad.instructions.prompt",player.getScoreboardName()), false);
+                                                      context.getSource().sendSuccess(() -> Component.translatable("lhmiracleroad.instructions.prompt",player.getScoreboardName()).withStyle(ChatFormatting.RED), false);
                                                   PlayerAttributeTool.resetLevel(player,playerOccupationAttribute);
-                                                  context.getSource().sendSuccess(() -> Component.translatable("lhmiracleroad.instructions.reset.level",player.getScoreboardName()), false);
+                                                  context.getSource().sendSuccess(() -> Component.translatable("lhmiracleroad.instructions.reset.level",player.getScoreboardName()).withStyle(ChatFormatting.GREEN), false);
                                               }
                                           }
                                           return 0;
@@ -87,9 +88,9 @@ public class GetPlayerOccupationLevelCommand {
                                               if (occupationAttribute.isPresent()){
                                                   PlayerOccupationAttribute playerOccupationAttribute = occupationAttribute.get();
                                                   if (playerOccupationAttribute.getOccupationId() == null)
-                                                      context.getSource().sendSuccess(() -> Component.translatable("lhmiracleroad.instructions.prompt",player.getScoreboardName()), false);
+                                                      context.getSource().sendSuccess(() -> Component.translatable("lhmiracleroad.instructions.prompt",player.getScoreboardName()).withStyle(ChatFormatting.RED), false);
                                                   PlayerAttributeTool.resetOccupation(player,playerOccupationAttribute);
-                                                  context.getSource().sendSuccess(() -> Component.translatable("lhmiracleroad.instructions.reset.occupation",player.getScoreboardName()), false);
+                                                  context.getSource().sendSuccess(() -> Component.translatable("lhmiracleroad.instructions.reset.occupation",player.getScoreboardName()).withStyle(ChatFormatting.GREEN), false);
                                               }
                                           }
                                           return 0;

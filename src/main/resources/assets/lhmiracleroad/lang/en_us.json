@@ -23,6 +23,8 @@
   "lhmiracleroad.gui.occupation.describe.outcast": "I already have nothing and can only look forward...",
   "lhmiracleroad.gui.occupation.name.samurai": "samurai",
   "lhmiracleroad.gui.occupation.describe.samurai": "Searching for one's own path...",
+  "lhmiracleroad.gui.occupation.name.ranger": "ranger",
+  "lhmiracleroad.gui.occupation.describe.ranger": "The mighty marksman who never misses, instilling fear with their ability to deliver a deadly blow in a single shot...",
   "lhmiracleroad.gui.attribute.text.level": "LV: %s",
   "lhmiracleroad.gui.attribute.text.points": "points: %s",
   "lhmiracleroad.gui.attribute.text.hold_soul": "hold soul",
@@ -36,6 +38,8 @@
   "lhmiracleroad.gui.attribute.text.details.hp_healing": "HP healing %s",
   "lhmiracleroad.gui.attribute.text.details.focus_iron": "Iron's MP %s",
   "lhmiracleroad.gui.attribute.text.details.focus_ars_nouveau": "Ars Nouveau MP %s",
+  "lhmiracleroad.gui.attribute.text.details.focus_iron_mana_regen": "Iron's MP Regen %s",
+  "lhmiracleroad.gui.attribute.text.details.focus_ars_nouveau_mana_regen": "Ars Nouveau MP Regen %s",
   "lhmiracleroad.gui.attribute.text.details.sturdy_burden": "burden %s",
   "lhmiracleroad.gui.attribute.text.details.sturdy_sturdy": "sturdy %s",
   "lhmiracleroad.gui.attribute.text.details.sturdy_hunger": "Reduce Hunger decay %s",
@@ -71,5 +75,27 @@
   "lhmiracleroad.instructions.reset.level": "%s reset level success",
   "lhmiracleroad.instructions.reset.occupation": "%s reset occupation success",
   "lhmiracleroad.instructions.prompt": "%s Select first occupation",
-  "lhmiracleroad.instructions.attribute_max_level.set": "%s attribute level max %s"
+  "lhmiracleroad.instructions.attribute_max_level.set": "%s attribute level max %s",
+
+
+
+  "itemGroup.lhmiracleroad.items": "miracle road",
+  "item.lhmiracleroad.broken_soul": "broken soul",
+  "item.lhmiracleroad.group_soul": "group soul",
+  "item.lhmiracleroad.evil_soul": "evil soul",
+  "item.lhmiracleroad.extremely_evil_soul": "extremely evil soul",
+  "item.lhmiracleroad.forget_water.effect.empty": "forget water",
+  "item.lhmiracleroad.king_soul": "king soul",
+  "item.lhmiracleroad.death_soul": "death soul",
+  "item.lhmiracleroad.soul": "+%s soul",
+  "item.lhmiracleroad.broken_soul.tooltip.details": "如同风中残烛...",
+  "item.lhmiracleroad.group_soul.tooltip.details": "残缺的灵魂们互相搀扶，也只能苟延残喘...",
+  "item.lhmiracleroad.evil_soul.tooltip.details": "生前即使恶魔死亡亦是恶鬼",
+  "item.lhmiracleroad.extremely_evil_soul.tooltip.details": "死亡对它来说只是开始吧...",
+  "item.lhmiracleroad.forget_water.tooltip.details": "遗忘...或许会变的更强吧...",
+  "item.lhmiracleroad.king_soul.tooltip.details": "强大的魂魄，生前是一方霸主...",
+  "item.lhmiracleroad.death_soul.tooltip.details.1": "死神的触媒。至少需要10万点灵魂才能使用",
+  "item.lhmiracleroad.death_soul.tooltip.details.2": "50%概率使灵魂翻倍并格外获得1技能点",
+  "item.lhmiracleroad.death_soul.tooltip.details.3": "另外将祭奠你所有的灵魂...",
+  "item.lhmiracleroad.death_soul.prompt": "未满足要求"
 }
