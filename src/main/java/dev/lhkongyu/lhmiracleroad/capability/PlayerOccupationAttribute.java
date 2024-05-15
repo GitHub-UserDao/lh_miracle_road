@@ -35,8 +35,6 @@ public class PlayerOccupationAttribute {
 
     private double offhandHeavy;
 
-//    private Map<String, JsonObject> showAttribute = Maps.newLinkedHashMap();
-
     private String empiricalCalculationFormula;
 
     private int points = 0;
@@ -272,42 +270,9 @@ public class PlayerOccupationAttribute {
         playerOccupationAttributeObject.addProperty("attributeMaxLevel",attributeMaxLevel);
         if (this.occupationId != null && !this.occupationId.isEmpty()) playerOccupationAttributeObject.addProperty("occupationId",this.occupationId);
         if (this.empiricalCalculationFormula != null && !this.empiricalCalculationFormula.isEmpty()) playerOccupationAttributeObject.addProperty("empiricalCalculationFormula",this.empiricalCalculationFormula);
-
-//        JsonObject attributeModifier = new JsonObject();
-//
-//        this.attributeModifier.forEach((key,value)->{
-//            JsonObject jsonObject = new JsonObject();
-//            jsonObject.addProperty("uuid", value.getId().toString());
-//            jsonObject.addProperty("name", value.getName());
-//            jsonObject.addProperty("amount", value.getAmount());
-//            jsonObject.addProperty("operation", value.getOperation().toValue());
-//            attributeModifier.add(key,jsonObject);
-//        });
-//        playerOccupationAttributeObject.add("attributeModifier",attributeModifier);
-
-//        JsonObject punishmentAttributeModifier = new JsonObject();
-//        this.punishmentAttributeModifier.forEach((key,value)->{
-//            JsonObject jsonObject = new JsonObject();
-//            jsonObject.addProperty("uuid", value.getId().toString());
-//            jsonObject.addProperty("name", value.getName());
-//            jsonObject.addProperty("amount", value.getAmount());
-//            jsonObject.addProperty("operation", value.getOperation().toValue());
-//            punishmentAttributeModifier.add(key,jsonObject);
-//        });
-//        playerOccupationAttributeObject.add("punishmentAttributeModifier",punishmentAttributeModifier);
-
         JsonObject occupationAttributeLevel = new JsonObject();
         this.occupationAttributeLevel.forEach(occupationAttributeLevel::addProperty);
         playerOccupationAttributeObject.add("occupationAttributeLevel",occupationAttributeLevel);
-
-//        if (heavyAttributeModifier  != null) {
-//            JsonObject heavyAttributeModifier = new JsonObject();
-//            heavyAttributeModifier.addProperty("uuid", this.heavyAttributeModifier.getId().toString());
-//            heavyAttributeModifier.addProperty("name", this.heavyAttributeModifier.getName());
-//            heavyAttributeModifier.addProperty("amount", this.heavyAttributeModifier.getAmount());
-//            heavyAttributeModifier.addProperty("operation", this.heavyAttributeModifier.getOperation().toValue());
-//            playerOccupationAttributeObject.add("heavyAttributeModifier", heavyAttributeModifier);
-//        }
         return playerOccupationAttributeObject;
     }
 

@@ -74,47 +74,37 @@
     "id": "mage",
     "items": [
       {
-        "item": "minecraft:bread",
-        "quantity": "12"
-      },
-      {
-        "item": "irons_spellbooks:copper_spell_book",
-        "quantity": "1"
-      },
-      {
-        "item": "ars_nouveau:novice_spell_book",
-        "quantity": "1"
-      },
-      {
-        "item": "irons_spellbooks:inscription_table",
-        "quantity": "1"
-      },
-      {
-        "item": "irons_spellbooks:scroll",
-        "quantity": "1",
-        "tag": {
-          "key": "ISB_spell",
-          "value": {
-            "id": "irons_spellbooks:firebolt",
-            "level": 1
-          }
-        }
-      },
-      {
-        "item": "minecraft:leather_helmet",
-        "quantity": "1"
-      },
-      {
         "item": "minecraft:leather_chestplate",
-        "quantity": "1"
-      },
-      {
-        "item": "minecraft:leather_leggings",
-        "quantity": "1"
+        "quantity": 1,
+        "tag": "{Damage:0}"
       },
       {
         "item": "minecraft:leather_boots",
-        "quantity": "1"
+        "quantity": 1,
+        "tag": "{Damage:0}"
+      },
+      {
+        "item": "minecraft:leather_leggings",
+        "quantity": 1,
+        "tag": "{Damage:0}"
+      },
+      {
+        "item": "minecraft:leather_helmet",
+        "quantity": 1,
+        "tag": "{Damage:0}"
+      },
+      {
+        "item": "minecraft:bread",
+        "quantity": 12
+      },
+      {
+        "item": "irons_spellbooks:copper_spell_book",
+        "quantity": 1,
+        "tag": "{ISB_spellbook:{activeSpellIndex:0,spellSlots:4,spells:[{level:1,sid:\"irons_spellbooks:firebolt\",slot:0}]}}"
+      },
+      {
+        "item": "ars_nouveau:novice_spell_book",
+        "quantity": 1
       }
     ]
   },

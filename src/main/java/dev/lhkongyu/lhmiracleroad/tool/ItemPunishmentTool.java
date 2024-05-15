@@ -27,6 +27,11 @@ import java.util.UUID;
 
 public class ItemPunishmentTool {
 
+    /**
+     * 物品的属性设置事件触发时，将能力里记录的物品属性直接注册进物品里
+     * @param stack
+     * @param event
+     */
     public static void itemStackAddPunishmentAttribute(ItemStack stack, ItemAttributeModifierEvent event){
         stack.getCapability(ItemStackPunishmentAttributeProvider.ITEM_STACK_PUNISHMENT_ATTRIBUTE_PROVIDER).ifPresent(itemStackPunishmentAttribute -> {
             Map<Attribute, AttributeModifier> attributeModifierMap = itemStackPunishmentAttribute.getAttribute();
@@ -36,6 +41,13 @@ public class ItemPunishmentTool {
         });
     }
 
+    /**
+     * 物品惩罚能力注册
+     * @param modifierMultimap
+     * @param itemStackPunishmentAttribute
+     * @param attribute
+     * @param multiplier
+     */
     public static void injectionItemStackPunishmentAttribute(Multimap<Attribute, AttributeModifier> modifierMultimap, ItemStackPunishmentAttribute itemStackPunishmentAttribute, Attribute attribute,double multiplier){
         if (modifierMultimap.containsKey(LHMiracleRoadAttributes.BURDEN)) return;
         modifierMultimap.forEach((key, value) -> {
@@ -48,6 +60,11 @@ public class ItemPunishmentTool {
         setHeavyAttributeModifier(itemStackPunishmentAttribute,attributeNeed);
     }
 
+    /**
+     * 给物品注册点数需求
+     * @param itemStackPunishmentAttribute
+     * @param attributeNeed
+     */
     public static void setHeavyAttributeModifier(ItemStackPunishmentAttribute itemStackPunishmentAttribute,@Nullable JsonArray attributeNeed){
         AttributeModifier attributeModifier = new AttributeModifier(UUID.randomUUID(), "", itemStackPunishmentAttribute.getHeavy(), AttributeModifier.Operation.ADDITION);
         Map<String, AttributeModifier> map = Maps.newHashMap();
@@ -56,6 +73,11 @@ public class ItemPunishmentTool {
         itemStackPunishmentAttribute.setAttributeNeed(attributeNeed);
     }
 
+    /**
+     * 自定义点数需求
+     * @param attackDamageAmount
+     * @return
+     */
     public static JsonArray setAttributeNeed(double attackDamageAmount){
         JsonArray jsonArray = new JsonArray();
         JsonObject attributeNeed = new JsonObject();
@@ -121,7 +143,7 @@ public class ItemPunishmentTool {
         }
         AttributeModifier attributeModifier = null;
         UUID uuid = UUID.randomUUID();
-        if (proportion >= 100){
+        if (proportion > 100){
             attributeModifier = new AttributeModifier(uuid, "", LHMiracleRoadConfig.COMMON.PUNISHMENT_OVERWEIGHT.get(), AttributeModifier.Operation.MULTIPLY_TOTAL);
         }else if (proportion >= 75){
             attributeModifier = new AttributeModifier(uuid, "",  LHMiracleRoadConfig.COMMON.PUNISHMENT_BIASED_WEIGHT.get(), AttributeModifier.Operation.MULTIPLY_TOTAL);
@@ -149,7 +171,7 @@ public class ItemPunishmentTool {
             Attribute attribute = LHMiracleRoadTool.stringConversionAttribute(key);
             AttributeInstance attributeInstance = player.getAttribute(attribute);
             if (attributeInstance != null){
-                player.getAttribute(attribute).removeModifier(attributeModifier);
+                attributeInstance.removeModifier(attributeModifier);
                 playerOccupationAttribute.removePunishmentAttributeModifier(attributeModifier.getId().toString());
             }
 

@@ -248,7 +248,7 @@ public class LHMiracleRoadOccupationScreen extends Screen {
             int quantity = LHMiracleRoadTool.isAsInt(object.get("quantity"));
             ItemStack itemStack = new ItemStack(item, quantity);
             if (itemStack.isEmpty()) continue;
-            JsonObject tag = LHMiracleRoadTool.isAsJsonObject(object.get("tag"));
+            String tag = LHMiracleRoadTool.isAsString(object.get("tag"));
             LHMiracleRoadTool.setTag(itemStack,tag);
             graphics.renderItem(itemStack, x + spacing, y + lineSpacing);
             graphics.renderItemDecorations(font, itemStack, x + spacing, y + lineSpacing, String.valueOf(quantity));

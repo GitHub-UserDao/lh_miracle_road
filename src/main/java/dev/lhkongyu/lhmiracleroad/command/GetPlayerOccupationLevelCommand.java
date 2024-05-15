@@ -2,8 +2,10 @@ package dev.lhkongyu.lhmiracleroad.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
+import dev.lhkongyu.lhmiracleroad.tool.FileTool;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import dev.lhkongyu.lhmiracleroad.tool.PlayerAttributeTool;
 import net.minecraft.ChatFormatting;
@@ -116,6 +118,19 @@ public class GetPlayerOccupationLevelCommand {
                                                       return 0;
                                                   })
                                           )
+                                  )
+                          )
+                  )
+                  .then(Commands.literal("equipment")
+                          .requires(e -> e.hasPermission(2))
+                          .then(Commands.literal("set")
+                                  .then(Commands.argument("occupation_id", StringArgumentType.greedyString())
+                                      .executes(context -> {
+                                          ServerPlayer player = context.getSource().getPlayer();
+                                          String occupationId = StringArgumentType.getString(context, "occupation_id");
+                                          FileTool.creationOccupationInitItem(player,occupationId);
+                                          return 0;
+                                      })
                                   )
                           )
                   )

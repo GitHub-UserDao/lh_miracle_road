@@ -1,6 +1,7 @@
 package dev.lhkongyu.lhmiracleroad.items;
 
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
+import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
@@ -95,21 +96,21 @@ public class LHMiracleRoadLootTables {
                     .add(LootItem.lootTableItem(LHMiracleRoadItems.KING_SOUL.get()))
                     .build());
 
-            event.getTable().addPool(LootPool.lootPool().when(LootItemRandomChanceCondition.randomChance(0.06F))
+            event.getTable().addPool(LootPool.lootPool().when(LootItemRandomChanceCondition.randomChance(0.08F))
                     .add(LootItem.lootTableItem(LHMiracleRoadItems.DEATH_SOUL.get()))
                     .build());
 
-            event.getTable().addPool(LootPool.lootPool().when(LootItemRandomChanceCondition.randomChance(0.06F))
+            event.getTable().addPool(LootPool.lootPool().when(LootItemRandomChanceCondition.randomChance(LHMiracleRoadConfig.COMMON.FORGET_WATER_PROBABILITY.get().floatValue()))
                     .add(LootItem.lootTableItem(LHMiracleRoadItems.FORGET_WATER.get()))
                     .build());
         }
 
         if (event.getName().equals(BuiltInLootTables.END_CITY_TREASURE)) {
-            event.getTable().addPool(LootPool.lootPool().when(LootItemRandomChanceCondition.randomChance(0.06F))
+            event.getTable().addPool(LootPool.lootPool().when(LootItemRandomChanceCondition.randomChance(0.08F))
                     .add(LootItem.lootTableItem(LHMiracleRoadItems.DEATH_SOUL.get()))
                     .build());
 
-            event.getTable().addPool(LootPool.lootPool().when(LootItemRandomChanceCondition.randomChance(0.06F))
+            event.getTable().addPool(LootPool.lootPool().when(LootItemRandomChanceCondition.randomChance(LHMiracleRoadConfig.COMMON.FORGET_WATER_PROBABILITY.get().floatValue()))
                     .add(LootItem.lootTableItem(LHMiracleRoadItems.FORGET_WATER.get()))
                     .build());
         }
@@ -117,12 +118,12 @@ public class LHMiracleRoadLootTables {
     }
 
     private static void currencyLootTable(final LootTableLoadEvent event){
-        event.getTable().addPool(LootPool.lootPool().when(LootItemRandomChanceCondition.randomChance(0.4F))
+        event.getTable().addPool(LootPool.lootPool().when(LootItemRandomChanceCondition.randomChance(0.5F))
                 .add(LootItem.lootTableItem(LHMiracleRoadItems.BROKEN_SOUL.get()))
                 .build());
 
         event.getTable().addPool(LootPool.lootPool()
-                .when(LootItemRandomChanceCondition.randomChance(0.3F))
+                .when(LootItemRandomChanceCondition.randomChance(0.35F))
                 .add(LootItem.lootTableItem(LHMiracleRoadItems.GROUP_SOUL.get()))
                 .build());
     }

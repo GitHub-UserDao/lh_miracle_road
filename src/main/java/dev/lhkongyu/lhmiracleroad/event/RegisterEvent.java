@@ -5,6 +5,7 @@ import dev.lhkongyu.lhmiracleroad.capability.ItemStackPunishmentAttributeProvide
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.command.GetPlayerOccupationLevelCommand;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
+import dev.lhkongyu.lhmiracleroad.tool.SynchronizationData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -60,9 +61,9 @@ public class RegisterEvent {
     @SubscribeEvent
     public static void onDataPackSync(final OnDatapackSyncEvent event) {
         if (event.getPlayer() != null) {
-            LHMiracleRoadTool.synchronizationClientData(event.getPlayer());
+            SynchronizationData.synchronization(event.getPlayer());
         } else {
-            event.getPlayerList().getPlayers().forEach(LHMiracleRoadTool::synchronizationClientData);
+            event.getPlayerList().getPlayers().forEach(SynchronizationData::synchronization);
         }
     }
 

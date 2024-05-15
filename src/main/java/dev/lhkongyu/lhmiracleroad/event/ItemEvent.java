@@ -9,6 +9,7 @@ import dev.lhkongyu.lhmiracleroad.capability.ItemStackPunishmentAttribute;
 import dev.lhkongyu.lhmiracleroad.capability.ItemStackPunishmentAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
+import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.data.ClientData;
 import dev.lhkongyu.lhmiracleroad.data.reloader.EquipmentReloadListener;
 import dev.lhkongyu.lhmiracleroad.tool.AttributesNameTool;
@@ -115,7 +116,7 @@ public class ItemEvent {
     }
 
     /**
-     * 物品属性设置事件
+     * 物品属性注册事件
      * @param event
      */
     @SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -124,22 +125,11 @@ public class ItemEvent {
         Item item = stack.getItem();
         if (item instanceof ArmorItem armorItem) {
             if (armorItem.getType().getSlot() != event.getSlotType()) return;
-            ItemPunishmentTool.itemStackAddPunishmentAttribute(stack,event);
-        }else {
+            ItemPunishmentTool.itemStackAddPunishmentAttribute(stack, event);
+        } else {
             if (event.getSlotType() != EquipmentSlot.MAINHAND) return;
             ItemPunishmentTool.itemStackAddPunishmentAttribute(stack, event);
         }
-
-//            if (item instanceof SwordItem || item instanceof AxeItem || item instanceof TridentItem
-//                || item instanceof BowItem || item instanceof ShieldItem || item instanceof PickaxeItem
-//                || item instanceof ShovelItem || item instanceof HoeItem) {
-//            if (event.getSlotType() != EquipmentSlot.MAINHAND) return;
-//            EquipmentPunishmentTool.itemStackAddPunishmentAttribute(stack, event);
-//        }
-//        else if (item instanceof ShieldItem){
-//            if (event.getSlotType() != EquipmentSlot.OFFHAND) return;
-//            EquipmentPunishmentTool.itemStackAddPunishmentAttribute(stack, event);
-//        }
     }
 
     /**
@@ -169,7 +159,7 @@ public class ItemEvent {
             if (itemFromPunishmentAttribute.isEmpty() && itemToPunishmentAttribute.isEmpty()) return;
 
             //清除物品所设置的惩罚
-            if (!itemFrom.isEmpty() && itemFromPunishmentAttribute.isPresent()){
+            if (itemFromPunishmentAttribute.isPresent()){
                 /*
                     清除 前物品记录的惩罚能力和解除对玩家的惩罚
                     有时会出现需要修改物品的能力的需求，这样也会触发切换物品事件，导致玩家对象里的惩罚跟前一个物品记录的不一样 从而出现bug,所以将前后两个物品都进行记录上的清除更为稳妥
@@ -179,6 +169,7 @@ public class ItemEvent {
                     ItemPunishmentTool.cleanItemFromPunishmentAttributeModifier(player, playerOccupationAttribute, itemToPunishmentAttribute.get());
                 }
             }
+
             //设置切换后的惩罚
             if (!itemTo.isEmpty() && itemToPunishmentAttribute.isPresent()) {
                 ItemPunishmentTool.setItemToPunishmentAttributeModifier(player,playerOccupationAttribute,itemToPunishmentAttribute.get());

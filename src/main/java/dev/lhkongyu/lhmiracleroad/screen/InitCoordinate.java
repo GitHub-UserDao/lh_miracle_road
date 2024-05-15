@@ -344,7 +344,7 @@ public class InitCoordinate {
         describeTexts = setDescribeTexts(backgroundWidth,font);
 
         //填充初始物品信息
-        initItem = LHMiracleRoadTool.setInitItem(occupation);
+        initItem = LHMiracleRoadTool.setInitItemClient(occupation);
     }
 
     public void setOccupation(int widthCore, int heightCore,int backgroundWidth,int backgroundHeight, Font font,String occupationId){

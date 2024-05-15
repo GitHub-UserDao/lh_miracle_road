@@ -11,8 +11,11 @@ import dev.lhkongyu.lhmiracleroad.data.reloader.*;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import dev.lhkongyu.lhmiracleroad.tool.PlayerAttributeTool;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Map;
 import java.util.function.Supplier;
@@ -39,13 +42,16 @@ public record ClientDataMessage(JsonObject data) {
                 for (Map.Entry<String, JsonElement> jsonElement : attributePointsRewards.entrySet()) {
                     ClientData.ATTRIBUTE_POINTS_REWARDS.put(jsonElement.getKey(), LHMiracleRoadTool.isAsJsonObject(jsonElement.getValue()));
                 }
-            }
 
-            JsonObject pointsRewards = LHMiracleRoadTool.isAsJsonObject(data.get("pointsRewards"));
-            if (pointsRewards != null) {
+                //从 ATTRIBUTE_POINTS_REWARDS 里获取 POINTS_REWARDS
                 ClientData.POINTS_REWARDS.clear();
-                for (Map.Entry<String, JsonElement> jsonElement : pointsRewards.entrySet()) {
-                    ClientData.POINTS_REWARDS.put(jsonElement.getKey(), LHMiracleRoadTool.isAsJsonObject(jsonElement.getValue()));
+                for (String key : ClientData.ATTRIBUTE_POINTS_REWARDS.keySet()){
+                    JsonObject data = ClientData.ATTRIBUTE_POINTS_REWARDS.get(key);
+                    for (JsonElement pointsRewardElement : LHMiracleRoadTool.isAsJsonArray(data.get("points_rewards"))) {
+                        JsonObject pointsRewardObj = pointsRewardElement.getAsJsonObject();
+                        String attributeName = LHMiracleRoadTool.isAsString(pointsRewardObj.get("attribute"));
+                        ClientData.POINTS_REWARDS.put(attributeName,pointsRewardObj);
+                    }
                 }
             }
 
@@ -61,7 +67,8 @@ public record ClientDataMessage(JsonObject data) {
             if (equipment != null) {
                 ClientData.EQUIPMENT.clear();
                 for (Map.Entry<String, JsonElement> jsonElement : equipment.entrySet()) {
-                    ClientData.EQUIPMENT.put(jsonElement.getKey(), LHMiracleRoadTool.isAsJsonObject(jsonElement.getValue()));
+                    JsonObject equipmentObj = LHMiracleRoadTool.equipmentDataRestore(LHMiracleRoadTool.isAsJsonObject(jsonElement.getValue()));
+                    ClientData.EQUIPMENT.put(jsonElement.getKey(), equipmentObj);
                 }
             }
 

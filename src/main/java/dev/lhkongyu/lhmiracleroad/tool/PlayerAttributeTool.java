@@ -142,7 +142,7 @@ public class PlayerAttributeTool {
             int quantity = LHMiracleRoadTool.isAsInt(object.get("quantity"));
             Boolean isSplit = LHMiracleRoadTool.isAsBoolean(object.get("is_split"));
             ItemStack itemStack = null;
-            JsonObject tag = LHMiracleRoadTool.isAsJsonObject(object.get("tag"));
+            String tag = LHMiracleRoadTool.isAsString(object.get("tag"));
             if (isSplit){
                 itemStack = new ItemStack(item, 1);
                 LHMiracleRoadTool.setTag(itemStack,tag);
@@ -188,14 +188,14 @@ public class PlayerAttributeTool {
         //给对应属性类型进行 属性增长
         setAttribute(player, jsonObject, level, playerOccupationAttribute);
 
-        //判断优化扣除经验
-        if (exp >= demandExperienceValue){
+        //判断优化扣除点数
+        if (points > 0){
+            points -= 1;
+            playerOccupationAttribute.setPoints(points);
+        }else {
             //修改当前经验和提升当前等级
             exp -= demandExperienceValue;
             playerOccupationAttribute.setOccupationExperience(exp);
-        }else {
-            points -= 1;
-            playerOccupationAttribute.setPoints(points);
         }
         playerOccupationAttribute.upgrade();
         //更新玩家奖惩状态

@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.lhkongyu.lhmiracleroad.attributes.LHMiracleRoadAttributes;
 import dev.lhkongyu.lhmiracleroad.attributes.ShowAttributesTypes;
 import dev.lhkongyu.lhmiracleroad.capability.ItemStackPunishmentAttribute;
@@ -18,6 +19,7 @@ import dev.lhkongyu.lhmiracleroad.packet.PlayerAttributeChannel;
 import dev.lhkongyu.lhmiracleroad.tool.mathcalculator.MathCalculatorUtil;
 import net.minecraft.client.gui.Font;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
@@ -255,12 +257,30 @@ public class LHMiracleRoadTool {
     }
 
     /**
-     * 通过职业信息获取，该职业的初始物品
+     * 通过职业信息获取该职业初始物品信息
      *
      * @param occupation
      * @return
      */
     public static List<JsonObject> setInitItem(JsonObject occupation) {
+        List<JsonObject> objects = new ArrayList<>();
+        JsonArray initItem = InitItemResourceReloadListener.INIT_ITEM.get(isAsString(occupation.get("id")));
+        if (initItem == null || initItem.isEmpty()) return objects;
+        for (JsonElement jsonElement : initItem) {
+            JsonObject object = LHMiracleRoadTool.isAsJsonObject(jsonElement);
+            if (object == null) continue;
+            objects.add(object);
+        }
+        return objects;
+    }
+
+    /**
+     * 通过职业信息获取该职业客户端的初始物品信息
+     *
+     * @param occupation
+     * @return
+     */
+    public static List<JsonObject> setInitItemClient(JsonObject occupation) {
         List<JsonObject> objects = new ArrayList<>();
         JsonArray initItem = ClientData.INIT_ITEM.get(isAsString(occupation.get("id")));
         if (initItem == null || initItem.isEmpty()) return objects;
@@ -276,18 +296,17 @@ public class LHMiracleRoadTool {
      * 设置始物品标签
      *
      * @param itemStack
-     * @param tag
+     * @param tagObj
      */
-    public static void setTag(ItemStack itemStack, JsonObject tag) {
-        if (tag != null) {
-            String key = LHMiracleRoadTool.isAsString(tag.get("key"));
-            JsonObject value = LHMiracleRoadTool.isAsJsonObject(tag.get("value"));
-            if (key == null || value == null) return;
-            CompoundTag modTag = new CompoundTag();
-            CompoundTag valueTag = new CompoundTag();
-            valueTag.putString("id", LHMiracleRoadTool.isAsString(value.get("id")));
-            valueTag.putInt("level", LHMiracleRoadTool.isAsInt(value.get("level")));
-            modTag.put(key, valueTag);
+    public static void setTag(ItemStack itemStack, String tagObj) {
+        if (tagObj != null) {
+            CompoundTag modTag;
+            try {
+                modTag = NbtUtils.snbtToStructure(tagObj);
+                modTag.remove("palette");
+            } catch (CommandSyntaxException e) {
+                throw new RuntimeException(e);
+            }
             itemStack.setTag(modTag);
         }
     }
@@ -417,67 +436,57 @@ public class LHMiracleRoadTool {
     }
 
     /**
-     * 将服务端数据包文件发送至客户端
+     * 压缩装备数据包
      */
-    public static void synchronizationClientData(ServerPlayer player) {
-        //将服务端数据包同步至客户端
-        //同步AttributePointsRewardsReloadListener类的数据包
-        JsonObject attributePointsRewardsReloadListenerData = new JsonObject();
-        JsonObject attributePointsRewards = new JsonObject();
-        AttributePointsRewardsReloadListener.ATTRIBUTE_POINTS_REWARDS.forEach(attributePointsRewards::add);
-        attributePointsRewardsReloadListenerData.add("attributePointsRewards",attributePointsRewards);
-
-        JsonObject pointsRewards = new JsonObject();
-        AttributePointsRewardsReloadListener.POINTS_REWARDS.forEach(pointsRewards::add);
-        attributePointsRewardsReloadListenerData.add("pointsRewards",pointsRewards);
-
-        ClientDataMessage attributePointsRewardsReloadListenerMessage = new ClientDataMessage(attributePointsRewardsReloadListenerData);
-        PlayerAttributeChannel.sendToClient(attributePointsRewardsReloadListenerMessage, player);
-
-        //同步AttributeReloadListener类的数据包
-        JsonObject attributeTypesData = new JsonObject();
-        JsonObject attributeTypes = new JsonObject();
-        AttributeReloadListener.ATTRIBUTE_TYPES.forEach(attributeTypes::add);
-        attributeTypesData.add("attributeTypes",attributeTypes);
-
-        ClientDataMessage attributeTypesMessage = new ClientDataMessage(attributeTypesData);
-        PlayerAttributeChannel.sendToClient(attributeTypesMessage, player);
-
-        //同步EquipmentReloadListener类的数据包
-        JsonObject equipmentData = new JsonObject();
+    public static JsonObject equipmentDataCompress() {
         JsonObject equipment = new JsonObject();
-        EquipmentReloadListener.EQUIPMENT.forEach(equipment::add);
-        equipmentData.add("equipment",equipment);
+        for (String key : EquipmentReloadListener.EQUIPMENT.keySet()){
+            JsonObject equipmentObj = EquipmentReloadListener.EQUIPMENT.get(key);
+            JsonObject equipmentObjNew = new JsonObject();
+            equipmentObjNew.addProperty("h",isAsInt(equipmentObj.get("heavy")));
 
-        ClientDataMessage equipmentMessage = new ClientDataMessage(equipmentData);
-        PlayerAttributeChannel.sendToClient(equipmentMessage, player);
+            JsonArray attributeNeed = isAsJsonArray(equipmentObj.get("attribute_need"));
+            if (attributeNeed != null && !attributeNeed.isEmpty()) {
+                JsonArray attributeNeedNew = new JsonArray();
+                for (JsonElement jsonElement : attributeNeed) {
+                    JsonObject object = isAsJsonObject(jsonElement);
+                    JsonObject attributeNeedNewObj = new JsonObject();
+                    attributeNeedNewObj.addProperty("i", isAsString(object.get("attribute_id")));
+                    attributeNeedNewObj.addProperty("n", isAsInt(object.get("need_points")));
+                    String pid = isAsString(object.get("punishment_id"));
+                    if (pid != null) attributeNeedNewObj.addProperty("p", pid);
+                    attributeNeedNew.add(attributeNeedNewObj);
+                }
+                equipmentObjNew.add("a",attributeNeedNew);
+            }
+            equipment.add(key,equipmentObjNew);
+        }
+        return equipment;
+    }
 
-        //同步OccupationReloadListener类的数据包
-        JsonObject occupationData = new JsonObject();
-        JsonArray occupation = new JsonArray();
-        OccupationReloadListener.OCCUPATION.forEach(occupation::add);
-        occupationData.add("occupation",occupation);
+    /**
+     * 还原装备数据包
+     */
+    public static JsonObject equipmentDataRestore(JsonObject equipmentObj) {
+        JsonObject equipmentObjNew = new JsonObject();
+        equipmentObjNew.addProperty("heavy",isAsInt(equipmentObj.get("h")));
 
-        ClientDataMessage occupationMessage = new ClientDataMessage(occupationData);
-        PlayerAttributeChannel.sendToClient(occupationMessage, player);
+        JsonArray attributeNeed = isAsJsonArray(equipmentObj.get("a"));
+        if (attributeNeed != null && !attributeNeed.isEmpty()) {
+            JsonArray attributeNeedNew = new JsonArray();
+            for (JsonElement jsonElement : attributeNeed) {
+                JsonObject object = isAsJsonObject(jsonElement);
+                JsonObject attributeNeedNewObj = new JsonObject();
+                attributeNeedNewObj.addProperty("attribute_id", isAsString(object.get("i")));
+                attributeNeedNewObj.addProperty("need_points", isAsInt(object.get("n")));
+                String pid = isAsString(object.get("p"));
+                if (pid != null) attributeNeedNewObj.addProperty("punishment_id", pid);
+                attributeNeedNew.add(attributeNeedNewObj);
+            }
+            equipmentObjNew.add("attribute_need",attributeNeedNew);
+        }
 
-        //同步ShowGuiAttributeReloadListener类的数据包
-        JsonObject showGuiAttributeData = new JsonObject();
-        JsonArray showGuiAttribute = new JsonArray();
-        ShowGuiAttributeReloadListener.SHOW_GUI_ATTRIBUTE.forEach(showGuiAttribute::add);
-        showGuiAttributeData.add("showGuiAttribute",showGuiAttribute);
-
-        ClientDataMessage showGuiAttributeMessage = new ClientDataMessage(showGuiAttributeData);
-        PlayerAttributeChannel.sendToClient(showGuiAttributeMessage, player);
-
-        //同步InitItemResourceReloadListener类的数据包
-        JsonObject initItemData = new JsonObject();
-        JsonObject initItem = new JsonObject();
-        InitItemResourceReloadListener.INIT_ITEM.forEach(initItem::add);
-        initItemData.add("initItem",initItem);
-
-        ClientDataMessage initItemMessage = new ClientDataMessage(initItemData);
-        PlayerAttributeChannel.sendToClient(initItemMessage, player);
+        return equipmentObjNew;
     }
 
     /**
@@ -509,26 +518,17 @@ public class LHMiracleRoadTool {
             AttributeInstance attributeInstance = player.getAttribute(attribute);
             if (attributeInstance == null) continue;
 
-//            String attributeText = isAsString(attributeObject.get("attribute_text"));
-//            String showValueType = isAsString(attributeObject.get("show_value_type"));
-//            showAttributeObject.addProperty("tx", attributeText);
-//            showAttributeObject.addProperty("ty", ShowAttributesTypes.fromString(showValueType).getValue());
-
             showAttributeObject.addProperty("v", attributeInstance.getValue());
             showAttributeObject.addProperty("b", attributeInstance.getBaseValue());
             JsonArray jsonArray = new JsonArray();
             attributeInstance.getModifiers().forEach(modifier -> {
                 JsonObject modifierObject = new JsonObject();
-//                modifierObject.addProperty("u", modifier.getId().toString());
-//                modifierObject.addProperty("n", modifier.getName());
                 modifierObject.addProperty("a", modifier.getAmount());
-//                modifierObject.addProperty("o", modifier.getOperation().toValue());
                 jsonArray.add(modifierObject);
             });
             showAttributeObject.add("m", jsonArray);
             showAttribute.put(attributeName, showAttributeObject);
         }
-
         return showAttribute;
     }
 
@@ -670,17 +670,6 @@ public class LHMiracleRoadTool {
         }
         return showValue;
     }
-
-//    public static int getAttributeLevel(PlayerOccupationAttribute playerOccupationAttribute){
-//        Map<String, Integer> occupationAttributeLevel = playerOccupationAttribute.getOccupationAttributeLevel();
-//        if (occupationAttributeLevel == null || occupationAttributeLevel.isEmpty()) return 1;
-//        int attributeLevel = 0;
-//        for (String key : occupationAttributeLevel.keySet()) {
-//            attributeLevel += occupationAttributeLevel.get(key);
-//        }
-//        attributeLevel = (attributeLevel - occupationAttributeLevel.size() * LHMiracleRoadConfig.COMMON.LEVEL_BASE.get()) + 1;
-//        return attributeLevel;
-//    }
 
     public static boolean isShowPointsButton(int currentLevel,int maxLevel,int attributeMaxLevel){
         if (attributeMaxLevel < 1) return currentLevel < maxLevel;

@@ -358,7 +358,7 @@ public class LHMiracleRoadMainScreen extends Screen {
         if (mouseX >= initX && mouseX <= initX + textWidth && mouseY >= initY && mouseY <= initY + lineHeight) {
             List<Component> components = new ArrayList<>();
             double proportion = ((double) heavyValue / burdenValue) * 100;
-            if (proportion >= 100){
+            if (proportion > 100){
                 components.add(Component.translatable("lhmiracleroad.gui.attribute.text.details.heavy.overweight"));
             }else if (proportion >= 75){
                 components.add(Component.translatable("lhmiracleroad.gui.attribute.text.details.heavy.biased_weight"));
@@ -387,7 +387,7 @@ public class LHMiracleRoadMainScreen extends Screen {
             if (LHMiracleRoadTool.isShowPointsButton(currentLevel,maxLevel,attributeMaxLevel)){
                 ImageButton showPointsButton =
                         new ImageButton(initAttributeLevelX, initY, 12, 12, Component.empty(),
-                                true, false, ResourceLocationTool.Gui.add, ResourceLocationTool.Gui.addTouch, 0, 0, 12, 12,
+                                true, false, ResourceLocationTool.Gui.ADD, ResourceLocationTool.Gui.ADD_TOUCH, 0, 0, 12, 12,
                                 12, 12);
                 showPointsButton.setPressFunc(b -> pointsAttributeName(key));
                 addRenderableWidget(showPointsButton);

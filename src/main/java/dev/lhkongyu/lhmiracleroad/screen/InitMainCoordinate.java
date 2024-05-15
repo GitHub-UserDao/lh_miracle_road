@@ -137,7 +137,6 @@ public class InitMainCoordinate {
 
     public int setShowDetailedAttributePage(){
         showDetailedAttributePages = new ArrayList<>();
-
         List<JsonObject> showGuiAttributeList = ClientData.SHOW_GUI_ATTRIBUTE;
 
         //设置每一面能放多少条数据
