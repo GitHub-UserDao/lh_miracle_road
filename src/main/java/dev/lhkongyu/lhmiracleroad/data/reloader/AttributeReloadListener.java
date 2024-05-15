@@ -17,7 +17,7 @@ public class AttributeReloadListener extends SimpleJsonResourceReloadListener {
 
 //    public static final List<JsonObject> ATTRIBUTE_TYPES = new ArrayList<>();
 
-    public static final Map<String,JsonObject> ATTRIBUTE_TYPES =  Maps.newLinkedHashMap();
+    public static final Map<String,JsonArray> ATTRIBUTE_TYPES =  Maps.newLinkedHashMap();
 
     public AttributeReloadListener() {
         super(GSON, "lh_miracle_road_occupation/player/attribute/attribute_types");
@@ -32,7 +32,7 @@ public class AttributeReloadListener extends SimpleJsonResourceReloadListener {
             for (JsonElement element:jsonArray){
                 JsonObject jsonObject = element.getAsJsonObject();
                 if(LHMiracleRoadTool.isJsonArrayModIdsExist(LHMiracleRoadTool.isAsJsonArray(jsonObject.get("conditions")))) continue;
-                ATTRIBUTE_TYPES.put(jsonObject.get("id").getAsString(),jsonObject);
+                ATTRIBUTE_TYPES.put(jsonObject.get("id").getAsString(),LHMiracleRoadTool.isAsJsonArray(jsonObject.get("describes")));
             }
         }
     }

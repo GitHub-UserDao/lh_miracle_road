@@ -4,18 +4,11 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
-import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.data.ClientData;
-import dev.lhkongyu.lhmiracleroad.data.reloader.*;
+import dev.lhkongyu.lhmiracleroad.tool.data.DataCompressTool;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
-import dev.lhkongyu.lhmiracleroad.tool.PlayerAttributeTool;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Map;
 import java.util.function.Supplier;
@@ -40,7 +33,8 @@ public record ClientDataMessage(JsonObject data) {
             if (attributePointsRewards != null) {
                 ClientData.ATTRIBUTE_POINTS_REWARDS.clear();
                 for (Map.Entry<String, JsonElement> jsonElement : attributePointsRewards.entrySet()) {
-                    ClientData.ATTRIBUTE_POINTS_REWARDS.put(jsonElement.getKey(), LHMiracleRoadTool.isAsJsonObject(jsonElement.getValue()));
+                    JsonObject attributePointsRewardsObj = DataCompressTool.attributePointsRewardsDataRestore(LHMiracleRoadTool.isAsJsonObject(jsonElement.getValue()));
+                    ClientData.ATTRIBUTE_POINTS_REWARDS.put(jsonElement.getKey(), attributePointsRewardsObj);
                 }
 
                 //从 ATTRIBUTE_POINTS_REWARDS 里获取 POINTS_REWARDS
@@ -59,16 +53,8 @@ public record ClientDataMessage(JsonObject data) {
             if (attributeTypes != null) {
                 ClientData.ATTRIBUTE_TYPES.clear();
                 for (Map.Entry<String, JsonElement> jsonElement : attributeTypes.entrySet()) {
-                    ClientData.ATTRIBUTE_TYPES.put(jsonElement.getKey(), LHMiracleRoadTool.isAsJsonObject(jsonElement.getValue()));
-                }
-            }
-
-            JsonObject equipment = LHMiracleRoadTool.isAsJsonObject(data.get("equipment"));
-            if (equipment != null) {
-                ClientData.EQUIPMENT.clear();
-                for (Map.Entry<String, JsonElement> jsonElement : equipment.entrySet()) {
-                    JsonObject equipmentObj = LHMiracleRoadTool.equipmentDataRestore(LHMiracleRoadTool.isAsJsonObject(jsonElement.getValue()));
-                    ClientData.EQUIPMENT.put(jsonElement.getKey(), equipmentObj);
+                    JsonArray attributeTypesArr = DataCompressTool.attributeTypesDataRestore(LHMiracleRoadTool.isAsJsonArray(jsonElement.getValue()));
+                    ClientData.ATTRIBUTE_TYPES.put(jsonElement.getKey(), attributeTypesArr);
                 }
             }
 
@@ -76,7 +62,7 @@ public record ClientDataMessage(JsonObject data) {
             if (occupation != null && !occupation.isEmpty()) {
                 ClientData.OCCUPATION.clear();
                 for (JsonElement jsonElement : occupation) {
-                    JsonObject object = jsonElement.getAsJsonObject();
+                    JsonObject object = DataCompressTool.occupationDataRestore(jsonElement.getAsJsonObject());
                     ClientData.OCCUPATION.add(object);
                 }
             }
@@ -85,7 +71,7 @@ public record ClientDataMessage(JsonObject data) {
             if (showGuiAttribute != null && !showGuiAttribute.isEmpty()) {
                 ClientData.SHOW_GUI_ATTRIBUTE.clear();
                 for (JsonElement jsonElement : showGuiAttribute) {
-                    JsonObject object = jsonElement.getAsJsonObject();
+                    JsonObject object = DataCompressTool.showGuiAttributeDataRestore(jsonElement.getAsJsonObject());
                     ClientData.SHOW_GUI_ATTRIBUTE.add(object);
                 }
             }
@@ -94,7 +80,8 @@ public record ClientDataMessage(JsonObject data) {
             if (initItem != null) {
                 ClientData.INIT_ITEM.clear();
                 for (Map.Entry<String, JsonElement> jsonElement : initItem.entrySet()) {
-                    ClientData.INIT_ITEM.put(jsonElement.getKey(), LHMiracleRoadTool.isAsJsonArray(jsonElement.getValue()));
+                    JsonArray initItemObj = DataCompressTool.initItemDataRestore(LHMiracleRoadTool.isAsJsonArray(jsonElement.getValue()));
+                    ClientData.INIT_ITEM.put(jsonElement.getKey(), initItemObj);
                 }
             }
 
@@ -103,6 +90,18 @@ public record ClientDataMessage(JsonObject data) {
                 ClientData.SHOW_ATTRIBUTE.clear();
                 for (Map.Entry<String, JsonElement> jsonElement : showAttribute.entrySet()) {
                     ClientData.SHOW_ATTRIBUTE.put(jsonElement.getKey(), LHMiracleRoadTool.isAsJsonObject(jsonElement.getValue()));
+                }
+            }
+
+
+            JsonObject equipment = LHMiracleRoadTool.isAsJsonObject(data.get("modEquipment"));
+            if (equipment != null) {
+                for (Map.Entry<String, JsonElement> jsonElement : equipment.entrySet()) {
+                    if (ClientData.EQUIPMENT.get(jsonElement.getKey()) != null){
+                        ClientData.EQUIPMENT.remove(jsonElement.getKey());
+                    }
+                    Map<String,JsonObject> equipmentMap = DataCompressTool.equipmentDataRestore(LHMiracleRoadTool.isAsJsonObject(jsonElement.getValue()));
+                    ClientData.EQUIPMENT.put(jsonElement.getKey(), equipmentMap);
                 }
             }
         });

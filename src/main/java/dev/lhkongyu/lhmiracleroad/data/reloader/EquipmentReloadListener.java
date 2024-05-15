@@ -16,7 +16,7 @@ public class EquipmentReloadListener extends SimpleJsonResourceReloadListener {
 
     private static final Gson GSON = (new GsonBuilder()).create();
 
-    public static final Map<String,JsonObject> EQUIPMENT = Maps.newHashMap();
+    public static final Map<String,Map<String,JsonObject>> EQUIPMENT = Maps.newHashMap();
 
     public EquipmentReloadListener() {
         super(GSON, "lh_miracle_road_equipment");
@@ -33,7 +33,21 @@ public class EquipmentReloadListener extends SimpleJsonResourceReloadListener {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
             Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(key));
             if (item == null) continue;
-            EQUIPMENT.put(item.getDescriptionId(),jsonObject);
+            String id = item.getDescriptionId();
+
+            int lastIndex = id.lastIndexOf(".");
+            if (lastIndex == -1) continue;
+
+            String firstPart = id.substring(0, lastIndex);
+            String secondPart = id.substring(lastIndex + 1);
+
+            if (EQUIPMENT.get(firstPart) != null){
+                EQUIPMENT.get(firstPart).put(secondPart,jsonObject);
+            }else {
+                Map<String,JsonObject> modEquipment = Maps.newHashMap();
+                modEquipment.put(secondPart,jsonObject);
+                EQUIPMENT.put(firstPart,modEquipment);
+            }
         }
     }
 }

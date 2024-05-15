@@ -92,6 +92,8 @@ public class PlayerForgeEvent {
             loggedInSyncAttribute(playerOccupationAttribute, (ServerPlayer) player);
             LHMiracleRoadTool.synchronizationClient(playerOccupationAttribute, (ServerPlayer) player);
             LHMiracleRoadTool.synchronizationShowAttribute((ServerPlayer) player);
+            //更新玩家奖惩状态
+            LHMiracleRoadTool.playerPunishmentStateUpdate((ServerPlayer) player, playerOccupationAttribute);
         });
     }
 

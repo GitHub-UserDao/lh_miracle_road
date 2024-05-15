@@ -85,8 +85,8 @@ public class ItemEvent {
             ItemStack stack = event.getObject();
             ItemStackPunishmentAttribute itemStackPunishmentAttribute = new ItemStackPunishmentAttribute();
             Item item = stack.getItem();
-            JsonObject equipment = EquipmentReloadListener.EQUIPMENT.get(item.getDescriptionId());
-            equipment = equipment != null ? equipment : ClientData.EQUIPMENT.get(item.getDescriptionId());
+            JsonObject equipment = LHMiracleRoadTool.getEquipment(EquipmentReloadListener.EQUIPMENT,item.getDescriptionId());
+            equipment = equipment != null ? equipment : LHMiracleRoadTool.getEquipment(ClientData.EQUIPMENT,item.getDescriptionId());
             if (equipment != null){
                 int heavy = LHMiracleRoadTool.isAsInt(equipment.get(AttributesNameTool.HEAVY));
                 JsonArray attributeNeed = LHMiracleRoadTool.isAsJsonArray(equipment.get("attribute_need"));

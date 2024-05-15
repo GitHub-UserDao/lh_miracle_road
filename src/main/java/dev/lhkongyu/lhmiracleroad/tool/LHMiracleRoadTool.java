@@ -231,8 +231,8 @@ public class LHMiracleRoadTool {
             JsonObject object = LHMiracleRoadTool.isAsJsonObject(jsonElement);
             if (object == null) continue;
             String id = object.get("id").getAsString();
-            JsonObject attributeObject = AttributeReloadListener.ATTRIBUTE_TYPES.get(id);
-            if (attributeObject == null) continue;
+            JsonArray attributeObject = AttributeReloadListener.ATTRIBUTE_TYPES.get(id);
+            if (attributeObject == null || attributeObject.isEmpty()) continue;
             int level = object.get("level").getAsInt();
             map.put(id, level);
         }
@@ -240,6 +240,11 @@ public class LHMiracleRoadTool {
         return map;
     }
 
+    /**
+     * 通过职业信息获取，职业每个属性的初始等级(客户端)
+     * @param occupation
+     * @return
+     */
     public static Map<String, Integer> setInitAttributeLevelClient(JsonObject occupation) {
         Map<String, Integer> map = Maps.newHashMap();
         JsonArray initAttribute = LHMiracleRoadTool.isAsJsonArray(occupation.get("init_attribute"));
@@ -247,8 +252,8 @@ public class LHMiracleRoadTool {
             JsonObject object = LHMiracleRoadTool.isAsJsonObject(jsonElement);
             if (object == null) continue;
             String id = object.get("id").getAsString();
-            JsonObject attributeObject = ClientData.ATTRIBUTE_TYPES.get(id);
-            if (attributeObject == null) continue;
+            JsonArray attributeObject = ClientData.ATTRIBUTE_TYPES.get(id);
+            if (attributeObject == null || attributeObject.isEmpty()) continue;
             int level = object.get("level").getAsInt();
             map.put(id, level);
         }
@@ -436,60 +441,6 @@ public class LHMiracleRoadTool {
     }
 
     /**
-     * 压缩装备数据包
-     */
-    public static JsonObject equipmentDataCompress() {
-        JsonObject equipment = new JsonObject();
-        for (String key : EquipmentReloadListener.EQUIPMENT.keySet()){
-            JsonObject equipmentObj = EquipmentReloadListener.EQUIPMENT.get(key);
-            JsonObject equipmentObjNew = new JsonObject();
-            equipmentObjNew.addProperty("h",isAsInt(equipmentObj.get("heavy")));
-
-            JsonArray attributeNeed = isAsJsonArray(equipmentObj.get("attribute_need"));
-            if (attributeNeed != null && !attributeNeed.isEmpty()) {
-                JsonArray attributeNeedNew = new JsonArray();
-                for (JsonElement jsonElement : attributeNeed) {
-                    JsonObject object = isAsJsonObject(jsonElement);
-                    JsonObject attributeNeedNewObj = new JsonObject();
-                    attributeNeedNewObj.addProperty("i", isAsString(object.get("attribute_id")));
-                    attributeNeedNewObj.addProperty("n", isAsInt(object.get("need_points")));
-                    String pid = isAsString(object.get("punishment_id"));
-                    if (pid != null) attributeNeedNewObj.addProperty("p", pid);
-                    attributeNeedNew.add(attributeNeedNewObj);
-                }
-                equipmentObjNew.add("a",attributeNeedNew);
-            }
-            equipment.add(key,equipmentObjNew);
-        }
-        return equipment;
-    }
-
-    /**
-     * 还原装备数据包
-     */
-    public static JsonObject equipmentDataRestore(JsonObject equipmentObj) {
-        JsonObject equipmentObjNew = new JsonObject();
-        equipmentObjNew.addProperty("heavy",isAsInt(equipmentObj.get("h")));
-
-        JsonArray attributeNeed = isAsJsonArray(equipmentObj.get("a"));
-        if (attributeNeed != null && !attributeNeed.isEmpty()) {
-            JsonArray attributeNeedNew = new JsonArray();
-            for (JsonElement jsonElement : attributeNeed) {
-                JsonObject object = isAsJsonObject(jsonElement);
-                JsonObject attributeNeedNewObj = new JsonObject();
-                attributeNeedNewObj.addProperty("attribute_id", isAsString(object.get("i")));
-                attributeNeedNewObj.addProperty("need_points", isAsInt(object.get("n")));
-                String pid = isAsString(object.get("p"));
-                if (pid != null) attributeNeedNewObj.addProperty("punishment_id", pid);
-                attributeNeedNew.add(attributeNeedNewObj);
-            }
-            equipmentObjNew.add("attribute_need",attributeNeedNew);
-        }
-
-        return equipmentObjNew;
-    }
-
-    /**
      * 解析并计算字符串公式
      *
      * @param formula
@@ -674,5 +625,14 @@ public class LHMiracleRoadTool {
     public static boolean isShowPointsButton(int currentLevel,int maxLevel,int attributeMaxLevel){
         if (attributeMaxLevel < 1) return currentLevel < maxLevel;
         else return currentLevel < attributeMaxLevel;
+    }
+
+    public static JsonObject getEquipment(Map<String,Map<String,JsonObject>> equipment,String id){
+        int lastIndex = id.lastIndexOf(".");
+        if (lastIndex == -1) return null;
+        String firstPart = id.substring(0, lastIndex);
+        String secondPart = id.substring(lastIndex + 1);
+        if (equipment.get(firstPart) == null) return null;
+        return equipment.get(firstPart).get(secondPart);
     }
 }

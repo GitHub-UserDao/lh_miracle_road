@@ -208,8 +208,7 @@ public class LHMiracleRoadMainScreen extends Screen {
         int initLevel = 0;
         int attributeSize = 0;
         for (String key : ClientData.ATTRIBUTE_TYPES.keySet()) {
-            JsonObject attributeObject = ClientData.ATTRIBUTE_TYPES.get(key);
-            String nameText = ResourceLocationTool.ATTRIBUTE_NAME_PREFIX + LHMiracleRoadTool.isAsString(attributeObject.get("id"));
+            String nameText = ResourceLocationTool.ATTRIBUTE_NAME_PREFIX + key;
             int level = initCoordinate.getInitAttributeLevel().get(key);
             graphics.drawString(font, Component.translatable(nameText), initNameTextX, initY, 0x6C5734, false);
             graphics.drawString(font, String.valueOf(level), initAttributeLevelX, initY, 0x6C5734, false);
@@ -217,7 +216,7 @@ public class LHMiracleRoadMainScreen extends Screen {
 
             // 检查鼠标是否悬停在指定位置上
             if (mouseX >= initDetailsX && mouseX <= initDetailsX + textWidth && mouseY >= initY && mouseY <= initY + lineHeight) {
-                detailsHoverTooltip = LHMiracleRoadTool.getDescribeText(LHMiracleRoadTool.isAsJsonArray(attributeObject.get("describes")),level,key);
+                detailsHoverTooltip = LHMiracleRoadTool.getDescribeText(LHMiracleRoadTool.isAsJsonArray(ClientData.ATTRIBUTE_TYPES.get(key)),level,key);
                 detailsHoverTooltipX = mouseX;
                 detailsHoverTooltipY = mouseY;
             }
@@ -281,9 +280,8 @@ public class LHMiracleRoadMainScreen extends Screen {
         int initAttributeLevelX = initMainCoordinate.getAttributePointsLevelX();
 
         for (String key : ClientData.ATTRIBUTE_TYPES.keySet()) {
-            JsonObject attributeObject = ClientData.ATTRIBUTE_TYPES.get(key);
             Integer level = playerOccupationAttribute.getOccupationAttributeLevel().get(key);
-            String nameText = ResourceLocationTool.ATTRIBUTE_NAME_PREFIX + LHMiracleRoadTool.isAsString(attributeObject.get("id"));
+            String nameText = ResourceLocationTool.ATTRIBUTE_NAME_PREFIX + key;
             Component componentNameText = Component.translatable(nameText);
 
             graphics.drawString(font, componentNameText, initNameTextX, initY, 0x6C5734, false);
@@ -292,7 +290,7 @@ public class LHMiracleRoadMainScreen extends Screen {
             int textWidth = font.width(componentNameText);
             // 检查鼠标是否悬停在指定位置上
             if (mouseX >= initNameTextX && mouseX <= initNameTextX + textWidth && mouseY >= initY && mouseY <= initY + lineHeight) {
-                detailsHoverTooltip = LHMiracleRoadTool.getDescribeText(LHMiracleRoadTool.isAsJsonArray(attributeObject.get("describes")),level,key);
+                detailsHoverTooltip = LHMiracleRoadTool.getDescribeText(LHMiracleRoadTool.isAsJsonArray(ClientData.ATTRIBUTE_TYPES.get(key)),level,key);
                 detailsHoverTooltipX = mouseX;
                 detailsHoverTooltipY = mouseY;
             }

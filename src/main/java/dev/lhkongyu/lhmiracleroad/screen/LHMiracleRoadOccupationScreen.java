@@ -198,8 +198,7 @@ public class LHMiracleRoadOccupationScreen extends Screen {
         int initLevel = 0;
         int attributeSize = 0;
         for (String key : ClientData.ATTRIBUTE_TYPES.keySet()) {
-            JsonObject attributeObject = ClientData.ATTRIBUTE_TYPES.get(key);
-            String nameText = ResourceLocationTool.ATTRIBUTE_NAME_PREFIX + LHMiracleRoadTool.isAsString(attributeObject.get("id"));
+            String nameText = ResourceLocationTool.ATTRIBUTE_NAME_PREFIX + key;
             int level = initCoordinate.getInitAttributeLevel().get(key);
             graphics.drawString(font, Component.translatable(nameText), initNameTextX, initY, 0x6C5734, false);
             graphics.drawString(font, String.valueOf(level), initAttributeLevelX, initY, 0x6C5734, false);
@@ -207,7 +206,7 @@ public class LHMiracleRoadOccupationScreen extends Screen {
 
             // 检查鼠标是否悬停在物品上
             if (mouseX >= initDetailsX && mouseX <= initDetailsX + textWidth && mouseY >= initY && mouseY <= initY + lineHeight) {
-                List<Component> components = LHMiracleRoadTool.getDescribeText(LHMiracleRoadTool.isAsJsonArray(attributeObject.get("describes")),level,key);
+                List<Component> components = LHMiracleRoadTool.getDescribeText(LHMiracleRoadTool.isAsJsonArray(ClientData.ATTRIBUTE_TYPES.get(key)),level,key);
                 detailsHoverTooltip =  components;
                 detailsHoverTooltipX = mouseX;
                 detailsHoverTooltipY = mouseY;

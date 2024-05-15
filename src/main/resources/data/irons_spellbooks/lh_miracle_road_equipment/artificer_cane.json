@@ -1,9 +1,9 @@
 {
-  "heavy": 13,
+  "heavy": 12,
   "attribute_need": [
     {
       "attribute_id": "brain",
-      "need_points": 40,
+      "need_points": 35,
       "punishment_id": "iron_magic"
     }
   ]

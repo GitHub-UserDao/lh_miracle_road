@@ -14,9 +14,9 @@ public class ClientData {
 
     public static final Map<String, JsonObject> POINTS_REWARDS = Maps.newHashMap();
 
-    public static final Map<String,JsonObject> ATTRIBUTE_TYPES =  Maps.newLinkedHashMap();
+    public static final Map<String,JsonArray> ATTRIBUTE_TYPES =  Maps.newLinkedHashMap();
 
-    public static final Map<String,JsonObject> EQUIPMENT = Maps.newHashMap();
+    public static final Map<String,Map<String,JsonObject>> EQUIPMENT = Maps.newHashMap();
 
     public static final List<JsonObject> OCCUPATION = new ArrayList<>();
 
