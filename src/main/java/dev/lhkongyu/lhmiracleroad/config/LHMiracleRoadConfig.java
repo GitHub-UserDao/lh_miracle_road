@@ -28,6 +28,8 @@ public class LHMiracleRoadConfig {
 
         public final ForgeConfigSpec.DoubleValue FORGET_WATER_PROBABILITY;
 
+        public final ForgeConfigSpec.BooleanValue IS_SKILL_POINTS_RESTRICT;
+
         public Common(ForgeConfigSpec.Builder builder) {
             builder.push("base");
             INIT_BURDEN = builder.comment("init burden").defineInRange("init_burden",60,10,1000);
@@ -41,7 +43,7 @@ public class LHMiracleRoadConfig {
             EMPIRICAL_BASE_MULTIPLIER = builder.comment("empirical base multiplier").defineInRange("empirical_base_multiplier",8.0,1.0,100.0);
             IGNORE_DEATH_PENALTY_PROBABILITY = builder.comment("ignore punishment probability").defineInRange("ignore_death_penalty_probability",30,1,100);
             FORGET_WATER_PROBABILITY = builder.comment("The probability of Forget Water appearing in a treasure chest").defineInRange("forget_water_probability",0.01,0.001,1);
-
+            IS_SKILL_POINTS_RESTRICT = builder.comment("Enable skill points restrict or not").define("is_skill_points_restrict",true);
             builder.pop();
         }
     }

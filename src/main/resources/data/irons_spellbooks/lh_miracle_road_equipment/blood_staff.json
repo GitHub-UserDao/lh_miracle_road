@@ -3,7 +3,7 @@
   "attribute_need": [
     {
       "attribute_id": "brain",
-      "need_points": 40,
+      "need_points": 52,
       "punishment_id": "iron_magic"
     }
   ]

@@ -10,6 +10,7 @@ import dev.lhkongyu.lhmiracleroad.capability.ItemStackPunishmentAttribute;
 import dev.lhkongyu.lhmiracleroad.capability.ItemStackPunishmentAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
+import dev.lhkongyu.lhmiracleroad.data.ClientData;
 import dev.lhkongyu.lhmiracleroad.data.reloader.PunishmentReloadListener;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -128,7 +129,7 @@ public class ItemPunishmentTool {
     }
 
     /**
-     * 给玩家设置奖惩信息
+     * 给玩家设置重量的奖惩信息
      * @param playerOccupationAttribute
      * @param player
      * @param heavy
@@ -163,6 +164,8 @@ public class ItemPunishmentTool {
      * @param itemFromPunishmentAttribute
      */
     public static void cleanItemFromPunishmentAttributeModifier(ServerPlayer player,PlayerOccupationAttribute playerOccupationAttribute,ItemStackPunishmentAttribute itemFromPunishmentAttribute){
+        //判断是否启用点数限制
+        if (!LHMiracleRoadConfig.COMMON.IS_SKILL_POINTS_RESTRICT.get()) return;
         Map<String, AttributeModifier> recordPunishmentAttributeModifier = itemFromPunishmentAttribute.getRecordPunishmentAttributeModifier();
         if (recordPunishmentAttributeModifier == null || recordPunishmentAttributeModifier.isEmpty()) return;
 
@@ -186,6 +189,8 @@ public class ItemPunishmentTool {
      * @param itemToPunishmentAttribute
      */
     public static void setItemToPunishmentAttributeModifier(ServerPlayer player,PlayerOccupationAttribute playerOccupationAttribute,ItemStackPunishmentAttribute itemToPunishmentAttribute){
+        //判断是否启用点数限制
+        if (!LHMiracleRoadConfig.COMMON.IS_SKILL_POINTS_RESTRICT.get()) return;
         Map<String, Integer> occupationAttributeLevel = playerOccupationAttribute.getOccupationAttributeLevel();
         JsonArray attributeNeed = itemToPunishmentAttribute.getAttributeNeed();
         if (attributeNeed == null || attributeNeed.isEmpty()) return;

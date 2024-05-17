@@ -47,6 +47,7 @@ public class ItemEvent {
      */
     @SubscribeEvent
     public static void onTooltip(ItemTooltipEvent event) {
+        if (!LHMiracleRoadConfig.COMMON.IS_SKILL_POINTS_RESTRICT.get()) return;
         Player player = event.getEntity();
         if(player == null) return;
         ItemStack stack = event.getItemStack();

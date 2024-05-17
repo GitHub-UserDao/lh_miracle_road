@@ -434,7 +434,8 @@ public class LHMiracleRoadTool {
         Map<String, JsonObject> showAttributeMap = setShowAttribute(player);
         JsonObject showAttribute = new JsonObject();
         showAttributeMap.forEach(showAttribute::add);
-        showAttributeData.add("showAttribute",showAttribute);
+        showAttributeData.addProperty("key","showAttribute");
+        showAttributeData.add("data",showAttribute);
 
         ClientDataMessage attributeTypesMessage = new ClientDataMessage(showAttributeData);
         PlayerAttributeChannel.sendToClient(attributeTypesMessage, player);

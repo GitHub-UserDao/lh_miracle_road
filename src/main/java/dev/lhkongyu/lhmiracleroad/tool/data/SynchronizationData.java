@@ -2,10 +2,9 @@ package dev.lhkongyu.lhmiracleroad.tool.data;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import dev.lhkongyu.lhmiracleroad.data.reloader.*;
+import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.packet.ClientDataMessage;
 import dev.lhkongyu.lhmiracleroad.packet.PlayerAttributeChannel;
-import dev.lhkongyu.lhmiracleroad.tool.data.DataCompressTool;
 import net.minecraft.server.level.ServerPlayer;
 
 public class SynchronizationData {
@@ -20,7 +19,8 @@ public class SynchronizationData {
             JsonObject equipmentData = new JsonObject();
             JsonObject data = new JsonObject();
             data.add(key,equipment.get(key));
-            equipmentData.add("modEquipment", data);
+            equipmentData.addProperty("key", "modEquipment");
+            equipmentData.add("data", data);
             ClientDataMessage equipmentMessage = new ClientDataMessage(equipmentData);
             PlayerAttributeChannel.sendToClient(equipmentMessage, player);
         }
@@ -29,7 +29,8 @@ public class SynchronizationData {
         //同步AttributePointsRewardsReloadListener类的数据包
         JsonObject attributePointsRewardsReloadListenerData = new JsonObject();
         JsonObject attributePointsRewards = DataCompressTool.attributePointsRewardsDataCompress();
-        attributePointsRewardsReloadListenerData.add("attributePointsRewards",attributePointsRewards);
+        attributePointsRewardsReloadListenerData.addProperty("key", "attributePointsRewards");
+        attributePointsRewardsReloadListenerData.add("data",attributePointsRewards);
 
         ClientDataMessage attributePointsRewardsReloadListenerMessage = new ClientDataMessage(attributePointsRewardsReloadListenerData);
         PlayerAttributeChannel.sendToClient(attributePointsRewardsReloadListenerMessage, player);
@@ -37,7 +38,8 @@ public class SynchronizationData {
         //同步AttributeReloadListener类的数据包
         JsonObject attributeTypesData = new JsonObject();
         JsonObject attributeTypes = DataCompressTool.attributeTypesDataCompress();
-        attributeTypesData.add("attributeTypes",attributeTypes);
+        attributeTypesData.addProperty("key", "attributeTypes");
+        attributeTypesData.add("data",attributeTypes);
 
         ClientDataMessage attributeTypesMessage = new ClientDataMessage(attributeTypesData);
         PlayerAttributeChannel.sendToClient(attributeTypesMessage, player);
@@ -45,7 +47,8 @@ public class SynchronizationData {
         //同步OccupationReloadListener类的数据包
         JsonObject occupationData = new JsonObject();
         JsonArray occupation = DataCompressTool.occupationDataCompress();
-        occupationData.add("occupation",occupation);
+        occupationData.addProperty("key", "occupation");
+        occupationData.add("data",occupation);
 
         ClientDataMessage occupationMessage = new ClientDataMessage(occupationData);
         PlayerAttributeChannel.sendToClient(occupationMessage, player);
@@ -53,7 +56,8 @@ public class SynchronizationData {
         //同步ShowGuiAttributeReloadListener类的数据包
         JsonObject showGuiAttributeData = new JsonObject();
         JsonArray showGuiAttribute = DataCompressTool.showGuiAttributeDataCompress();
-        showGuiAttributeData.add("showGuiAttribute",showGuiAttribute);
+        showGuiAttributeData.addProperty("key", "showGuiAttribute");
+        showGuiAttributeData.add("data",showGuiAttribute);
 
         ClientDataMessage showGuiAttributeMessage = new ClientDataMessage(showGuiAttributeData);
         PlayerAttributeChannel.sendToClient(showGuiAttributeMessage, player);
@@ -61,7 +65,8 @@ public class SynchronizationData {
         //同步InitItemResourceReloadListener类的数据包
         JsonObject initItemData = new JsonObject();
         JsonObject initItem = DataCompressTool.initItemDataCompress();
-        initItemData.add("initItem",initItem);
+        initItemData.addProperty("key", "initItem");
+        initItemData.add("data",initItem);
 
         ClientDataMessage initItemMessage = new ClientDataMessage(initItemData);
         PlayerAttributeChannel.sendToClient(initItemMessage, player);
