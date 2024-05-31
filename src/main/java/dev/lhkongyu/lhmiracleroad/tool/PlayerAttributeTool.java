@@ -99,12 +99,8 @@ public class PlayerAttributeTool {
             double levelPromoteValue = LHMiracleRoadTool.isAsDouble(object.get("level_promote_value"));
             String operationString = LHMiracleRoadTool.isAsString(object.get("operation"));
             double attributeValue;
-            if (object.get("min") == null) {
-                attributeValue = LHMiracleRoadTool.calculateTotalIncrease(attributeLevel, value, levelPromoteValue, levelPromote);
-            }else {
-                double min = LHMiracleRoadTool.isAsDouble(object.get("min"));
-                attributeValue = Math.max(LHMiracleRoadTool.calculateTotalIncrease(attributeLevel, value, levelPromoteValue, levelPromote), min);
-            }
+            double min = LHMiracleRoadTool.isAsDouble(object.get("min"));
+            attributeValue = LHMiracleRoadTool.calculateTotalIncrease(attributeLevel, value, levelPromoteValue, levelPromote, min);
             addExtraAttributes(player,attributeName,attributeValue,operationString,playerOccupationAttribute);
         }
     }

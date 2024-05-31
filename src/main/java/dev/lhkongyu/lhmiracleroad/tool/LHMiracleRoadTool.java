@@ -123,7 +123,8 @@ public class LHMiracleRoadTool {
                 double levelPromoteValue = isAsDouble(jsonObject.get("level_promote_value"));
                 AttributeModifier.Operation operation = stringConversionOperation(isAsString(jsonObject.get("operation")));
                 if (operation == null) return "";
-                double attributeValue = LHMiracleRoadTool.calculateTotalIncrease(level, value, levelPromoteValue, levelPromote);
+                double min = LHMiracleRoadTool.isAsDouble(jsonObject.get("min"));
+                double attributeValue = LHMiracleRoadTool.calculateTotalIncrease(level, value, levelPromoteValue, levelPromote,min);
                 showValue = switch (operation) {
                     case ADDITION -> "+ " + attributeValue;
                     case MULTIPLY_BASE, MULTIPLY_TOTAL -> "+ " + new BigDecimal(attributeValue * percentageBase).setScale(4, RoundingMode.HALF_UP).doubleValue() + "%";
@@ -189,7 +190,7 @@ public class LHMiracleRoadTool {
      * @param levelPromote
      * @return
      */
-    public static double calculateTotalIncrease(int level, double value, double levelPromoteValue, int levelPromote) {
+    public static double calculateTotalIncrease(int level, double value, double levelPromoteValue, int levelPromote,double min) {
         level = level - LHMiracleRoadConfig.COMMON.LEVEL_BASE.get();
         if (level == 0) return 0.0;
         double returnValue = 0.0;
@@ -197,19 +198,25 @@ public class LHMiracleRoadTool {
         if (levelPromote > 0) {
             // 根据当前等级计算提升次数 也就是组
             int twenties = level / levelPromote;
+
+            if (levelPromoteValue < 0) {
+                levelPromoteValue = levelPromoteValue > value ? value - min : levelPromoteValue;
+            }
             /*
                以levelPromote数量为一组 先计算出所有组的基础数据提升总和，也就是 基础数值 * 组 * 每组数量 = 基础提升值总和，
                然后加上 附加提升量总和，用等差数列求和公式 (n * (n - 1) / 2) * levelPromote * levelPromoteValue 来计算第1组到第n-1组的附加提升值总和
              */
-            double increaseBeforeTwenties = 0;
-            if (twenties > 0)
-                increaseBeforeTwenties = value * twenties * levelPromote + ((double) (twenties * (twenties - 1)) / 2) * levelPromote * levelPromoteValue;
-
+            double increase = 0;
+            if (twenties > 0) {
+                double levelIncrease = value * twenties * levelPromote;
+                increase = levelIncrease + ((double) (twenties * (twenties - 1)) / 2) * levelPromote * levelPromoteValue;
+            }
             // 用于计算 当前等级不满足一组的部分
             int remainingLevels = level % levelPromote;
-            double increaseWithinTwenties = (levelPromoteValue * twenties + value) * remainingLevels;
+            double especiallyDecreasing = levelPromoteValue * twenties + value;
+            double increaseTheRest = Math.max(especiallyDecreasing,min) * remainingLevels;
 
-            returnValue = increaseBeforeTwenties + increaseWithinTwenties;
+            returnValue = increase + increaseTheRest;
             dfReturnValue = new BigDecimal(returnValue);
             return dfReturnValue.setScale(4, RoundingMode.HALF_UP).doubleValue();
         }
