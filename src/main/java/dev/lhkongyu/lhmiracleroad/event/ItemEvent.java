@@ -112,7 +112,11 @@ public class ItemEvent {
                     ItemPunishmentTool.injectionItemStackPunishmentAttribute(modifierMultimap, itemStackPunishmentAttribute, Attributes.ATTACK_DAMAGE,2.5);
                 }
             }
-            event.addCapability(new ResourceLocation(LHMiracleRoad.MODID, "punishment_cap"), new ItemStackPunishmentAttributeProvider(itemStackPunishmentAttribute));
+
+            if (equipment != null || item instanceof SwordItem || item instanceof ArmorItem || item instanceof AxeItem ||
+                    item instanceof BowItem || item instanceof ShieldItem || item instanceof TridentItem){
+                event.addCapability(new ResourceLocation(LHMiracleRoad.MODID, "punishment_cap"), new ItemStackPunishmentAttributeProvider(itemStackPunishmentAttribute));
+            }
         }
     }
 
@@ -157,22 +161,14 @@ public class ItemEvent {
             //沉重值计算
             ItemPunishmentTool.heavyPunishmentAttributeModifier(itemFrom,itemTo,itemFromPunishmentAttribute,itemToPunishmentAttribute,player,playerOccupationAttribute,slot);
 
-            if (itemFromPunishmentAttribute.isEmpty() && itemToPunishmentAttribute.isEmpty()) return;
-
-            //清除物品所设置的惩罚
-            if (itemFromPunishmentAttribute.isPresent()){
-                /*
-                    清除 前物品记录的惩罚能力和解除对玩家的惩罚
-                    有时会出现需要修改物品的能力的需求，这样也会触发切换物品事件，导致玩家对象里的惩罚跟前一个物品记录的不一样 从而出现bug,所以将前后两个物品都进行记录上的清除更为稳妥
-                 */
+            //清除前物品所设置的惩罚
+            if (itemFromPunishmentAttribute.isPresent() && !itemFrom.isEmpty()){
                 ItemPunishmentTool.cleanItemFromPunishmentAttributeModifier(player, playerOccupationAttribute, itemFromPunishmentAttribute.get());
-                if (!itemTo.isEmpty() && itemToPunishmentAttribute.isPresent()){
-                    ItemPunishmentTool.cleanItemFromPunishmentAttributeModifier(player, playerOccupationAttribute, itemToPunishmentAttribute.get());
-                }
             }
 
             //设置切换后的惩罚
-            if (!itemTo.isEmpty() && itemToPunishmentAttribute.isPresent()) {
+            if (itemToPunishmentAttribute.isPresent() && !itemTo.isEmpty()) {
+                ItemPunishmentTool.cleanItemFromPunishmentAttributeModifier(player, playerOccupationAttribute, itemToPunishmentAttribute.get());
                 ItemPunishmentTool.setItemToPunishmentAttributeModifier(player,playerOccupationAttribute,itemToPunishmentAttribute.get());
             }
         }

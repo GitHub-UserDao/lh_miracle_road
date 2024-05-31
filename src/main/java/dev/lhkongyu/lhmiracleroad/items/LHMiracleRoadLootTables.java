@@ -19,112 +19,108 @@ public class LHMiracleRoadLootTables {
     @SubscribeEvent
     public static void modifyVanillaLootPools(final LootTableLoadEvent event) {
         if (event.getName().equals(BuiltInLootTables.DESERT_PYRAMID)) {
-            event.getTable().addPool(LootPool.lootPool().when(LootItemRandomChanceCondition.randomChance(0.2F))
-                    .add(LootItem.lootTableItem(LHMiracleRoadItems.EXTREMELY_EVIL_SOUL.get()))
-                    .build());
+            primaryCurrencyLootTable(event);
+            extremelyEvilSoulCurrencyLootTable(event);
 
-            event.getTable().addPool(LootPool.lootPool().when(LootItemRandomChanceCondition.randomChance(0.1F))
-                    .add(LootItem.lootTableItem(LHMiracleRoadItems.KING_SOUL.get()))
-                    .build());
+            kingSoulCurrencyLootTable(event);
         }
 
         if (event.getName().equals(BuiltInLootTables.SIMPLE_DUNGEON) || event.getName().equals(BuiltInLootTables.PILLAGER_OUTPOST)) {
-            currencyLootTable(event);
+            primaryCurrencyLootTable(event);
 
-            event.getTable().addPool(LootPool.lootPool().when(LootItemRandomChanceCondition.randomChance(0.2F))
-                    .add(LootItem.lootTableItem(LHMiracleRoadItems.EVIL_SOUL.get()))
-                    .build());
+            evilSoulCurrencyLootTable(event);
         }
 
         if (event.getName().equals(BuiltInLootTables.ABANDONED_MINESHAFT) || event.getName().equals(BuiltInLootTables.UNDERWATER_RUIN_BIG)) {
-            currencyLootTable(event);
+            primaryCurrencyLootTable(event);
         }
 
         if (event.getName().equals(BuiltInLootTables.SHIPWRECK_MAP) || event.getName().equals(BuiltInLootTables.WOODLAND_MANSION)) {
-            currencyLootTable(event);
+            primaryCurrencyLootTable(event);
 
-            event.getTable().addPool(LootPool.lootPool().when(LootItemRandomChanceCondition.randomChance(0.2F))
-                    .add(LootItem.lootTableItem(LHMiracleRoadItems.EVIL_SOUL.get()))
-                    .build());
+            evilSoulCurrencyLootTable(event);
 
-            event.getTable().addPool(LootPool.lootPool().when(LootItemRandomChanceCondition.randomChance(0.15F))
-                    .add(LootItem.lootTableItem(LHMiracleRoadItems.EXTREMELY_EVIL_SOUL.get()))
-                    .build());
+            extremelyEvilSoulCurrencyLootTable(event);
         }
 
         if (event.getName().equals(BuiltInLootTables.STRONGHOLD_LIBRARY)) {
-            currencyLootTable(event);
+            primaryCurrencyLootTable(event);
 
-            event.getTable().addPool(LootPool.lootPool().when(LootItemRandomChanceCondition.randomChance(0.2F))
-                    .add(LootItem.lootTableItem(LHMiracleRoadItems.EVIL_SOUL.get()))
-                    .build());
+            evilSoulCurrencyLootTable(event);
         }
 
         if (event.getName().equals(BuiltInLootTables.BASTION_OTHER) || event.getName().equals(BuiltInLootTables.BASTION_BRIDGE)
                 || event.getName().equals(BuiltInLootTables.BASTION_HOGLIN_STABLE) || event.getName().equals(BuiltInLootTables.JUNGLE_TEMPLE)) {
-            currencyLootTable(event);
+            primaryCurrencyLootTable(event);
 
-            event.getTable().addPool(LootPool.lootPool().when(LootItemRandomChanceCondition.randomChance(0.2F))
-                    .add(LootItem.lootTableItem(LHMiracleRoadItems.EVIL_SOUL.get()))
-                    .build());
+            evilSoulCurrencyLootTable(event);
 
-            event.getTable().addPool(LootPool.lootPool().when(LootItemRandomChanceCondition.randomChance(0.15F))
-                    .add(LootItem.lootTableItem(LHMiracleRoadItems.EXTREMELY_EVIL_SOUL.get()))
-                    .build());
+            extremelyEvilSoulCurrencyLootTable(event);
         }
 
         if (event.getName().equals(BuiltInLootTables.NETHER_BRIDGE)) {
-            event.getTable().addPool(LootPool.lootPool().when(LootItemRandomChanceCondition.randomChance(0.2F))
-                    .add(LootItem.lootTableItem(LHMiracleRoadItems.EVIL_SOUL.get()))
-                    .build());
+            primaryCurrencyLootTable(event);
+            evilSoulCurrencyLootTable(event);
 
-            event.getTable().addPool(LootPool.lootPool().when(LootItemRandomChanceCondition.randomChance(0.08F))
-                    .add(LootItem.lootTableItem(LHMiracleRoadItems.KING_SOUL.get()))
-                    .build());
+            kingSoulCurrencyLootTable(event);
         }
 
         if (event.getName().equals(BuiltInLootTables.IGLOO_CHEST)) {
-            currencyLootTable(event);
+            primaryCurrencyLootTable(event);
 
-            event.getTable().addPool(LootPool.lootPool().when(LootItemRandomChanceCondition.randomChance(0.15F))
-                    .add(LootItem.lootTableItem(LHMiracleRoadItems.EXTREMELY_EVIL_SOUL.get()))
-                    .build());
+            extremelyEvilSoulCurrencyLootTable(event);
         }
 
         if (event.getName().equals(BuiltInLootTables.ANCIENT_CITY)) {
-            event.getTable().addPool(LootPool.lootPool().when(LootItemRandomChanceCondition.randomChance(0.1F))
-                    .add(LootItem.lootTableItem(LHMiracleRoadItems.KING_SOUL.get()))
-                    .build());
+            primaryCurrencyLootTable(event);
+            kingSoulCurrencyLootTable(event);
 
-            event.getTable().addPool(LootPool.lootPool().when(LootItemRandomChanceCondition.randomChance(0.08F))
-                    .add(LootItem.lootTableItem(LHMiracleRoadItems.DEATH_SOUL.get()))
-                    .build());
-
-            event.getTable().addPool(LootPool.lootPool().when(LootItemRandomChanceCondition.randomChance(LHMiracleRoadConfig.COMMON.FORGET_WATER_PROBABILITY.get().floatValue()))
-                    .add(LootItem.lootTableItem(LHMiracleRoadItems.FORGET_WATER.get()))
-                    .build());
+            superlativeCurrencyLootTable(event);
         }
 
         if (event.getName().equals(BuiltInLootTables.END_CITY_TREASURE)) {
-            event.getTable().addPool(LootPool.lootPool().when(LootItemRandomChanceCondition.randomChance(0.08F))
-                    .add(LootItem.lootTableItem(LHMiracleRoadItems.DEATH_SOUL.get()))
-                    .build());
-
-            event.getTable().addPool(LootPool.lootPool().when(LootItemRandomChanceCondition.randomChance(LHMiracleRoadConfig.COMMON.FORGET_WATER_PROBABILITY.get().floatValue()))
-                    .add(LootItem.lootTableItem(LHMiracleRoadItems.FORGET_WATER.get()))
-                    .build());
+            primaryCurrencyLootTable(event);
+            superlativeCurrencyLootTable(event);
         }
 
     }
 
-    private static void currencyLootTable(final LootTableLoadEvent event){
-        event.getTable().addPool(LootPool.lootPool().when(LootItemRandomChanceCondition.randomChance(0.5F))
+    private static void primaryCurrencyLootTable(final LootTableLoadEvent event){
+        event.getTable().addPool(LootPool.lootPool().when(LootItemRandomChanceCondition.randomChance(LHMiracleRoadConfig.COMMON.BROKEN_SOUL_PROBABILITY.get().floatValue()))
                 .add(LootItem.lootTableItem(LHMiracleRoadItems.BROKEN_SOUL.get()))
                 .build());
 
         event.getTable().addPool(LootPool.lootPool()
-                .when(LootItemRandomChanceCondition.randomChance(0.35F))
+                .when(LootItemRandomChanceCondition.randomChance(LHMiracleRoadConfig.COMMON.GROUP_SOUL_PROBABILITY.get().floatValue()))
                 .add(LootItem.lootTableItem(LHMiracleRoadItems.GROUP_SOUL.get()))
+                .build());
+    }
+
+    private static void evilSoulCurrencyLootTable(final  LootTableLoadEvent event){
+        event.getTable().addPool(LootPool.lootPool().when(LootItemRandomChanceCondition.randomChance(LHMiracleRoadConfig.COMMON.EVIL_SOUL_PROBABILITY.get().floatValue()))
+                .add(LootItem.lootTableItem(LHMiracleRoadItems.EVIL_SOUL.get()))
+                .build());
+    }
+
+    private static void extremelyEvilSoulCurrencyLootTable(final  LootTableLoadEvent event){
+        event.getTable().addPool(LootPool.lootPool().when(LootItemRandomChanceCondition.randomChance(LHMiracleRoadConfig.COMMON.EXTREMELY_EVIL_SOUL_PROBABILITY.get().floatValue()))
+                .add(LootItem.lootTableItem(LHMiracleRoadItems.EXTREMELY_EVIL_SOUL.get()))
+                .build());
+    }
+
+    private static void kingSoulCurrencyLootTable(final  LootTableLoadEvent event){
+        event.getTable().addPool(LootPool.lootPool().when(LootItemRandomChanceCondition.randomChance(LHMiracleRoadConfig.COMMON.KING_SOUL_PROBABILITY.get().floatValue()))
+                .add(LootItem.lootTableItem(LHMiracleRoadItems.KING_SOUL.get()))
+                .build());
+    }
+
+    private static void superlativeCurrencyLootTable(final  LootTableLoadEvent event){
+        event.getTable().addPool(LootPool.lootPool().when(LootItemRandomChanceCondition.randomChance(LHMiracleRoadConfig.COMMON.DEATH_SOUL_PROBABILITY.get().floatValue()))
+                .add(LootItem.lootTableItem(LHMiracleRoadItems.DEATH_SOUL.get()))
+                .build());
+
+        event.getTable().addPool(LootPool.lootPool().when(LootItemRandomChanceCondition.randomChance(LHMiracleRoadConfig.COMMON.FORGET_WATER_PROBABILITY.get().floatValue()))
+                .add(LootItem.lootTableItem(LHMiracleRoadItems.FORGET_WATER.get()))
                 .build());
     }
 }

@@ -10,7 +10,6 @@ import dev.lhkongyu.lhmiracleroad.capability.ItemStackPunishmentAttribute;
 import dev.lhkongyu.lhmiracleroad.capability.ItemStackPunishmentAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
-import dev.lhkongyu.lhmiracleroad.data.ClientData;
 import dev.lhkongyu.lhmiracleroad.data.reloader.PunishmentReloadListener;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -177,7 +176,6 @@ public class ItemPunishmentTool {
                 attributeInstance.removeModifier(attributeModifier);
                 playerOccupationAttribute.removePunishmentAttributeModifier(attributeModifier.getId().toString());
             }
-
         });
         itemFromPunishmentAttribute.cleanRecordPunishmentAttributeModifier();
     }
@@ -191,6 +189,7 @@ public class ItemPunishmentTool {
     public static void setItemToPunishmentAttributeModifier(ServerPlayer player,PlayerOccupationAttribute playerOccupationAttribute,ItemStackPunishmentAttribute itemToPunishmentAttribute){
         //判断是否启用点数限制
         if (!LHMiracleRoadConfig.COMMON.IS_SKILL_POINTS_RESTRICT.get()) return;
+        //判断是否启用点数限制
         Map<String, Integer> occupationAttributeLevel = playerOccupationAttribute.getOccupationAttributeLevel();
         JsonArray attributeNeed = itemToPunishmentAttribute.getAttributeNeed();
         if (attributeNeed == null || attributeNeed.isEmpty()) return;
