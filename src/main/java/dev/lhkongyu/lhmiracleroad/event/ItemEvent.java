@@ -97,19 +97,19 @@ public class ItemEvent {
                 //  stack.getItem() instanceof SwordItem || stack.getItem() instanceof AxeItem || stack.getItem() instanceof PickaxeItem || stack.getItem() instanceof ShovelItem || stack.getItem() instanceof HoeItem
                 if (item instanceof SwordItem swordItem) {
                     Multimap<Attribute, AttributeModifier> modifierMultimap = swordItem.getDefaultAttributeModifiers(EquipmentSlot.MAINHAND);
-                    ItemPunishmentTool.injectionItemStackPunishmentAttribute(modifierMultimap, itemStackPunishmentAttribute, Attributes.ATTACK_DAMAGE,2.5);
+                    ItemPunishmentTool.injectionItemStackPunishmentAttribute(modifierMultimap, itemStackPunishmentAttribute, Attributes.ATTACK_DAMAGE,2);
                 } else if (item instanceof ArmorItem armorItem) {
                     Multimap<Attribute, AttributeModifier> modifierMultimap = armorItem.getDefaultAttributeModifiers(armorItem.getType().getSlot());
-                    ItemPunishmentTool.injectionItemStackPunishmentAttribute(modifierMultimap, itemStackPunishmentAttribute, Attributes.ARMOR,3);
+                    ItemPunishmentTool.injectionItemStackPunishmentAttribute(modifierMultimap, itemStackPunishmentAttribute, Attributes.ARMOR,2.5);
                 } else if (item instanceof AxeItem axeItem) {
                     Multimap<Attribute, AttributeModifier> modifierMultimap = axeItem.getDefaultAttributeModifiers(EquipmentSlot.MAINHAND);
-                    ItemPunishmentTool.injectionItemStackPunishmentAttribute(modifierMultimap, itemStackPunishmentAttribute, Attributes.ATTACK_DAMAGE,2.5);
+                    ItemPunishmentTool.injectionItemStackPunishmentAttribute(modifierMultimap, itemStackPunishmentAttribute, Attributes.ATTACK_DAMAGE,2);
                 } else if (item instanceof BowItem || item instanceof ShieldItem) {
                     itemStackPunishmentAttribute.setHeavy(12);
                     ItemPunishmentTool.setHeavyAttributeModifier(itemStackPunishmentAttribute,null);
                 } else if (item instanceof TridentItem tridentItem) {
                     Multimap<Attribute, AttributeModifier> modifierMultimap = tridentItem.getDefaultAttributeModifiers(EquipmentSlot.MAINHAND);
-                    ItemPunishmentTool.injectionItemStackPunishmentAttribute(modifierMultimap, itemStackPunishmentAttribute, Attributes.ATTACK_DAMAGE,2.5);
+                    ItemPunishmentTool.injectionItemStackPunishmentAttribute(modifierMultimap, itemStackPunishmentAttribute, Attributes.ATTACK_DAMAGE,2);
                 }
             }
 
@@ -151,6 +151,7 @@ public class ItemEvent {
 
             //获取玩家能力和物品能力
             PlayerOccupationAttribute playerOccupationAttribute = player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).resolve().get();
+
             Optional<ItemStackPunishmentAttribute> itemFromPunishmentAttribute = itemFrom
                     .getCapability(ItemStackPunishmentAttributeProvider.ITEM_STACK_PUNISHMENT_ATTRIBUTE_PROVIDER)
                     .resolve();

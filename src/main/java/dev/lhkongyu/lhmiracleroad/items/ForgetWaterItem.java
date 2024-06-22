@@ -57,6 +57,7 @@ public class ForgetWaterItem extends Item {
                     if (!player.getAbilities().instabuild) {
                         itemStack.shrink(1);
                     }
+                    LHMiracleRoadTool.synchronizationClient(playerOccupationAttribute, player);
                 }else player.sendSystemMessage(Component.translatable("lhmiracleroad.instructions.prompt",player.getName()).withStyle(ChatFormatting.RED),false);
             });
         }

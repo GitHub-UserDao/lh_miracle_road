@@ -202,14 +202,16 @@ public class LHMiracleRoadTool {
             if (levelPromoteValue < 0) {
                 levelPromoteValue = levelPromoteValue > value ? value - min : levelPromoteValue;
             }
-            /*
-               以levelPromote数量为一组 先计算出所有组的基础数据提升总和，也就是 基础数值 * 组 * 每组数量 = 基础提升值总和，
-               然后加上 附加提升量总和，用等差数列求和公式 (n * (n - 1) / 2) * levelPromote * levelPromoteValue 来计算第1组到第n-1组的附加提升值总和
-             */
             double increase = 0;
             if (twenties > 0) {
                 double levelIncrease = value * twenties * levelPromote;
-                increase = levelIncrease + ((double) (twenties * (twenties - 1)) / 2) * levelPromote * levelPromoteValue;
+//                increase = levelIncrease + ((double) (twenties * (twenties - 1)) / 2) * levelPromote * levelPromoteValue;
+                double decreasingValue = 0;
+                for (int i = 0;i < twenties;i++){
+                    double thisRoundPromoteValue = levelPromoteValue * i;
+                    decreasingValue += levelPromote * (value + thisRoundPromoteValue < min ? (value - min) * -1 : thisRoundPromoteValue);
+                }
+                increase = levelIncrease + decreasingValue;
             }
             // 用于计算 当前等级不满足一组的部分
             int remainingLevels = level % levelPromote;
@@ -361,6 +363,8 @@ public class LHMiracleRoadTool {
             case AttributesNameTool.HEALING -> LHMiracleRoadAttributes.HEALING;
             case AttributesNameTool.HUNGER -> LHMiracleRoadAttributes.HUNGER;
             case AttributesNameTool.JUMP -> LHMiracleRoadAttributes.JUMP;
+            case AttributesNameTool.CRITICAL_HIT_RATE -> LHMiracleRoadAttributes.CRITICAL_HIT_RATE;
+            case AttributesNameTool.CRITICAL_HIT_DAMAGE -> LHMiracleRoadAttributes.CRITICAL_HIT_DAMAGE;
             default -> AttributePointsRewardsReloadListener.recordAttribute.get(attributeName);
         };
     }
@@ -373,7 +377,7 @@ public class LHMiracleRoadTool {
     public static boolean isLHMiracleRoadAttribute(String attributeName){
         if (attributeName == null) return false;
         return switch (attributeName) {
-            case AttributesNameTool.RANGED_DAMAGE, AttributesNameTool.JUMP, AttributesNameTool.HUNGER, AttributesNameTool.HEALING, AttributesNameTool.HEAVY, AttributesNameTool.BURDEN -> true;
+            case AttributesNameTool.RANGED_DAMAGE, AttributesNameTool.JUMP, AttributesNameTool.HUNGER, AttributesNameTool.HEALING, AttributesNameTool.HEAVY, AttributesNameTool.BURDEN, AttributesNameTool.CRITICAL_HIT_RATE, AttributesNameTool.CRITICAL_HIT_DAMAGE -> true;
             default -> false;
         };
     }
@@ -502,6 +506,19 @@ public class LHMiracleRoadTool {
         else if (probability < 1) return false;
 
         return new Random().nextInt(100) < probability;
+    }
+
+    /**
+     * 概率计算
+     *
+     * @param probability
+     * @return
+     */
+    public static boolean percentageProbability(double probability) {
+        if (probability >= 100.0) return true;
+        else if (probability <= 0.0) return false;
+
+        return new Random().nextDouble() * 100.0 < probability;
     }
 
     /**

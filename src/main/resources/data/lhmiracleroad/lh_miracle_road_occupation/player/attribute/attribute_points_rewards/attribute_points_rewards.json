@@ -7,8 +7,8 @@
         {
           "attribute": "max_health",
           "value": 1,
-          "level_promote": 0,
-          "level_promote_value": 0,
+          "level_promote": 20,
+          "level_promote_value": 1,
           "operation": "addition"
         },
         {
@@ -235,6 +235,14 @@
           "level_promote": 0,
           "level_promote_value": 0,
           "operation": "addition"
+        },
+        {
+          "attribute": "critical_hit_rate",
+          "value": 2,
+          "level_promote": 8,
+          "level_promote_value": -0.5,
+          "operation": "addition",
+          "min": 1
         }
       ]
     }

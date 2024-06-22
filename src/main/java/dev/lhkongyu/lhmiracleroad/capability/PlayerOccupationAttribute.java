@@ -83,6 +83,10 @@ public class PlayerOccupationAttribute {
         this.attributeModifier.put(key,attributeModifier);
     }
 
+    public void clearAttributeModifier(){
+        this.attributeModifier.clear();
+    }
+
     public String getOccupationId() {
         return occupationId;
     }

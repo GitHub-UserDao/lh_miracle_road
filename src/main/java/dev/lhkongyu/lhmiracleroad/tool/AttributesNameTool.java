@@ -31,4 +31,8 @@ public class AttributesNameTool {
     public static final String INIT_DIFFICULTY_LEVEL = "init_difficulty_level";
 
     public static final String MINING_SPEED = "mining_speed";
+
+    public static final String CRITICAL_HIT_RATE = "critical_hit_rate";
+
+    public static final String CRITICAL_HIT_DAMAGE = "critical_hit_damage";
 }

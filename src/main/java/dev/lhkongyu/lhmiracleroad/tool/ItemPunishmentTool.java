@@ -82,7 +82,7 @@ public class ItemPunishmentTool {
         JsonArray jsonArray = new JsonArray();
         JsonObject attributeNeed = new JsonObject();
         attributeNeed.addProperty("attribute_id", "power");
-        attributeNeed.addProperty("need_points", Integer.min((int) (attackDamageAmount * 1.5),80));
+        attributeNeed.addProperty("need_points", Integer.min((int) (attackDamageAmount * 1.25),80));
         jsonArray.add(attributeNeed);
 
         return jsonArray;

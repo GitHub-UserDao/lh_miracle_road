@@ -21,7 +21,7 @@ import java.util.Optional;
 
 @Mod.EventBusSubscriber(modid = LHMiracleRoad.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ClientEvents {
-    private static final KeyMapping LH_MIRACLE_ROAD_TREE_KEY =
+    public static final KeyMapping LH_MIRACLE_ROAD_TREE_KEY =
             new KeyMapping(
                     "key.display_miracle_road", GLFW.GLFW_KEY_H, "key.categories." + LHMiracleRoad.MODID);
 

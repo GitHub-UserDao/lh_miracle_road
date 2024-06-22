@@ -60,6 +60,9 @@ public class PlayerAttributeTool {
         playerOccupationAttribute.setOccupationAttributeLevel(initAttributeLevel);
         playerOccupationAttribute.setOccupationLevel(level);
         playerOccupationAttribute.setEmpiricalCalculationFormula(LHMiracleRoadConfig.COMMON.EMPIRICAL_CALCULATION_FORMULA.get());
+        if (playerOccupationAttribute.getAttributeMaxLevel() < 1) {
+            playerOccupationAttribute.setAttributeMaxLevel(LHMiracleRoadConfig.COMMON.ATTRIBUTE_MAX_LEVEL.get());
+        }
     }
 
     /**
@@ -80,6 +83,9 @@ public class PlayerAttributeTool {
         playerOccupationAttribute.setOccupationLevel(level);
         playerOccupationAttribute.setEmpiricalCalculationFormula(LHMiracleRoadConfig.COMMON.EMPIRICAL_CALCULATION_FORMULA.get());
         player.getAttribute(LHMiracleRoadAttributes.BURDEN).setBaseValue(LHMiracleRoadConfig.COMMON.INIT_BURDEN.get());
+        if (playerOccupationAttribute.getAttributeMaxLevel() < 1) {
+            playerOccupationAttribute.setAttributeMaxLevel(LHMiracleRoadConfig.COMMON.ATTRIBUTE_MAX_LEVEL.get());
+        }
     }
 
     /**

@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 public class LHMiracleRoad
 {
     public static final String MODID = "lhmiracleroad";
-    private static final Logger LOGGER = LogUtils.getLogger();
+    public static final Logger LOGGER = LogUtils.getLogger();
 
     public LHMiracleRoad()
     {

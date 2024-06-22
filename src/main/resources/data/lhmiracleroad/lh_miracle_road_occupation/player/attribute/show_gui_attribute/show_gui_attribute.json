@@ -44,6 +44,11 @@
     "show_value_type": "base"
   },
   {
+    "attribute": "critical_hit_rate",
+    "attribute_text": "critical_hit_rate",
+    "show_value_type": "base_percentage"
+  },
+  {
     "attribute": "hunger",
     "attribute_text": "sturdy_hunger",
     "show_value_type": "extra_percentage"

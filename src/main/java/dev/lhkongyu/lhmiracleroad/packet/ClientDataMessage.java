@@ -42,7 +42,6 @@ public record ClientDataMessage(JsonObject data) {
         });
         context.setPacketHandled(true);
     }
-
     private void modEquipmentManage(JsonObject equipment){
         if (equipment != null) {
             for (Map.Entry<String, JsonElement> jsonElement : equipment.entrySet()) {

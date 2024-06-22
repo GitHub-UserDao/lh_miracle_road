@@ -143,6 +143,10 @@
       {
         "attribute": "luck",
         "describe": "luck"
+      },
+      {
+        "attribute": "critical_hit_rate",
+        "describe": "critical_hit_rate"
       }
     ]
   }

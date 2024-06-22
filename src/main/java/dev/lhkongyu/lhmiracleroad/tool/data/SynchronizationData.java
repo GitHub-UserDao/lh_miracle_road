@@ -2,6 +2,7 @@ package dev.lhkongyu.lhmiracleroad.tool.data;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.packet.ClientDataMessage;
 import dev.lhkongyu.lhmiracleroad.packet.PlayerAttributeChannel;
@@ -24,6 +25,7 @@ public class SynchronizationData {
             ClientDataMessage equipmentMessage = new ClientDataMessage(equipmentData);
             PlayerAttributeChannel.sendToClient(equipmentMessage, player);
         }
+        LHMiracleRoad.LOGGER.warn("LHMiracleRoad: synchronization mod equipment");
 
         //将服务端数据包同步至客户端
         //同步AttributePointsRewardsReloadListener类的数据包
@@ -35,6 +37,8 @@ public class SynchronizationData {
         ClientDataMessage attributePointsRewardsReloadListenerMessage = new ClientDataMessage(attributePointsRewardsReloadListenerData);
         PlayerAttributeChannel.sendToClient(attributePointsRewardsReloadListenerMessage, player);
 
+        LHMiracleRoad.LOGGER.warn("LHMiracleRoad: synchronization attribute points rewards");
+
         //同步AttributeReloadListener类的数据包
         JsonObject attributeTypesData = new JsonObject();
         JsonObject attributeTypes = DataCompressTool.attributeTypesDataCompress();
@@ -43,6 +47,8 @@ public class SynchronizationData {
 
         ClientDataMessage attributeTypesMessage = new ClientDataMessage(attributeTypesData);
         PlayerAttributeChannel.sendToClient(attributeTypesMessage, player);
+
+        LHMiracleRoad.LOGGER.warn("LHMiracleRoad: synchronization attribute types");
 
         //同步OccupationReloadListener类的数据包
         JsonObject occupationData = new JsonObject();
@@ -53,6 +59,8 @@ public class SynchronizationData {
         ClientDataMessage occupationMessage = new ClientDataMessage(occupationData);
         PlayerAttributeChannel.sendToClient(occupationMessage, player);
 
+        LHMiracleRoad.LOGGER.warn("LHMiracleRoad:synchronization occupation");
+
         //同步ShowGuiAttributeReloadListener类的数据包
         JsonObject showGuiAttributeData = new JsonObject();
         JsonArray showGuiAttribute = DataCompressTool.showGuiAttributeDataCompress();
@@ -62,6 +70,8 @@ public class SynchronizationData {
         ClientDataMessage showGuiAttributeMessage = new ClientDataMessage(showGuiAttributeData);
         PlayerAttributeChannel.sendToClient(showGuiAttributeMessage, player);
 
+        LHMiracleRoad.LOGGER.warn("LHMiracleRoad:synchronization show gui attribute");
+
         //同步InitItemResourceReloadListener类的数据包
         JsonObject initItemData = new JsonObject();
         JsonObject initItem = DataCompressTool.initItemDataCompress();
@@ -70,5 +80,7 @@ public class SynchronizationData {
 
         ClientDataMessage initItemMessage = new ClientDataMessage(initItemData);
         PlayerAttributeChannel.sendToClient(initItemMessage, player);
+
+        LHMiracleRoad.LOGGER.warn("LHMiracleRoad:synchronization init item");
     }
 }

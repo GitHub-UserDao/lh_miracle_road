@@ -82,6 +82,24 @@ public class LHMiracleRoadAttributes {
 //			Double.MAX_VALUE
 //	).setSyncable(true);
 
+	public static final String CRITICAL_HIT_RATE_ID = "attribute.name."+LHMiracleRoad.MODID+"."+ AttributesNameTool.CRITICAL_HIT_RATE;
+
+	public static final Attribute CRITICAL_HIT_RATE = create(
+			CRITICAL_HIT_RATE_ID,
+			0.0,
+			0.0,
+			100
+	).setSyncable(true);
+
+	public static final String CRITICAL_HIT_DAMAGE_ID = "attribute.name."+LHMiracleRoad.MODID+"."+ AttributesNameTool.CRITICAL_HIT_DAMAGE;
+
+	public static final Attribute CRITICAL_HIT_DAMAGE = create(
+			CRITICAL_HIT_DAMAGE_ID,
+			1.5,
+			1.5,
+			Double.MAX_VALUE
+	).setSyncable(true);
+
 
 	private static Attribute create(String id, double fallback, double min, double max) {
 		return new RangedAttribute(
@@ -100,6 +118,8 @@ public class LHMiracleRoadAttributes {
 		ForgeRegistries.ATTRIBUTES.register(AttributesNameTool.HUNGER, HUNGER);
 		ForgeRegistries.ATTRIBUTES.register(AttributesNameTool.INIT_DIFFICULTY_LEVEL, INIT_DIFFICULTY_LEVEL);
 		ForgeRegistries.ATTRIBUTES.register(AttributesNameTool.JUMP, JUMP);
+		ForgeRegistries.ATTRIBUTES.register(AttributesNameTool.CRITICAL_HIT_RATE, CRITICAL_HIT_RATE);
+		ForgeRegistries.ATTRIBUTES.register(AttributesNameTool.CRITICAL_HIT_DAMAGE, CRITICAL_HIT_DAMAGE);
 	}
 
 	public static void registerPlayerAttribute(EntityAttributeModificationEvent event){
@@ -110,5 +130,7 @@ public class LHMiracleRoadAttributes {
 		event.add(EntityType.PLAYER, HUNGER);
 		event.add(EntityType.PLAYER, INIT_DIFFICULTY_LEVEL);
 		event.add(EntityType.PLAYER, JUMP);
+		event.add(EntityType.PLAYER, CRITICAL_HIT_RATE);
+		event.add(EntityType.PLAYER, CRITICAL_HIT_DAMAGE);
 	}
 }

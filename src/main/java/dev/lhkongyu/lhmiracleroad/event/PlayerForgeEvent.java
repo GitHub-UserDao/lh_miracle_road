@@ -2,6 +2,7 @@ package dev.lhkongyu.lhmiracleroad.event;
 
 import com.google.gson.JsonObject;
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
+import dev.lhkongyu.lhmiracleroad.attributes.LHMiracleRoadAttributes;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
@@ -101,8 +102,12 @@ public class PlayerForgeEvent {
         if (playerOccupationAttribute.getOccupationId() != null) {
             Map<String, AttributeModifier> modifierMap = playerOccupationAttribute.getAttributeModifier();
             if (modifierMap == null || modifierMap.isEmpty()) return;
+
+            player.getAttribute(LHMiracleRoadAttributes.BURDEN).setBaseValue(LHMiracleRoadConfig.COMMON.INIT_BURDEN.get());
             for (String key : modifierMap.keySet()) {
                 Attribute attribute = LHMiracleRoadTool.stringConversionAttribute(key);
+                if (attribute == null) continue;
+
                 player.getAttribute(attribute).addTransientModifier(modifierMap.get(key));
                 if (attribute.getDescriptionId().equals(Attributes.MAX_HEALTH.getDescriptionId())){
                     player.setHealth((float) player.getAttribute(attribute).getValue());
@@ -134,6 +139,7 @@ public class PlayerForgeEvent {
                     newAttributeLevel.put(key,actualValue);
                 }
             }
+            playerOccupationAttribute.clearAttributeModifier();
             //重新附上属性值
             PlayerAttributeTool.calculateAttribute(player,newAttributeLevel,playerOccupationAttribute);
         }else {
