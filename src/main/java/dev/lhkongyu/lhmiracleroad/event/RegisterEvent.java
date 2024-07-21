@@ -2,6 +2,7 @@ package dev.lhkongyu.lhmiracleroad.event;
 
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
 import dev.lhkongyu.lhmiracleroad.capability.ItemStackPunishmentAttributeProvider;
+import dev.lhkongyu.lhmiracleroad.capability.PlayerCurioProvider;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.command.GetPlayerOccupationLevelCommand;
 import dev.lhkongyu.lhmiracleroad.tool.data.SynchronizationData;
@@ -40,6 +41,7 @@ public class RegisterEvent {
     public static void setUpEntityCapabilitiesEvent(AttachCapabilitiesEvent<Entity> event){
         if (event.getObject() instanceof  Player){
             event.addCapability(new ResourceLocation(LHMiracleRoad.MODID, "player_occupation_attribute"),new PlayerOccupationAttributeProvider());
+            event.addCapability(new ResourceLocation(LHMiracleRoad.MODID, "player_curio_provider"),new PlayerCurioProvider());
         }
     }
 

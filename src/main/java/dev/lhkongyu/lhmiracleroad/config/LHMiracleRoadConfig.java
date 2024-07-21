@@ -28,7 +28,7 @@ public class LHMiracleRoadConfig {
 
         public final ForgeConfigSpec.DoubleValue EMPIRICAL_BASE_MULTIPLIER;
 
-        public final ForgeConfigSpec.IntValue IGNORE_DEATH_PENALTY_PROBABILITY;
+        public final ForgeConfigSpec.DoubleValue SOUL_LOSS_COUNT;
 
         public final ForgeConfigSpec.BooleanValue IS_SKILL_POINTS_RESTRICT;
 
@@ -72,6 +72,8 @@ public class LHMiracleRoadConfig {
 
         public final ForgeConfigSpec.DoubleValue ENDER_DRAGON_FORGET_WATER_ODDS;
 
+        public final ForgeConfigSpec.IntValue MAX_LEVEL;
+
         public Common(ForgeConfigSpec.Builder builder) {
             builder.push("base");
             INIT_BURDEN = builder.comment("init burden").defineInRange("init_burden",60,10,1000);
@@ -81,11 +83,12 @@ public class LHMiracleRoadConfig {
             PUNISHMENT_NORMAL = builder.comment("normal").defineInRange("punishment_normal",0.0,-0.99,1);
             PUNISHMENT_BIASED_WEIGHT = builder.comment("biased weight").defineInRange("punishment_biased_weight",-0.3,-0.99,1);
             PUNISHMENT_OVERWEIGHT = builder.comment("overweight").defineInRange("punishment_overweight",-0.6,-0.99,1);
-            EMPIRICAL_CALCULATION_FORMULA = builder.comment("empirical calculation formula").define("empirical_calculation_formula","min(pow(lv,2.2) + 300 + 20 * (lv + 1), 9999999)");
+            EMPIRICAL_CALCULATION_FORMULA = builder.comment("empirical calculation formula").define("empirical_calculation_formula","min(pow(3.02 * lv,2) + 98.4 * lv, 19999999)");
             EMPIRICAL_BASE_MULTIPLIER = builder.comment("empirical base multiplier").defineInRange("empirical_base_multiplier",8.0,1.0,100.0);
-            IGNORE_DEATH_PENALTY_PROBABILITY = builder.comment("ignore punishment probability").defineInRange("ignore_death_penalty_probability",30,1,100);
+            SOUL_LOSS_COUNT = builder.comment("The percentage amount of soul loss: 1 means no loss, 0 means loss is cleared, and 0.5 means half of the loss.").defineInRange("soul_loss_count",0.5,0,1);
             IS_SKILL_POINTS_RESTRICT = builder.comment("Enable skill points restrict or not").define("is_skill_points_restrict",true);
             ATTRIBUTE_MAX_LEVEL = builder.comment("Enable skill points restrict or not").defineInRange("attribute_max_level",0,0,Integer.MAX_VALUE);
+            MAX_LEVEL = builder.comment("player max level").defineInRange("max_level",Integer.MAX_VALUE,0,Integer.MAX_VALUE);
             builder.pop();
 
             builder.push("items loot probability");
@@ -104,8 +107,8 @@ public class LHMiracleRoadConfig {
             builder.push("mob loot");
 
             ORDINARY_MOB = builder.comment("ordinary mob").defineList("ordinary_mob", initOrdinaryMobList(),(string) -> true);
-            ORDINARY_LOOT_SOON_ELAPSE_SOUL_ODDS = builder.comment("The drop rate of the 'Soon Elapse Soul' from Ordinary Mobs").defineInRange("ordinary_loot_soon_elapse_soul_odds",0.1,0,1.0);
-            ORDINARY_LOOT_INCOMPLETE_SOUL_ODDS = builder.comment("The drop rate of 'Incomplete Soul' from Ordinary Mobs").defineInRange("ordinary_loot_incomplete_soul_odds",0.05,0,1.0);
+            ORDINARY_LOOT_SOON_ELAPSE_SOUL_ODDS = builder.comment("The drop rate of the 'Soon Elapse Soul' from Ordinary Mobs").defineInRange("ordinary_loot_soon_elapse_soul_odds",0.06,0,1.0);
+            ORDINARY_LOOT_INCOMPLETE_SOUL_ODDS = builder.comment("The drop rate of 'Incomplete Soul' from Ordinary Mobs").defineInRange("ordinary_loot_incomplete_soul_odds",0.03,0,1.0);
 
             ELITE_MOB = builder.comment("elite mob").defineList("elite_mob", initEliteMobList(),(string) -> true);
             ELITE_LOOT_SOUL_ODDS = builder.comment("The drop rate of 'Large Block Soul' from Elite Mobs").defineInRange("elite_loot_soul_odds",0.5,0,1.0);

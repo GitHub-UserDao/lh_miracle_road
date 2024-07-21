@@ -35,4 +35,10 @@ public class AttributesNameTool {
     public static final String CRITICAL_HIT_RATE = "critical_hit_rate";
 
     public static final String CRITICAL_HIT_DAMAGE = "critical_hit_damage";
+
+    public static final String INJURED = "injured";
+
+    public static final String SOUL_INCREASE = "soul_increase";
+
+    public static final String DAMAGE_ADDITION = "damage_addition";
 }

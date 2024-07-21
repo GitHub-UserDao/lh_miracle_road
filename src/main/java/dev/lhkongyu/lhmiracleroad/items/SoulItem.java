@@ -129,4 +129,15 @@ public class SoulItem extends Item {
             }else player.sendSystemMessage(Component.translatable("item.lhmiracleroad.death_soul.prompt").withStyle(ChatFormatting.RED));
         });
     }
+
+    @Override
+    public int getMaxStackSize(ItemStack stack) {
+        Item item = stack.getItem();
+        return switch (item.getDescriptionId()) {
+            case "item.lhmiracleroad.king_soul","item.lhmiracleroad.death_soul" -> 1;
+            case "item.lhmiracleroad.liege_soul" -> 8;
+            case "item.lhmiracleroad.exhausted_general_soul" -> 16;
+            default -> 64;
+        };
+    }
 }

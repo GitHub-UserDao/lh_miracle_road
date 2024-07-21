@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " H ",
+    "FXP",
+    " W "
+  ],
+  "key": {
+    "H": {
+      "item": "lhmiracleroad:fire_resistance_ring"
+    },
+    "F": {
+      "item": "lhmiracleroad:frost_ring"
+    },
+    "P": {
+      "item": "lhmiracleroad:poison_invading_ring"
+    },
+    "W": {
+      "item": "lhmiracleroad:water_avoidance_ring"
+    },
+    "X": {
+      "item": "minecraft:nether_star"
+    }
+  },
+  "result": {
+    "item": "lhmiracleroad:radiance_ring",
+    "count": 1
+  }
+}

@@ -43,6 +43,8 @@ public class PlayerOccupationAttribute {
 
     private int attributeMaxLevel = 0;
 
+    private int maxLevel = 0;
+
     public int getOccupationLevel() {
         return occupationLevel;
     }
@@ -175,6 +177,14 @@ public class PlayerOccupationAttribute {
         this.attributeMaxLevel = attributeMaxLevel;
     }
 
+    public int getMaxLevel() {
+        return maxLevel;
+    }
+
+    public void setMaxLevel(int maxLevel) {
+        this.maxLevel = maxLevel;
+    }
+
     public void saveNBTData(CompoundTag compoundTag){
         compoundTag.putInt("occupationLevel",occupationLevel);
         compoundTag.putInt("occupationExperience",occupationExperience);
@@ -182,6 +192,7 @@ public class PlayerOccupationAttribute {
         compoundTag.putInt("points",points);
         compoundTag.putInt("burden",burden);
         compoundTag.putInt("attributeMaxLevel",attributeMaxLevel);
+        compoundTag.putInt("maxLevel",maxLevel);
         if (attributeModifier != null) {
             CompoundTag attributeModifierTags = new CompoundTag();
             for (Map.Entry<String, AttributeModifier> entry : attributeModifier.entrySet()) {
@@ -222,6 +233,7 @@ public class PlayerOccupationAttribute {
         points = compoundTag.getInt("points");
         burden = compoundTag.getInt("burden");
         attributeMaxLevel = compoundTag.getInt("attributeMaxLevel");
+        maxLevel = compoundTag.getInt("maxLevel");
         if (compoundTag.contains("attributeModifier", Tag.TAG_COMPOUND)) {
             CompoundTag initAttributeTags = compoundTag.getCompound("attributeModifier");
             attributeModifier = Maps.newHashMap();
@@ -272,6 +284,7 @@ public class PlayerOccupationAttribute {
         playerOccupationAttributeObject.addProperty("burden",this.burden);
         playerOccupationAttributeObject.addProperty("playerUUID",playerUUID.toString());
         playerOccupationAttributeObject.addProperty("attributeMaxLevel",attributeMaxLevel);
+        playerOccupationAttributeObject.addProperty("maxLevel",maxLevel);
         if (this.occupationId != null && !this.occupationId.isEmpty()) playerOccupationAttributeObject.addProperty("occupationId",this.occupationId);
         if (this.empiricalCalculationFormula != null && !this.empiricalCalculationFormula.isEmpty()) playerOccupationAttributeObject.addProperty("empiricalCalculationFormula",this.empiricalCalculationFormula);
         JsonObject occupationAttributeLevel = new JsonObject();

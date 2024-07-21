@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    "lhmiracleroad:greedy_gold_serpent_ring",
+    "lhmiracleroad:greedy_silver_serpent_ring",
+    "lhmiracleroad:desire_ring",
+    "lhmiracleroad:endless_desire",
+    "lhmiracleroad:fire_resistance_ring",
+    "lhmiracleroad:life_ring",
+    "lhmiracleroad:radiance_ring",
+    "lhmiracleroad:recovery_ring",
+    "lhmiracleroad:ring_strength",
+    "lhmiracleroad:shielding_ring",
+    "lhmiracleroad:vigilance_ring_distant",
+    "lhmiracleroad:vigilance_ring_near",
+    "lhmiracleroad:poison_invading_ring",
+    "lhmiracleroad:water_avoidance_ring",
+    "lhmiracleroad:ancient_spellcraft_ring",
+    "lhmiracleroad:frost_ring"
+  ]
+}

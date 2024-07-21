@@ -374,24 +374,28 @@ public class LHMiracleRoadMainScreen extends Screen {
     private void showPointsButton(){
         if (current != 1) return;
         if (initMainCoordinate.getHoldExperienceValue() < initMainCoordinate.getDemandExperienceValue() && playerOccupationAttribute.getPoints() < 1) return;
-        int initY = initMainCoordinate.getAttributePointsY();
-        int initAttributeLevelX = initMainCoordinate.getAttributePointsButtonX();
-        int lineHeight = font.lineHeight;
-        for (String key : ClientData.ATTRIBUTE_TYPES.keySet()){
-            JsonObject data = ClientData.ATTRIBUTE_POINTS_REWARDS.get(key);
-            int maxLevel = LHMiracleRoadTool.isAsInt(data.get("max_level"));
-            int currentLevel = playerOccupationAttribute.getOccupationAttributeLevel().get(key);
-            int attributeMaxLevel = playerOccupationAttribute.getAttributeMaxLevel();
-            if (LHMiracleRoadTool.isShowPointsButton(currentLevel,maxLevel,attributeMaxLevel)){
-                ImageButton showPointsButton =
-                        new ImageButton(initAttributeLevelX, initY, 12, 12, Component.empty(),
-                                true, false, ResourceLocationTool.Gui.ADD, ResourceLocationTool.Gui.ADD_TOUCH, 0, 0, 12, 12,
-                                12, 12);
-                showPointsButton.setPressFunc(b -> pointsAttributeName(key));
-                addRenderableWidget(showPointsButton);
+
+        if (playerOccupationAttribute.getOccupationLevel() < playerOccupationAttribute.getMaxLevel()) {
+            int initY = initMainCoordinate.getAttributePointsY();
+            int initAttributeLevelX = initMainCoordinate.getAttributePointsButtonX();
+            int lineHeight = font.lineHeight;
+            for (String key : ClientData.ATTRIBUTE_TYPES.keySet()) {
+                JsonObject data = ClientData.ATTRIBUTE_POINTS_REWARDS.get(key);
+                int maxLevel = LHMiracleRoadTool.isAsInt(data.get("max_level"));
+                int currentLevel = playerOccupationAttribute.getOccupationAttributeLevel().get(key);
+                int attributeMaxLevel = playerOccupationAttribute.getAttributeMaxLevel();
+                if (LHMiracleRoadTool.isShowPointsButton(currentLevel, maxLevel, attributeMaxLevel)) {
+                    ImageButton showPointsButton =
+                            new ImageButton(initAttributeLevelX, initY, 12, 12, Component.empty(),
+                                    true, false, ResourceLocationTool.Gui.ADD, ResourceLocationTool.Gui.ADD_TOUCH, 0, 0, 12, 12,
+                                    12, 12);
+                    showPointsButton.setPressFunc(b -> pointsAttributeName(key));
+                    addRenderableWidget(showPointsButton);
+                }
+                initY += (int) (lineHeight * 1.55);
             }
-            initY += (int) (lineHeight * 1.55);
         }
+
         isShowPointsButton = false;
     }
 

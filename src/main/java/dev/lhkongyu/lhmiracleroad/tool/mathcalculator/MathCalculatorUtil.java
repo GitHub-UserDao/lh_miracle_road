@@ -1,4 +1,5 @@
 package dev.lhkongyu.lhmiracleroad.tool.mathcalculator;
+import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -476,8 +477,8 @@ public class MathCalculatorUtil {
         return (int) value;
     }
 
-//    public static void main(String args[]){
-//        String k2 ="min((pow(6666,2.2) + 150) + (15 * (6666 + 1)), 9999999)";
-//        System.err.println(getCalculatorInt(k2));
-//    }
+    public static void main(String args[]){
+        String k2 ="min(pow(3.02 * lv,2) + 98.4 * lv, 19999999)";
+        System.err.println(LHMiracleRoadTool.evaluateFormula(k2,15));
+    }
 }

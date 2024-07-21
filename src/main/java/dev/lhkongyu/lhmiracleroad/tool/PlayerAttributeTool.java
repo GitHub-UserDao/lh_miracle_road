@@ -52,7 +52,7 @@ public class PlayerAttributeTool {
         int level = 0;
         for (String key : initAttributeLevel.keySet()) {
             JsonObject jsonObject = AttributePointsRewardsReloadListener.ATTRIBUTE_POINTS_REWARDS.get(key);
-            setAttribute(player, jsonObject, initAttributeLevel.get(key),playerOccupationAttribute);
+            setAttribute(player, jsonObject, initAttributeLevel.get(key),playerOccupationAttribute,key);
             level += initAttributeLevel.get(key);
         }
         level = (level - initAttributeLevel.size() * LHMiracleRoadConfig.COMMON.LEVEL_BASE.get()) + 1;
@@ -63,6 +63,7 @@ public class PlayerAttributeTool {
         if (playerOccupationAttribute.getAttributeMaxLevel() < 1) {
             playerOccupationAttribute.setAttributeMaxLevel(LHMiracleRoadConfig.COMMON.ATTRIBUTE_MAX_LEVEL.get());
         }
+        playerOccupationAttribute.setMaxLevel(LHMiracleRoadConfig.COMMON.MAX_LEVEL.get());
     }
 
     /**
@@ -75,7 +76,7 @@ public class PlayerAttributeTool {
         int level = 0;
         for (String key : newAttributeLevel.keySet()) {
             JsonObject jsonObject = AttributePointsRewardsReloadListener.ATTRIBUTE_POINTS_REWARDS.get(key);
-            setAttribute(player, jsonObject, newAttributeLevel.get(key),playerOccupationAttribute);
+            setAttribute(player, jsonObject, newAttributeLevel.get(key),playerOccupationAttribute,key);
             level += newAttributeLevel.get(key);
         }
         level = (level - newAttributeLevel.size() * LHMiracleRoadConfig.COMMON.LEVEL_BASE.get()) + 1;
@@ -86,6 +87,7 @@ public class PlayerAttributeTool {
         if (playerOccupationAttribute.getAttributeMaxLevel() < 1) {
             playerOccupationAttribute.setAttributeMaxLevel(LHMiracleRoadConfig.COMMON.ATTRIBUTE_MAX_LEVEL.get());
         }
+        playerOccupationAttribute.setMaxLevel(LHMiracleRoadConfig.COMMON.MAX_LEVEL.get());
     }
 
     /**
@@ -95,7 +97,7 @@ public class PlayerAttributeTool {
      * @param attributeLevel
      * @param playerOccupationAttribute
      */
-    private static void setAttribute(ServerPlayer player, JsonObject jsonObject, int attributeLevel, PlayerOccupationAttribute playerOccupationAttribute){
+    private static void setAttribute(ServerPlayer player, JsonObject jsonObject, int attributeLevel, PlayerOccupationAttribute playerOccupationAttribute,String attributeTypeName){
         for (JsonElement jsonElement : LHMiracleRoadTool.isAsJsonArray(jsonObject.get("points_rewards"))) {
             JsonObject object = jsonElement.getAsJsonObject();
             String attributeName = LHMiracleRoadTool.isAsString(object.get("attribute"));
@@ -107,7 +109,7 @@ public class PlayerAttributeTool {
             double attributeValue;
             double min = LHMiracleRoadTool.isAsDouble(object.get("min"));
             attributeValue = LHMiracleRoadTool.calculateTotalIncrease(attributeLevel, value, levelPromoteValue, levelPromote, min);
-            addExtraAttributes(player,attributeName,attributeValue,operationString,playerOccupationAttribute);
+            addExtraAttributes(player,attributeName,attributeValue,operationString,playerOccupationAttribute,attributeTypeName);
         }
     }
 
@@ -119,21 +121,21 @@ public class PlayerAttributeTool {
      * @param operationString
      * @param playerOccupationAttribute
      */
-    private static void addExtraAttributes(ServerPlayer player,String attributeName,double attributeValue,String operationString, PlayerOccupationAttribute playerOccupationAttribute){
+    private static void addExtraAttributes(ServerPlayer player,String attributeName,double attributeValue,String operationString, PlayerOccupationAttribute playerOccupationAttribute,String attributeTypeName){
         AttributeModifier.Operation operation = LHMiracleRoadTool.stringConversionOperation(operationString);
         if (operation == null) return;
         Attribute attribute = LHMiracleRoadTool.stringConversionAttribute(attributeName);
         if (attribute != null){
             AttributeModifier attributeModifier = new AttributeModifier(UUID.randomUUID(), "", attributeValue, operation);
 
-            AttributeModifier playerAttributeModifier = playerOccupationAttribute.getAttributeModifier().get(attributeName);
+            AttributeModifier playerAttributeModifier = playerOccupationAttribute.getAttributeModifier().get(attributeName + ":" + attributeTypeName);
             if (playerAttributeModifier != null) player.getAttribute(attribute).removeModifier(playerAttributeModifier);
 
             player.getAttribute(attribute).addTransientModifier(attributeModifier);
             if (attribute.getDescriptionId().equals(Attributes.MAX_HEALTH.getDescriptionId())){
                 player.setHealth((float) player.getAttribute(attribute).getValue());
             }
-            playerOccupationAttribute.addAttributeModifier(attributeName,attributeModifier);
+            playerOccupationAttribute.addAttributeModifier(attributeName + ":" + attributeTypeName,attributeModifier);
         }
     }
 
@@ -154,20 +156,13 @@ public class PlayerAttributeTool {
                 itemStack = new ItemStack(item, 1);
                 LHMiracleRoadTool.setTag(itemStack,tag);
                 for (int i = 0; i < quantity; i++) {
-                    addItemStack(player,itemStack.copy());
+                    LHMiracleRoadTool.addItemStack(player,itemStack.copy());
                 }
             }else {
                 itemStack = new ItemStack(item, quantity);
                 LHMiracleRoadTool.setTag(itemStack,tag);
-                addItemStack(player, itemStack);
+                LHMiracleRoadTool.addItemStack(player, itemStack);
             }
-        }
-    }
-
-    private static void addItemStack(ServerPlayer player,ItemStack itemStack){
-        boolean wasAdded = player.getInventory().add(itemStack);
-        if (!wasAdded) {
-            player.drop(itemStack, false);
         }
     }
 
@@ -193,7 +188,7 @@ public class PlayerAttributeTool {
         //给该属性类型的等级进行修改
         playerOccupationAttribute.putOccupationAttributeLevel(attributeTypeName, level);
         //给对应属性类型进行 属性增长
-        setAttribute(player, jsonObject, level, playerOccupationAttribute);
+        setAttribute(player, jsonObject, level, playerOccupationAttribute,attributeTypeName);
 
         //判断优化扣除点数
         if (points > 0){
@@ -249,11 +244,16 @@ public class PlayerAttributeTool {
 
     public static void resetOccupation(ServerPlayer player,PlayerOccupationAttribute playerOccupationAttribute){
         playerOccupationAttribute.setOccupationId(null);
-        for (String key : AttributePointsRewardsReloadListener.POINTS_REWARDS.keySet()){
-            Attribute attribute = LHMiracleRoadTool.stringConversionAttribute(key);
-            if (attribute != null) {
-                AttributeModifier playerAttributeModifier = playerOccupationAttribute.getAttributeModifier().get(key);
-                if (playerAttributeModifier != null) player.getAttribute(attribute).removeModifier(playerAttributeModifier);
+        for (String key : AttributePointsRewardsReloadListener.ATTRIBUTE_POINTS_REWARDS.keySet()){
+            JsonObject jsonObject = AttributePointsRewardsReloadListener.ATTRIBUTE_POINTS_REWARDS.get(key);
+            for (JsonElement pointsRewardElement : LHMiracleRoadTool.isAsJsonArray(jsonObject.get("points_rewards"))) {
+                JsonObject pointsRewardObj = pointsRewardElement.getAsJsonObject();
+                String attributeName = LHMiracleRoadTool.isAsString(pointsRewardObj.get("attribute"));
+                Attribute attribute = LHMiracleRoadTool.stringConversionAttribute(attributeName);
+                if (attribute != null) {
+                    AttributeModifier playerAttributeModifier = playerOccupationAttribute.getAttributeModifier().get(attributeName + ":" + key);
+                    if (playerAttributeModifier != null) player.getAttribute(attribute).removeModifier(playerAttributeModifier);
+                }
             }
         }
         LHMiracleRoadTool.synchronizationClient(playerOccupationAttribute,player);

@@ -365,6 +365,9 @@ public class LHMiracleRoadTool {
             case AttributesNameTool.JUMP -> LHMiracleRoadAttributes.JUMP;
             case AttributesNameTool.CRITICAL_HIT_RATE -> LHMiracleRoadAttributes.CRITICAL_HIT_RATE;
             case AttributesNameTool.CRITICAL_HIT_DAMAGE -> LHMiracleRoadAttributes.CRITICAL_HIT_DAMAGE;
+            case AttributesNameTool.INJURED -> LHMiracleRoadAttributes.INJURED;
+            case AttributesNameTool.SOUL_INCREASE -> LHMiracleRoadAttributes.SOUL_INCREASE;
+            case AttributesNameTool.DAMAGE_ADDITION -> LHMiracleRoadAttributes.DAMAGE_ADDITION;
             default -> AttributePointsRewardsReloadListener.recordAttribute.get(attributeName);
         };
     }
@@ -659,5 +662,12 @@ public class LHMiracleRoadTool {
         String secondPart = id.substring(lastIndex + 1);
         if (equipment.get(firstPart) == null) return null;
         return equipment.get(firstPart).get(secondPart);
+    }
+
+    public static void addItemStack(ServerPlayer player,ItemStack itemStack){
+        boolean wasAdded = player.getInventory().add(itemStack);
+        if (!wasAdded) {
+            player.drop(itemStack, false);
+        }
     }
 }

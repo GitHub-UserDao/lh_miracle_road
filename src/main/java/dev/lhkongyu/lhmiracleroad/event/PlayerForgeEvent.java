@@ -3,18 +3,31 @@ package dev.lhkongyu.lhmiracleroad.event;
 import com.google.gson.JsonObject;
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
 import dev.lhkongyu.lhmiracleroad.attributes.LHMiracleRoadAttributes;
+import dev.lhkongyu.lhmiracleroad.capability.PlayerCurioProvider;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
+import dev.lhkongyu.lhmiracleroad.items.curio.ring.VigilanceRingDistant;
+import dev.lhkongyu.lhmiracleroad.items.curio.ring.VigilanceRingNear;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import dev.lhkongyu.lhmiracleroad.tool.PlayerAttributeTool;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -50,6 +63,7 @@ public class PlayerForgeEvent {
             playerOccupationAttribute.setEmpiricalCalculationFormula(optional.getEmpiricalCalculationFormula());
             playerOccupationAttribute.setBurden(optional.getBurden());
             playerOccupationAttribute.setAttributeMaxLevel(optional.getAttributeMaxLevel());
+            playerOccupationAttribute.setMaxLevel(optional.getMaxLevel());
 
             LHMiracleRoadTool.synchronizationClient(playerOccupationAttribute, (ServerPlayer) player);
         });
@@ -64,9 +78,9 @@ public class PlayerForgeEvent {
         Player player = event.getEntity();
         player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).ifPresent(playerOccupationAttribute -> {
             againAttachAttribute(playerOccupationAttribute,player);
-            if (!LHMiracleRoadTool.percentageProbability(LHMiracleRoadConfig.COMMON.IGNORE_DEATH_PENALTY_PROBABILITY.get())){
-                playerOccupationAttribute.setOccupationExperience(0);
-            }
+            //死亡后的灵魂量
+            int soulCount = (int) (playerOccupationAttribute.getOccupationExperience() * LHMiracleRoadConfig.COMMON.SOUL_LOSS_COUNT.get());
+            playerOccupationAttribute.setOccupationExperience(soulCount);
         });
     }
 
@@ -144,6 +158,51 @@ public class PlayerForgeEvent {
             PlayerAttributeTool.calculateAttribute(player,newAttributeLevel,playerOccupationAttribute);
         }else {
             player.sendSystemMessage(Component.translatable("lhmiracleroad.gui.prompt"));
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void reduceDamage(LivingDamageEvent event) {
+        Entity directEntity = event.getSource().getEntity();
+        if (directEntity instanceof  Player player){
+            //饰品伤害加成
+            player.getCapability(PlayerCurioProvider.PLAYER_CURIO_PROVIDER).ifPresent(playerCurio -> {
+                if (playerCurio.isVigilanceRingDistant()){
+                    VigilanceRingDistant.damageCount(player,event.getEntity(), event);
+                }
+
+                if (playerCurio.isVigilanceRingNear()){
+                    VigilanceRingNear.damageCount(player,event.getEntity(), event);
+                }
+            });
+            //伤害加成
+            AttributeInstance attributeInstance = player.getAttribute(LHMiracleRoadAttributes.DAMAGE_ADDITION);
+            if (attributeInstance != null) {
+                float damage = (float) (event.getAmount() * attributeInstance.getValue());
+                event.setAmount(damage);
+            }
+
+            //爆伤加成
+            double criticalHitRate = player.getAttribute(LHMiracleRoadAttributes.CRITICAL_HIT_RATE).getValue();
+            double criticalHitDamage = player.getAttribute(LHMiracleRoadAttributes.CRITICAL_HIT_DAMAGE).getValue();
+            if (LHMiracleRoadTool.percentageProbability(criticalHitRate)) {
+                float damage = (float) (event.getAmount() * criticalHitDamage);
+                event.setAmount(damage);
+                LivingEntity entity = event.getEntity();
+                int particleCount = (int) (15 * entity.getBbWidth() * entity.getBbHeight()); // 基于实体体积调整粒子数量
+                ServerLevel serverLevel = (ServerLevel) player.level();
+                serverLevel.sendParticles((ServerPlayer) player, ParticleTypes.CRIT, true, entity.getX(), entity.getY() + entity.getBbHeight() * 0.5, entity.getZ(), particleCount, entity.getBbWidth() / 2, entity.getBbHeight() / 2, entity.getBbWidth() / 2,0.2);
+                serverLevel.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.PLAYER_ATTACK_CRIT, SoundSource.PLAYERS, 1.5F, 1.0F);
+            }
+        }
+
+        //玩家受到伤害最后计算
+        if (event.getEntity() instanceof Player player) {
+            AttributeInstance attributeInstance = player.getAttribute(LHMiracleRoadAttributes.INJURED);
+            if (attributeInstance != null) {
+                float damage = (float) (event.getAmount() * attributeInstance.getValue());
+                event.setAmount(damage);
+            }
         }
     }
 }

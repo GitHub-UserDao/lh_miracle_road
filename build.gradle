@@ -148,6 +148,13 @@ repositories {
             includeGroup "curse.maven"
         }
     }
+
+    maven {
+        url = "https://maven.theillusivec4.top/"
+        content {
+            includeGroup "top.theillusivec4.curios"
+        }
+    }
 }
 
 dependencies {
@@ -163,8 +170,9 @@ dependencies {
 //    implementation fg.deobf("curse.maven:irons-spells-n-spellbooks-855414:5341949")
 //    // caelus
 //    implementation fg.deobf("curse.maven:caelus-308989:4581481")
-//    // curios
-//    implementation fg.deobf("curse.maven:curios-309927:5175956")
+    // curios
+    implementation fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}:api")
+    runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")
 //    //geckolib
 //    implementation fg.deobf("curse.maven:geckolib-388172:5188427")
 //    //playeranimator
@@ -178,6 +186,8 @@ dependencies {
 
 //    // paragliders
 //    implementation fg.deobf("curse.maven:paragliders-289240:5046069")
+
+    implementation fg.deobf("curse.maven:tslatentitystatus-tes-830420:5011935")
     // Specify the version of Minecraft to use.
     // Any artifact can be supplied so long as it has a "userdev" classifier artifact and is a compatible patcher artifact.
     // The "userdev" classifier will be requested and setup by ForgeGradle.
