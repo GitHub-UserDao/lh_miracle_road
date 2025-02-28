@@ -5,6 +5,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
 import dev.lhkongyu.lhmiracleroad.attributes.LHMiracleRoadAttributes;
 import dev.lhkongyu.lhmiracleroad.attributes.ShowAttributesTypes;
 import dev.lhkongyu.lhmiracleroad.capability.ItemStackPunishmentAttribute;
@@ -16,27 +17,70 @@ import dev.lhkongyu.lhmiracleroad.data.reloader.*;
 import dev.lhkongyu.lhmiracleroad.packet.ClientDataMessage;
 import dev.lhkongyu.lhmiracleroad.packet.ClientOccupationMessage;
 import dev.lhkongyu.lhmiracleroad.packet.PlayerAttributeChannel;
+import dev.lhkongyu.lhmiracleroad.particle.SoulParticleOption;
 import dev.lhkongyu.lhmiracleroad.tool.mathcalculator.MathCalculatorUtil;
 import net.minecraft.client.gui.Font;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.fml.ModList;
+import org.joml.Vector3f;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
 
 public class LHMiracleRoadTool {
+
+    /**
+     * 转入路径转换为 带 modid 的 ResourceLocation对象
+     * @param path
+     * @return
+     */
+    public static ResourceLocation resourceLocationId(String path){
+
+        return new ResourceLocation(LHMiracleRoad.MODID,path);
+    }
+
+    /**
+     * rgb 转换 为 Vector3f
+     * @param red
+     * @param green
+     * @param blue
+     * @return
+     */
+    public static Vector3f RGBChangeVector3f(int red, int green, int blue){
+        // 将通道值归一化到范围[0, 1]
+        float normalizedRed = (float) red / 255.0f;
+        float normalizedGreen = (float) green / 255.0f;
+        float normalizedBlue = (float) blue / 255.0f;
+
+        return new Vector3f(normalizedRed, normalizedGreen, normalizedBlue);
+    }
+
+    /**
+     * 将秒 转换为 tick
+     * @param duration
+     * @return
+     */
+    public static int getDuration(int duration){
+        return duration * 20;
+    }
 
     /**
      * 根据文本的宽度来进行拆分文本
@@ -349,6 +393,11 @@ public class LHMiracleRoadTool {
      */
     public static Attribute stringConversionAttribute(String attributeName) {
         if (attributeName == null) return null;
+        int index = attributeName.indexOf('#');
+        if (index != -1) {
+            attributeName = attributeName.substring(0, index).trim();
+        }
+
         return switch (attributeName) {
             case AttributesNameTool.MAX_HEALTH -> Attributes.MAX_HEALTH;
             case AttributesNameTool.ATTACK_DAMAGE -> Attributes.ATTACK_DAMAGE;
@@ -669,5 +718,25 @@ public class LHMiracleRoadTool {
         if (!wasAdded) {
             player.drop(itemStack, false);
         }
+    }
+
+    public static void getSoulParticle(ServerLevel serverLevel, ServerPlayer player, int soulCount,int max){
+        int particleCount = Math.min(Math.max(soulCount / 200,10),max);
+        float speed = .1f + ((float) particleCount / max * .025f);
+        serverLevel.sendParticles(player,new SoulParticleOption(player.getId()), true, player.getX(), player.getY() + player.getBbHeight() * 0.5, player.getZ(), particleCount, 0.1, 0.1, 0.1,speed);
+    }
+
+    public static void getSoulParticle(ServerLevel serverLevel, ServerPlayer player, int soulCount, int max,int soulCountDivisor, Entity target){
+        if (target == null) return;
+        int particleCount = Math.min(Math.max(soulCount / soulCountDivisor,10),max);
+        float speed = .1f + ((float) particleCount / max * .025f);
+        serverLevel.sendParticles(player,new SoulParticleOption(player.getId()), true, target.getX(), target.getY() + target.getBbHeight() * 0.5, target.getZ(), particleCount, 0.1, 0.1, 0.1,speed);
+    }
+
+    public static void getSoulParticle(ServerLevel serverLevel, ServerPlayer player, int soulCount, int max,int min,int soulCountDivisor, Entity target){
+        if (target == null) return;
+        int particleCount = Math.min(Math.max(soulCount / soulCountDivisor,min),max);
+        float speed = .1f + ((float) particleCount / max * .025f);
+        serverLevel.sendParticles(player,new SoulParticleOption(player.getId()), true, target.getX(), target.getY() + target.getBbHeight() * 0.5, target.getZ(), particleCount, 0.1, 0.1, 0.1,speed);
     }
 }

@@ -9,6 +9,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
 
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
@@ -29,7 +30,11 @@ public record PlayerOccupationMessage(String occupationId) {
             if (occupationId != null && !occupationId.isEmpty()) {
                 PlayerAttributeTool.initOccupation(player, occupationId);
             }
-            PlayerOccupationAttribute playerOccupationAttribute = player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).resolve().get();
+
+            Optional<PlayerOccupationAttribute> optionalPlayerOccupationAttribute = player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).resolve();
+            if (optionalPlayerOccupationAttribute.isEmpty()) return;
+            PlayerOccupationAttribute playerOccupationAttribute = optionalPlayerOccupationAttribute.get();
+
             //设置一下在gui渲染的属性
 //            playerOccupationAttribute.setShowAttribute(LHMiracleRoadTool.setShowAttribute(player));
             LHMiracleRoadTool.synchronizationClient(playerOccupationAttribute, player);

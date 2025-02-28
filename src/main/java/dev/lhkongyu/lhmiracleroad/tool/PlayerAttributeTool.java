@@ -19,6 +19,7 @@ import org.checkerframework.checker.units.qual.K;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 public class PlayerAttributeTool {
@@ -30,7 +31,11 @@ public class PlayerAttributeTool {
         int initDifficultyLevel = LHMiracleRoadTool.isAsInt(occupation.get("init_difficulty_level"));
         Map<String,Integer> initAttributeLevel = LHMiracleRoadTool.setInitAttributeLevel(occupation);
         List<JsonObject> items = LHMiracleRoadTool.setInitItem(occupation);
-        PlayerOccupationAttribute playerOccupationAttribute = player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).resolve().get();
+
+        Optional<PlayerOccupationAttribute> optionalPlayerOccupationAttribute = player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).resolve();
+        if (optionalPlayerOccupationAttribute.isEmpty()) return;
+        PlayerOccupationAttribute playerOccupationAttribute = optionalPlayerOccupationAttribute.get();
+
         //设置基础属性值
         LHMiracleRoadTool.setConfigBaseAttribute(player,initDifficultyLevel);
         //设置初始属性等级所带来的提升值
@@ -128,14 +133,14 @@ public class PlayerAttributeTool {
         if (attribute != null){
             AttributeModifier attributeModifier = new AttributeModifier(UUID.randomUUID(), "", attributeValue, operation);
 
-            AttributeModifier playerAttributeModifier = playerOccupationAttribute.getAttributeModifier().get(attributeName + ":" + attributeTypeName);
+            AttributeModifier playerAttributeModifier = playerOccupationAttribute.getAttributeModifier().get(attributeName + "#" + attributeTypeName);
             if (playerAttributeModifier != null) player.getAttribute(attribute).removeModifier(playerAttributeModifier);
 
             player.getAttribute(attribute).addTransientModifier(attributeModifier);
             if (attribute.getDescriptionId().equals(Attributes.MAX_HEALTH.getDescriptionId())){
                 player.setHealth((float) player.getAttribute(attribute).getValue());
             }
-            playerOccupationAttribute.addAttributeModifier(attributeName + ":" + attributeTypeName,attributeModifier);
+            playerOccupationAttribute.addAttributeModifier(attributeName + "#" + attributeTypeName,attributeModifier);
         }
     }
 
@@ -167,7 +172,10 @@ public class PlayerAttributeTool {
     }
 
     public static void points(ServerPlayer player,String attributeTypeName){
-        PlayerOccupationAttribute playerOccupationAttribute = player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).resolve().get();
+        Optional<PlayerOccupationAttribute> optionalPlayerOccupationAttribute = player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).resolve();
+        if (optionalPlayerOccupationAttribute.isEmpty()) return;
+        PlayerOccupationAttribute playerOccupationAttribute = optionalPlayerOccupationAttribute.get();
+
         //玩家所持有点数
         int points = playerOccupationAttribute.getPoints();
 
@@ -251,7 +259,7 @@ public class PlayerAttributeTool {
                 String attributeName = LHMiracleRoadTool.isAsString(pointsRewardObj.get("attribute"));
                 Attribute attribute = LHMiracleRoadTool.stringConversionAttribute(attributeName);
                 if (attribute != null) {
-                    AttributeModifier playerAttributeModifier = playerOccupationAttribute.getAttributeModifier().get(attributeName + ":" + key);
+                    AttributeModifier playerAttributeModifier = playerOccupationAttribute.getAttributeModifier().get(attributeName + "#" + key);
                     if (playerAttributeModifier != null) player.getAttribute(attribute).removeModifier(playerAttributeModifier);
                 }
             }

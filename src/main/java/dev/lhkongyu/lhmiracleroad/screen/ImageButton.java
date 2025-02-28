@@ -65,13 +65,13 @@ public class ImageButton extends Button {
             @NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         graphics.blit(backgroundImage, getX(), getY(), initWidth, initHeight, imageWidthBase, imageHeightBase, imageWidth, imageHeight);
         if (isText) {
-            renderText(graphics,0xE6941A);
+            renderText(graphics,0xC56F49);
         }
         // 鼠标否悬触发
         if (isHovered() && isPage) {
             graphics.blit(hoveredFocusedImage, getX(), getY(), initWidth, initHeight, imageWidthBase, imageHeightBase, imageWidth, imageHeight);
             if (isText) {
-                renderText(graphics,0xE3C79F);
+                renderText(graphics,0xC59290);
             }
         }
     }

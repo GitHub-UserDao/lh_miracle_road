@@ -52,7 +52,11 @@ public class ItemEvent {
         if(player == null) return;
         ItemStack stack = event.getItemStack();
         List<Component> tooltip = event.getToolTip();
-        PlayerOccupationAttribute playerOccupationAttribute = player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).resolve().get();
+
+        Optional<PlayerOccupationAttribute> optionalPlayerOccupationAttribute = player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).resolve();
+        if (optionalPlayerOccupationAttribute.isEmpty()) return;
+        PlayerOccupationAttribute playerOccupationAttribute = optionalPlayerOccupationAttribute.get();
+
         stack.getCapability(ItemStackPunishmentAttributeProvider.ITEM_STACK_PUNISHMENT_ATTRIBUTE_PROVIDER).ifPresent(itemStackPunishmentAttribute -> {
            JsonArray attributeNeed = itemStackPunishmentAttribute.getAttributeNeed();
            if (attributeNeed == null || attributeNeed.isEmpty()) return;
@@ -150,7 +154,11 @@ public class ItemEvent {
             ItemStack itemTo = event.getTo();
 
             //获取玩家能力和物品能力
-            PlayerOccupationAttribute playerOccupationAttribute = player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).resolve().get();
+            Optional<PlayerOccupationAttribute> optionalPlayerOccupationAttribute = player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).resolve();
+
+            if (optionalPlayerOccupationAttribute.isEmpty()) return;
+
+            PlayerOccupationAttribute playerOccupationAttribute = optionalPlayerOccupationAttribute.get();
 
             Optional<ItemStackPunishmentAttribute> itemFromPunishmentAttribute = itemFrom
                     .getCapability(ItemStackPunishmentAttributeProvider.ITEM_STACK_PUNISHMENT_ATTRIBUTE_PROVIDER)

@@ -128,10 +128,10 @@ public class LHMiracleRoadAttributes {
 	).setSyncable(true);
 
 
-	private static Attribute create(String id, double fallback, double min, double max) {
+	private static Attribute create(String id, double base, double min, double max) {
 		return new RangedAttribute(
 				id,
-				fallback,
+				base,
 				min,
 				max
 		);

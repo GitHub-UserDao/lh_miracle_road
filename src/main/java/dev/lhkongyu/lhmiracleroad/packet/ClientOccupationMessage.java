@@ -17,6 +17,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
 
@@ -44,7 +45,11 @@ public record ClientOccupationMessage(JsonObject playerOccupationAttributeObject
             String playerUUID = LHMiracleRoadTool.isAsString(playerOccupationAttributeObject.get("playerUUID"));
             Player clientPlayer = clientLevel.getPlayerByUUID(UUID.fromString(playerUUID));
             if (clientPlayer != null) {
-                PlayerOccupationAttribute playerOccupationAttribute = clientPlayer.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).resolve().get();
+
+                Optional<PlayerOccupationAttribute> optionalPlayerOccupationAttribute = clientPlayer.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).resolve();
+                if (optionalPlayerOccupationAttribute.isEmpty()) return;
+                PlayerOccupationAttribute playerOccupationAttribute = optionalPlayerOccupationAttribute.get();
+
                 String occupationId = LHMiracleRoadTool.isAsString(playerOccupationAttributeObject.get("occupationId"));
                 if (occupationId == null || occupationId.isEmpty()){
                     playerOccupationAttribute.setOccupationId(null);

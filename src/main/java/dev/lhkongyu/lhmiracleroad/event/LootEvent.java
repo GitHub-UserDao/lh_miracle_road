@@ -388,7 +388,7 @@ public class LootEvent {
             //配置凋灵掉落
         }else if (event.getName().equals(EntityType.WITHER.getDefaultLootTable())){
             event.getTable().addPool(LootPool.lootPool()
-                    .when(LootItemRandomChanceCondition.randomChance(0.15f))
+                    .when(LootItemRandomChanceCondition.randomChance(0.5f))
                     .add(LootItem.lootTableItem(ItemsRegistry.DESIRE_RING.get()))
                     .build());
         }

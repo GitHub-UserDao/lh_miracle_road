@@ -236,23 +236,25 @@ public class InitCoordinate {
     public InitCoordinate(int widthCore, int heightCore,int backgroundWidth,int backgroundHeight,Font font,int current){
         int lineHeight = font.lineHeight;
         int lineWidth = font.width("测试");
+        int y = 5;
+
         //计算切换页数的位置
-        pageWidth = 16;
-        pageHeight = 16;
-        pageY = heightCore + backgroundHeight - 35;
-        pageLeftX = widthCore + pageWidth + 6;
-        pageRightX = widthCore + backgroundWidth - 37;
+        pageWidth = 32;
+        pageHeight = 32;
+        pageY = heightCore + backgroundHeight - 52;
+        pageLeftX = widthCore + pageWidth - 14;
+        pageRightX = widthCore + backgroundWidth - 49;
 
         //计算职业相框的位置
         frameWidth = backgroundWidth / 3;
-        frameHeight = (int) (backgroundHeight * 0.5 );
+        frameHeight = (int) (backgroundHeight * 0.45 );
         frameX = widthCore + (frameWidth / 3);
-        frameY = heightCore;
+        frameY = heightCore + y;
         //计算选择框的位置以及文本
-        selectWidth = (int) (backgroundWidth * 0.1);
-        selectHeight = (int) (backgroundHeight * 0.055 );
+        selectWidth = (int) (backgroundWidth * 0.125);
+        selectHeight = (int) (backgroundHeight * 0.06 );
         selectX = widthCore + (backgroundWidth / 6 + selectWidth / 2);
-        selectY = pageY - 5;
+        selectY = pageY + y * 2 + 3;
         selectComponent = Component.translatable("lhmiracleroad.gui.text.select");
         //计算职业图片的位置
         occupationWidth = (int) (backgroundWidth * 0.225);
@@ -260,8 +262,8 @@ public class InitCoordinate {
         occupationX = widthCore + (backgroundWidth / 6);
         occupationY = heightCore + (frameHeight / 5);
         // 计算初始物品的位置以及文本
-        initItemX = (int) (widthCore + lineWidth * 1.5);
-        initItemY = heightCore + (backgroundHeight / 2) + lineHeight * 3;
+        initItemX = widthCore + lineWidth * 2;
+        initItemY = heightCore + (backgroundHeight / 2) + lineHeight * 3 + y;
         initItemComponent = Component.translatable("lhmiracleroad.gui.titles.init_item");
         // 计算初始属性的位置以及文本
         initAttributeX = widthCore + (backgroundWidth / 2) + lineWidth;
@@ -269,8 +271,8 @@ public class InitCoordinate {
         initAttributeComponent = Component.translatable("lhmiracleroad.gui.titles.init_attribute");
         //设置描述文本的位置
         describeOneLnInitX = (int) (widthCore + lineWidth * 2.5);
-        describeOtherLnInitX = (int) (widthCore + lineWidth * 1.5);
-        describeInitY = heightCore + frameHeight - lineHeight * 2;
+        describeOtherLnInitX = widthCore + lineWidth * 2;
+        describeInitY = heightCore + frameHeight - lineHeight + y * 3;
 
         //设置职业基本数据
         setOccupation(widthCore,heightCore,backgroundWidth,backgroundHeight,font,current);
@@ -279,18 +281,19 @@ public class InitCoordinate {
     public InitCoordinate(int widthCore, int heightCore,int backgroundWidth,int backgroundHeight,Font font,String occupationId){
         int lineHeight = font.lineHeight;
         int lineWidth = font.width("测试");
+        int y = 5;
         //计算切换页数的位置
-        pageWidth = 16;
-        pageHeight = 16;
-        pageY = heightCore + backgroundHeight - 35;
-        pageLeftX = widthCore + pageWidth + 6;
-        pageRightX = widthCore + backgroundWidth - 37;
+        pageWidth = 32;
+        pageHeight = 32;
+        pageY = heightCore + backgroundHeight - 52;
+        pageLeftX = widthCore + pageWidth - 14;
+        pageRightX = widthCore + backgroundWidth - 49;
 
         //计算职业相框的位置
         frameWidth = backgroundWidth / 3;
         frameHeight = (int) (backgroundHeight * 0.5 );
         frameX = widthCore + (frameWidth / 3);
-        frameY = heightCore;
+        frameY = heightCore + y;
         //计算职业图片的位置
         occupationWidth = (int) (backgroundWidth * 0.225);
         occupationHeight = (int) (backgroundHeight * 0.25 );
@@ -302,16 +305,18 @@ public class InitCoordinate {
         initAttributeComponent = Component.translatable("lhmiracleroad.gui.titles.init_attribute");
         //设置描述文本的位置
         describeOneLnInitX = (int) (widthCore + lineWidth * 2.5);
-        describeOtherLnInitX = (int) (widthCore + lineWidth * 1.5);
-        describeInitY = heightCore + frameHeight - lineHeight * 2;
+        describeOtherLnInitX = widthCore + lineWidth * 2;
+        describeInitY = heightCore + frameHeight - lineHeight + y * 3;
         //选择框y
-        selectY = pageY - 5;
+        selectWidth = (int) (backgroundWidth * 0.125);
+        selectHeight = (int) (backgroundHeight * 0.06 );
+        selectY = pageY + y * 2 + 3;
         //设置职业基本数据
         setOccupation(widthCore,heightCore,backgroundWidth,backgroundHeight,font,occupationId);
     }
 
     private List<String> setDescribeTexts(int backgroundWidth,Font font){
-        int baseMaxWidth = (int) (backgroundWidth  * 0.375);
+        int baseMaxWidth = (int) (backgroundWidth  * 0.385);
         //通过id获取职业描述
         String occupationDescribe = ResourceLocationTool.OCCUPATION_DESCRIBE_PREFIX + LHMiracleRoadTool.isAsString(occupation.get("id"));
         MutableComponent mutableComponent = Component.translatable(occupationDescribe);
@@ -336,7 +341,7 @@ public class InitCoordinate {
         //设置职业名称的位置
         int textWidth = font.width(occupationNameComponent);
         occupationNameX = widthCore + (backgroundWidth / 6 + frameWidth / 3) - (textWidth / 2);
-        occupationNameY = (int) (heightCore + frameHeight - lineHeight * 3.75);
+        occupationNameY = (int) (heightCore + frameHeight - lineHeight * 2 + 6);
         //填充初始属性等级数据
         initAttributeLevel = LHMiracleRoadTool.setInitAttributeLevelClient(occupation);
 
@@ -364,7 +369,7 @@ public class InitCoordinate {
         //设置职业名称的位置
         int textWidth = font.width(occupationNameComponent);
         occupationNameX = widthCore + (backgroundWidth / 6 + frameWidth / 3) - (textWidth / 2);
-        occupationNameY = (int) (heightCore + frameHeight - lineHeight * 3.75);
+        occupationNameY = (int) (heightCore + frameHeight - lineHeight * 2 + 6);
 
         //填充初始属性等级数据
         initAttributeLevel = LHMiracleRoadTool.setInitAttributeLevelClient(occupation);

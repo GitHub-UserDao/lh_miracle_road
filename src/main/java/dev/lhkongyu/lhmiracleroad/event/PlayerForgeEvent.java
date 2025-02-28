@@ -7,6 +7,7 @@ import dev.lhkongyu.lhmiracleroad.capability.PlayerCurioProvider;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
+import dev.lhkongyu.lhmiracleroad.entity.player.PlayerSoulEntity;
 import dev.lhkongyu.lhmiracleroad.items.curio.ring.VigilanceRingDistant;
 import dev.lhkongyu.lhmiracleroad.items.curio.ring.VigilanceRingNear;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
@@ -27,6 +28,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -49,7 +51,10 @@ public class PlayerForgeEvent {
     public static void playerClone(PlayerEvent.Clone event) {
         Player player = event.getOriginal();
         player.reviveCaps();
-        PlayerOccupationAttribute optional = player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).resolve().get();
+
+        Optional<PlayerOccupationAttribute> optionalPlayerOccupationAttribute = player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).resolve();
+        if (optionalPlayerOccupationAttribute.isEmpty()) return;
+        PlayerOccupationAttribute optional = optionalPlayerOccupationAttribute.get();
 
         event.getEntity().getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).ifPresent(playerOccupationAttribute -> {
             playerOccupationAttribute.setOccupationLevel(optional.getOccupationLevel());
@@ -79,7 +84,8 @@ public class PlayerForgeEvent {
         player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).ifPresent(playerOccupationAttribute -> {
             againAttachAttribute(playerOccupationAttribute,player);
             //死亡后的灵魂量
-            int soulCount = (int) (playerOccupationAttribute.getOccupationExperience() * LHMiracleRoadConfig.COMMON.SOUL_LOSS_COUNT.get());
+//            int soulCount = (int) (playerOccupationAttribute.getOccupationExperience() * LHMiracleRoadConfig.COMMON.SOUL_LOSS_COUNT.get());
+            int soulCount = 0;
             playerOccupationAttribute.setOccupationExperience(soulCount);
         });
     }
@@ -110,6 +116,20 @@ public class PlayerForgeEvent {
             //更新玩家奖惩状态
             LHMiracleRoadTool.playerPunishmentStateUpdate((ServerPlayer) player, playerOccupationAttribute);
         });
+    }
+
+    //交互事件
+    @SubscribeEvent
+    public static void onRightClickEntity(PlayerInteractEvent.EntityInteract event) {
+        if (!event.getLevel().isClientSide()) {
+            Entity target = event.getTarget();
+            Player player = event.getEntity();
+
+            if (target instanceof PlayerSoulEntity soulEntity) {
+                soulEntity.getSoul(player,event.getLevel());
+                player.swing(event.getHand()); // 播放玩家挥手动画
+            }
+        }
     }
 
     private static void againAttachAttribute(PlayerOccupationAttribute playerOccupationAttribute,Player player){
@@ -162,7 +182,7 @@ public class PlayerForgeEvent {
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void reduceDamage(LivingDamageEvent event) {
+    public static void damageAddition(LivingDamageEvent event) {
         Entity directEntity = event.getSource().getEntity();
         if (directEntity instanceof  Player player){
             //饰品伤害加成

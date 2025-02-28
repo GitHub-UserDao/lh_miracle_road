@@ -1,4 +1,4 @@
-package dev.lhkongyu.lhmiracleroad.event;
+package dev.lhkongyu.lhmiracleroad.event.client;
 
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;

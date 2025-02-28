@@ -61,6 +61,8 @@ public class LHMiracleRoadMainScreen extends Screen {
 
     private boolean isShowPointsButton;
 
+    private final int color = 0x000;
+
 
     public LHMiracleRoadMainScreen(int current) {
         super(Component.empty());
@@ -161,19 +163,31 @@ public class LHMiracleRoadMainScreen extends Screen {
         super.renderBackground(graphics);
         //背景图
         graphics.blit(ResourceLocationTool.Gui.background, widthCore, heightCore, 0, 0F, 0F, backgroundWidth, backgroundHeight, backgroundWidth, backgroundHeight);
-        if (current == 0) graphics.blit(ResourceLocationTool.Gui.frame, initCoordinate.getFrameX(), initCoordinate.getFrameY(), 0, 0, initCoordinate.getFrameWidth(),initCoordinate.getFrameHeight(),
-                initCoordinate.getFrameWidth(),  initCoordinate.getFrameHeight());
+        if (current == 0) {
+            graphics.blit(ResourceLocationTool.Gui.frame, initCoordinate.getFrameX(), initCoordinate.getFrameY(), 0, 0, initCoordinate.getFrameWidth(),initCoordinate.getFrameHeight(),
+                    initCoordinate.getFrameWidth(),  initCoordinate.getFrameHeight());
+
+            int width = (int) (initCoordinate.getSelectWidth() * 1.25);
+            int height = initCoordinate.getSelectHeight();
+            int lineHeight = font.lineHeight / 3;
+            int lineWidth = font.width("测试") / 4;
+            int titleAttributeX = initCoordinate.getInitAttributeX() - lineWidth;
+            int titleAttributeY = initCoordinate.getInitAttributeY() - lineHeight;
+
+            graphics.blit(ResourceLocationTool.Gui.title,titleAttributeX, titleAttributeY,0,0,width, height,
+                    width, height);
+        }
     }
 
     private void showTitle(GuiGraphics graphics){
-        graphics.drawString(font, initCoordinate.getInitAttributeComponent(), initCoordinate.getInitAttributeX(), initCoordinate.getInitAttributeY(), 0x6C5734, false);
+        graphics.drawString(font, initCoordinate.getInitAttributeComponent(), initCoordinate.getInitAttributeX(), initCoordinate.getInitAttributeY(), 0Xffffff, false);
     }
 
     private void showOccupationName(GuiGraphics graphics){
         int x = initCoordinate.getOccupationNameX();
         int y = initCoordinate.getOccupationNameY();
 
-        graphics.drawString(font, initCoordinate.getOccupationNameComponent(), x, y, 0x000000, false);
+        graphics.drawString(font, initCoordinate.getOccupationNameComponent(), x, y, color, false);
     }
 
     private void showDescribe(GuiGraphics graphics){
@@ -181,9 +195,9 @@ public class LHMiracleRoadMainScreen extends Screen {
         List<String> lines = initCoordinate.getDescribeTexts();
         for (int i = 0; i < lines.size(); i++) {
             if (i == 0){
-                graphics.drawString(font, Component.literal(lines.get(i)), initCoordinate.getDescribeOneLnInitX(), startY, 0x000000, false);
+                graphics.drawString(font, Component.literal(lines.get(i)), initCoordinate.getDescribeOneLnInitX(), startY, color, false);
             }else {
-                graphics.drawString(font, Component.literal(lines.get(i)), initCoordinate.getDescribeOtherLnInitX(), startY, 0x000000, false);
+                graphics.drawString(font, Component.literal(lines.get(i)), initCoordinate.getDescribeOtherLnInitX(), startY, color, false);
             }
             startY += font.lineHeight;
         }
@@ -200,19 +214,19 @@ public class LHMiracleRoadMainScreen extends Screen {
         detailsHoverTooltipX = 0;
         detailsHoverTooltipY = 0;
         int initNameTextX = initCoordinate.getInitAttributeX();
-        int initAttributeLevelX = (int) (initNameTextX + (backgroundWidth * 0.18));
+        int initAttributeLevelX = (int) (initNameTextX + (backgroundWidth * 0.175));
         Component details = Component.translatable("lhmiracleroad.gui.attribute.text.details");
         int textWidth = font.width(details);
-        int initDetailsX = initCoordinate.getPageRightX() - (textWidth / 2);
+        int initDetailsX = (int) (initNameTextX + (backgroundWidth * 0.175) * 1.75);
         int initY = (int) (initCoordinate.getInitAttributeY() + (lineHeight * 1.75));
         int initLevel = 0;
         int attributeSize = 0;
         for (String key : ClientData.ATTRIBUTE_TYPES.keySet()) {
             String nameText = ResourceLocationTool.ATTRIBUTE_NAME_PREFIX + key;
             int level = initCoordinate.getInitAttributeLevel().get(key);
-            graphics.drawString(font, Component.translatable(nameText), initNameTextX, initY, 0x6C5734, false);
-            graphics.drawString(font, String.valueOf(level), initAttributeLevelX, initY, 0x6C5734, false);
-            graphics.drawString(font, details, initDetailsX, initY, 0xC58360, false);
+            graphics.drawString(font, Component.translatable(nameText), initNameTextX, initY, color, false);
+            graphics.drawString(font, String.valueOf(level), initAttributeLevelX, initY, color, false);
+            graphics.drawString(font, details, initDetailsX, initY, 0xC56F49, false);
 
             // 检查鼠标是否悬停在指定位置上
             if (mouseX >= initDetailsX && mouseX <= initDetailsX + textWidth && mouseY >= initY && mouseY <= initY + lineHeight) {
@@ -233,7 +247,7 @@ public class LHMiracleRoadMainScreen extends Screen {
         String difficultyLevelText = difficultyLevelcomponent.getString();
         String levelText = initLevelText+" "+difficultyLevelText;
         textWidth = font.width(levelText);
-        graphics.drawString(font, levelText, initAttributeLevelX - (textWidth / 2), initCoordinate.getSelectY(), 0x6C5734, false);
+        graphics.drawString(font, levelText, initAttributeLevelX - (textWidth / 2), initCoordinate.getSelectY(), color, false);
     }
 
     private void showButton(boolean leftShow,boolean rightShow){
@@ -259,13 +273,13 @@ public class LHMiracleRoadMainScreen extends Screen {
     }
 
     private void showLevelInformation(GuiGraphics graphics){
-        graphics.drawString(font, initMainCoordinate.getLevelComponent(), initMainCoordinate.getLevelX(), initMainCoordinate.getLevelY(), 0x6C5734, false);
-        graphics.drawString(font, initMainCoordinate.getPointsComponent(), initMainCoordinate.getPointsX(), initMainCoordinate.getLevelY(), 0x6C5734, false);
-        graphics.drawString(font, initMainCoordinate.getHoldExperienceComponent(), initMainCoordinate.getLevelX(), initMainCoordinate.getHoldExperienceY(), 0x6C5734, false);
-        graphics.drawString(font, initMainCoordinate.getDemandExperienceComponent(), initMainCoordinate.getLevelX(), initMainCoordinate.getDemandExperienceY(), 0x6C5734, false);
+        graphics.drawString(font, initMainCoordinate.getLevelComponent(), initMainCoordinate.getLevelX(), initMainCoordinate.getLevelY(), color, false);
+        graphics.drawString(font, initMainCoordinate.getPointsComponent(), initMainCoordinate.getPointsX(), initMainCoordinate.getLevelY(), color, false);
+        graphics.drawString(font, initMainCoordinate.getHoldExperienceComponent(), initMainCoordinate.getLevelX(), initMainCoordinate.getHoldExperienceY(), color, false);
+        graphics.drawString(font, initMainCoordinate.getDemandExperienceComponent(), initMainCoordinate.getLevelX(), initMainCoordinate.getDemandExperienceY(), color, false);
 
-        graphics.drawString(font, String.valueOf(initMainCoordinate.getHoldExperienceValue()), initMainCoordinate.getPointsX(), initMainCoordinate.getHoldExperienceY(), 0x6C5734, false);
-        graphics.drawString(font, String.valueOf(initMainCoordinate.getDemandExperienceValue()), initMainCoordinate.getPointsX(), initMainCoordinate.getDemandExperienceY(), 0x6C5734, false);
+        graphics.drawString(font, String.valueOf(initMainCoordinate.getHoldExperienceValue()), initMainCoordinate.getPointsX(), initMainCoordinate.getHoldExperienceY(), color, false);
+        graphics.drawString(font, String.valueOf(initMainCoordinate.getDemandExperienceValue()), initMainCoordinate.getPointsX(), initMainCoordinate.getDemandExperienceY(), color, false);
 
 
     }
@@ -284,8 +298,8 @@ public class LHMiracleRoadMainScreen extends Screen {
             String nameText = ResourceLocationTool.ATTRIBUTE_NAME_PREFIX + key;
             Component componentNameText = Component.translatable(nameText);
 
-            graphics.drawString(font, componentNameText, initNameTextX, initY, 0x6C5734, false);
-            graphics.drawString(font, String.valueOf(level), initAttributeLevelX, initY, 0x6C5734, false);
+            graphics.drawString(font, componentNameText, initNameTextX, initY, color, false);
+            graphics.drawString(font, String.valueOf(level), initAttributeLevelX, initY, color, false);
 
             int textWidth = font.width(componentNameText);
             // 检查鼠标是否悬停在指定位置上
@@ -335,7 +349,7 @@ public class LHMiracleRoadMainScreen extends Screen {
                     showValue = LHMiracleRoadTool.getShowValueType(showValueType, value, baseValue, percentageBase, attributeName);
                 }
                 Component showText = Component.translatable(attributeText, showValue);
-                graphics.drawString(font, showText, initX, initY, 0x6C5734, false);
+                graphics.drawString(font, showText, initX, initY, color, false);
                 initY += (int) (lineHeight * 1.4);
             }
         }
@@ -351,7 +365,7 @@ public class LHMiracleRoadMainScreen extends Screen {
         Component component = Component.translatable("lhmiracleroad.gui.attribute.text.heavy",heavyValue,burdenValue);
         int textWidth = font.width(component);
         int initX = (int) (initCoordinate.getInitAttributeX() + (backgroundWidth * 0.18)) - (textWidth / 2);
-        graphics.drawString(font, component, initX, initY, 0x6C5734, false);
+        graphics.drawString(font, component, initX, initY, color, false);
         // 检查鼠标是否悬停在指定位置上
         if (mouseX >= initX && mouseX <= initX + textWidth && mouseY >= initY && mouseY <= initY + lineHeight) {
             List<Component> components = new ArrayList<>();
@@ -401,7 +415,11 @@ public class LHMiracleRoadMainScreen extends Screen {
 
     private void pointsAttributeName(String attributeTypeName){
         PlayerAttributeChannel.sendToServer(new PlayerAttributePointsMessage(attributeTypeName));
-        PlayerOccupationAttribute occupationAttribute = getPlayer().getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).resolve().get();
+
+        Optional<PlayerOccupationAttribute> optionalPlayerOccupationAttribute = getPlayer().getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).resolve();
+        if (optionalPlayerOccupationAttribute.isEmpty()) return;
+        PlayerOccupationAttribute occupationAttribute = optionalPlayerOccupationAttribute.get();
+
         occupationAttribute.setOccupationExperience(0);
         occupationAttribute.setPoints(0);
         isShowPointsButton = true;

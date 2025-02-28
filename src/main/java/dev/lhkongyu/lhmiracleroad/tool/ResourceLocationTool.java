@@ -16,6 +16,7 @@ public class ResourceLocationTool {
         public static final ResourceLocation pageRightButton = new ResourceLocation(LHMiracleRoad.MODID, "textures/gui/page_right_button.png");
         public static final ResourceLocation select = new ResourceLocation(LHMiracleRoad.MODID, "textures/gui/select.png");
         public static final ResourceLocation selectButton = new ResourceLocation(LHMiracleRoad.MODID, "textures/gui/select_button.png");
+        public static final ResourceLocation title = new ResourceLocation(LHMiracleRoad.MODID, "textures/gui/title.png");
     }
 
     public static final String OCCUPATION_IMAGE_PREFIX = "textures/occupation/";

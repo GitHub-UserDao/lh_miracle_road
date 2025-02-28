@@ -113,7 +113,7 @@ public class InitMainCoordinate {
         int lineHeight = font.lineHeight;
         int lineWidth = font.width("测试");
         levelY = heightCore + lineHeight * 2;
-        levelX = (int) (widthCore + lineWidth * 1.5);
+        levelX = widthCore + lineWidth * 2;
         pointsX = levelX + (backgroundWidth / 5);
         holdExperienceY = levelY + (lineHeight * 2);
         demandExperienceY = (int) (holdExperienceY + (lineHeight * 1.75));

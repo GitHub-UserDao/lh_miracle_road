@@ -187,7 +187,7 @@ dependencies {
 //    // paragliders
 //    implementation fg.deobf("curse.maven:paragliders-289240:5046069")
 
-    implementation fg.deobf("curse.maven:tslatentitystatus-tes-830420:5011935")
+//    implementation fg.deobf("curse.maven:tslatentitystatus-tes-830420:5011935")
     // Specify the version of Minecraft to use.
     // Any artifact can be supplied so long as it has a "userdev" classifier artifact and is a compatible patcher artifact.
     // The "userdev" classifier will be requested and setup by ForgeGradle.

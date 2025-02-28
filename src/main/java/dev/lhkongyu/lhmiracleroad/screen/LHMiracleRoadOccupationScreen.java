@@ -50,6 +50,8 @@ public class LHMiracleRoadOccupationScreen extends Screen {
 
     private int heightCore;
 
+    private final int color = 0x000;
+
 
     public LHMiracleRoadOccupationScreen() {
         super(Component.empty());
@@ -137,18 +139,33 @@ public class LHMiracleRoadOccupationScreen extends Screen {
         graphics.blit(ResourceLocationTool.Gui.background, widthCore, heightCore, 0, 0F, 0F, backgroundWidth, backgroundHeight, backgroundWidth, backgroundHeight);
         graphics.blit(ResourceLocationTool.Gui.frame, initCoordinate.getFrameX(), initCoordinate.getFrameY(), 0, 0, initCoordinate.getFrameWidth(),initCoordinate.getFrameHeight(),
                 initCoordinate.getFrameWidth(),  initCoordinate.getFrameHeight());
+
+        int width = (int) (initCoordinate.getSelectWidth() * 1.25);
+        int height = initCoordinate.getSelectHeight();
+        int lineHeight = font.lineHeight / 3;
+        int lineWidth = font.width("测试") / 4;
+        int titleItemX = initCoordinate.getInitItemX() - lineWidth;
+        int titleItemY = initCoordinate.getInitItemY() - lineHeight;
+        int titleAttributeX = initCoordinate.getInitAttributeX() - lineWidth;
+        int titleAttributeY = initCoordinate.getInitAttributeY() - lineHeight;
+
+        graphics.blit(ResourceLocationTool.Gui.title,titleItemX, titleItemY,0,0,width, height,
+                width, height);
+
+        graphics.blit(ResourceLocationTool.Gui.title,titleAttributeX, titleAttributeY,0,0,width, height,
+                width, height);
     }
 
     private void showTitle(GuiGraphics graphics){
-        graphics.drawString(font, initCoordinate.getInitItemComponent(), initCoordinate.getInitItemX(), initCoordinate.getInitItemY(), 0x6C5734, false);
-        graphics.drawString(font, initCoordinate.getInitAttributeComponent(), initCoordinate.getInitAttributeX(), initCoordinate.getInitAttributeY(), 0x6C5734, false);
+        graphics.drawString(font, initCoordinate.getInitItemComponent(), initCoordinate.getInitItemX(), initCoordinate.getInitItemY(), 0Xffffff, false);
+        graphics.drawString(font, initCoordinate.getInitAttributeComponent(), initCoordinate.getInitAttributeX(), initCoordinate.getInitAttributeY(), 0Xffffff, false);
     }
 
     private void showOccupationName(GuiGraphics graphics){
         int x = initCoordinate.getOccupationNameX();
         int y = initCoordinate.getOccupationNameY();
 
-        graphics.drawString(font, initCoordinate.getOccupationNameComponent(), x, y, 0x000000, false);
+        graphics.drawString(font, initCoordinate.getOccupationNameComponent(), x, y, color, false);
 
 //        Minecraft minecraft = Minecraft.getInstance();
 //        boolean isFullscreen = minecraft.getWindow().isFullscreen();
@@ -171,9 +188,9 @@ public class LHMiracleRoadOccupationScreen extends Screen {
         List<String> lines = initCoordinate.getDescribeTexts();
         for (int i = 0; i < lines.size(); i++) {
             if (i == 0){
-                graphics.drawString(font, Component.literal(lines.get(i)), initCoordinate.getDescribeOneLnInitX(), startY, 0x000000, false);
+                graphics.drawString(font, Component.literal(lines.get(i)), initCoordinate.getDescribeOneLnInitX(), startY, color, false);
             }else {
-                graphics.drawString(font, Component.literal(lines.get(i)), initCoordinate.getDescribeOtherLnInitX(), startY, 0x000000, false);
+                graphics.drawString(font, Component.literal(lines.get(i)), initCoordinate.getDescribeOtherLnInitX(), startY, color, false);
             }
             startY += font.lineHeight;
         }
@@ -190,19 +207,19 @@ public class LHMiracleRoadOccupationScreen extends Screen {
         detailsHoverTooltipX = 0;
         detailsHoverTooltipY = 0;
         int initNameTextX = initCoordinate.getInitAttributeX();
-        int initAttributeLevelX = (int) (initNameTextX + (backgroundWidth * 0.18));
+        int initAttributeLevelX = (int) (initNameTextX + (backgroundWidth * 0.175));
         Component details = Component.translatable("lhmiracleroad.gui.attribute.text.details");
         int textWidth = font.width(details);
-        int initDetailsX = initCoordinate.getPageRightX() - (textWidth / 2);
+        int initDetailsX =(int) (initNameTextX + (backgroundWidth * 0.175) * 1.75);
         int initY = initCoordinate.getInitAttributeY() + (lineHeight * 2);
         int initLevel = 0;
         int attributeSize = 0;
         for (String key : ClientData.ATTRIBUTE_TYPES.keySet()) {
             String nameText = ResourceLocationTool.ATTRIBUTE_NAME_PREFIX + key;
             int level = initCoordinate.getInitAttributeLevel().get(key);
-            graphics.drawString(font, Component.translatable(nameText), initNameTextX, initY, 0x6C5734, false);
-            graphics.drawString(font, String.valueOf(level), initAttributeLevelX, initY, 0x6C5734, false);
-            graphics.drawString(font, details, initDetailsX, initY, 0xC58360, false);
+            graphics.drawString(font, Component.translatable(nameText), initNameTextX, initY, color, false);
+            graphics.drawString(font, String.valueOf(level), initAttributeLevelX, initY, color, false);
+            graphics.drawString(font, details, initDetailsX, initY, 0xC56F49, false);
 
             // 检查鼠标是否悬停在物品上
             if (mouseX >= initDetailsX && mouseX <= initDetailsX + textWidth && mouseY >= initY && mouseY <= initY + lineHeight) {
@@ -224,7 +241,7 @@ public class LHMiracleRoadOccupationScreen extends Screen {
         String difficultyLevelText = difficultyLevelcomponent.getString();
         String levelText = initLevelText+" "+difficultyLevelText;
         textWidth = font.width(levelText);
-        graphics.drawString(font, levelText, initAttributeLevelX - (textWidth / 2), initCoordinate.getSelectY(), 0x6C5734, false);
+        graphics.drawString(font, levelText, initAttributeLevelX - (textWidth / 2), initCoordinate.getSelectY(), color, false);
     }
 
     private void showItem(GuiGraphics graphics, int mouseX, int mouseY){
@@ -235,7 +252,7 @@ public class LHMiracleRoadOccupationScreen extends Screen {
         itemHoverTooltipY = 0;
         int itemSize = 24;
         int x = initCoordinate.getInitItemX();
-        int y = (int) (initCoordinate.getInitItemY() + lineHeight * 1.5);
+        int y = (int) (initCoordinate.getInitItemY() + lineHeight * 1.45);
         int spacing = 0;
         int lineSpacing = 0;
         int quantityBreak = 8; //每循环多少次物品时换行
