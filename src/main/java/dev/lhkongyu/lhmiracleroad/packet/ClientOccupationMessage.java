@@ -72,11 +72,20 @@ public record ClientOccupationMessage(JsonObject playerOccupationAttributeObject
                     }
                 }
 
+                JsonObject curioAttributeLevelObject = LHMiracleRoadTool.isAsJsonObject(playerOccupationAttributeObject.get("curioAttributeLevel"));
+                Map<String, Integer> curioAttributeLevelMap = Maps.newHashMap();
+                if (curioAttributeLevelObject != null) {
+                    for (Map.Entry<String, JsonElement> entry : curioAttributeLevelObject.entrySet()) {
+                        curioAttributeLevelMap.put(entry.getKey(), LHMiracleRoadTool.isAsInt(entry.getValue()));
+                    }
+                }
+
                 playerOccupationAttribute.setOccupationLevel(occupationLevel);
                 playerOccupationAttribute.setOccupationExperience(occupationExperience);
                 playerOccupationAttribute.setOccupationId(occupationId);
                 playerOccupationAttribute.setOffhandHeavy(offhandHeavy);
                 playerOccupationAttribute.setOccupationAttributeLevel(occupationAttributeLevelMap);
+                playerOccupationAttribute.setCurioAttributeLevel(curioAttributeLevelMap);
                 playerOccupationAttribute.setEmpiricalCalculationFormula(empiricalCalculationFormula);
                 playerOccupationAttribute.setPoints(points);
                 playerOccupationAttribute.setBurden(burden);

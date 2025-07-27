@@ -5,10 +5,12 @@ import dev.lhkongyu.lhmiracleroad.items.SoulItem;
 import dev.lhkongyu.lhmiracleroad.items.WaterBottleItem;
 import dev.lhkongyu.lhmiracleroad.items.curio.BraceletItem;
 import dev.lhkongyu.lhmiracleroad.items.curio.RingItem;
+import dev.lhkongyu.lhmiracleroad.items.curio.TalismanItem;
 import dev.lhkongyu.lhmiracleroad.items.curio.bracelet.BerserkBracelet;
 import dev.lhkongyu.lhmiracleroad.items.curio.bracelet.HeavyBracelet;
 import dev.lhkongyu.lhmiracleroad.items.curio.bracelet.LuckyBracelet;
 import dev.lhkongyu.lhmiracleroad.items.curio.ring.*;
+import dev.lhkongyu.lhmiracleroad.items.curio.talisman.*;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -60,6 +62,8 @@ public class ItemsRegistry {
     //戒指
     public static final RegistryObject<Item> GREEDY_GOLD_SERPENT_RING = ITEMS.register("greedy_gold_serpent_ring", GreedyGoldSerpentRing::addAttributeModifier);
 
+    public static final RegistryObject<Item> COSSET_RING = ITEMS.register("cosset_ring", CossetRing::addAttributeModifier);
+
     public static final RegistryObject<Item> ENDLESS_DESIRE = ITEMS.register("endless_desire", EndlessDesire::addAttributeModifier);
 
     public static final RegistryObject<Item> RADIANCE_RING = ITEMS.register("radiance_ring", () -> new RingItem(new Item.Properties().rarity(Rarity.UNCOMMON),null));
@@ -68,11 +72,13 @@ public class ItemsRegistry {
 
     public static final RegistryObject<Item> DESIRE_RING = ITEMS.register("desire_ring", DesireRing::addAttributeModifier);
 
-    public static final RegistryObject<Item> VIGILANCE_RING_DISTANT = ITEMS.register("vigilance_ring_distant", () -> new RingItem(new Item.Properties().rarity(Rarity.EPIC),null));
-
-    public static final RegistryObject<Item> VIGILANCE_RING_NEAR = ITEMS.register("vigilance_ring_near", () -> new RingItem(new Item.Properties().rarity(Rarity.EPIC),null));
+//    public static final RegistryObject<Item> VIGILANCE_RING_DISTANT = ITEMS.register("vigilance_ring_distant", () -> new RingItem(new Item.Properties().rarity(Rarity.EPIC),null));
+//
+//    public static final RegistryObject<Item> VIGILANCE_RING_NEAR = ITEMS.register("vigilance_ring_near", () -> new RingItem(new Item.Properties().rarity(Rarity.EPIC),null));
 
     public static final RegistryObject<Item> ANCIENT_SPELLCRAFT_RING = ITEMS.register("ancient_spellcraft_ring", AncientSpellCraftRing::addAttributeModifier);
+
+    public static final RegistryObject<Item> WHISPER_RING = ITEMS.register("whisper_ring", WhisperRing::addAttributeModifier);
 
     public static final RegistryObject<Item> FIRE_RESISTANCE_RING = ITEMS.register("fire_resistance_ring", () -> new RingItem(new Item.Properties().rarity(Rarity.RARE),null));
 
@@ -98,6 +104,28 @@ public class ItemsRegistry {
     public static final RegistryObject<Item> HEAVY_BRACELET = ITEMS.register("heavy_bracelet", HeavyBracelet::addAttributeModifier);
 
     public static final RegistryObject<Item> LUCKY_BRACELET = ITEMS.register("lucky_bracelet", LuckyBracelet::addAttributeModifier);
+
+    //护符
+    public static final RegistryObject<Item> BIG_SHIELD_TALISMAN = ITEMS.register("big_shield_talisman", BigShieldTalisman::addAttributeModifier);
+
+    public static final RegistryObject<Item> CONSECRATED_COMBAT_PLUME = ITEMS.register("consecrated_combat_plume", ConsecratedCombatPlume::addAttributeModifier);
+
+    public static final RegistryObject<Item> CREED_TALISMAN = ITEMS.register("creed_talisman", CreedTalisman::createCreedTalisman);
+
+//    public static final RegistryObject<Item> ENDER_GAZE = ITEMS.register("ender_gaze", () -> new TalismanItem(new Item.Properties().rarity(Rarity.EPIC),null));
+
+    public static final RegistryObject<Item> HEART_OF_BLOODLUST = ITEMS.register("heart_of_bloodlust", () -> new TalismanItem(new Item.Properties().rarity(Rarity.UNCOMMON),null));
+
+    public static final RegistryObject<Item> HUNTING_BOW_TALISMAN = ITEMS.register("hunting_bow_talisman", HuntingBowTalisman::addAttributeModifier);
+
+    public static final RegistryObject<Item> MANY_WEAPONS_TALISMAN = ITEMS.register("many_weapons_talisman", ManyWeaponsTalisman::addAttributeModifier);
+
+    public static final RegistryObject<Item> MIRACULOUS_TALISMAN = ITEMS.register("miraculous_talisman", MiraculousTalisman::createCreedTalisman);
+
+    public static final RegistryObject<Item> SPANNING_WINGS = ITEMS.register("spanning_wings", SpanningWings::addAttributeModifier);
+
+    public static final RegistryObject<Item> WARRIOR_TALISMAN = ITEMS.register("warrior_talisman", WarriorTalisman::addAttributeModifier);
+
 
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);

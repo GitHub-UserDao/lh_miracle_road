@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.data.ClientData;
+import dev.lhkongyu.lhmiracleroad.data.reloader.AttributePointsRewardsReloadListener;
 import dev.lhkongyu.lhmiracleroad.data.reloader.ShowGuiAttributeReloadListener;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import net.minecraft.client.gui.Font;
@@ -132,7 +133,11 @@ public class InitMainCoordinate {
         holdExperienceValue = playerOccupationAttribute.getOccupationExperience();
         demandExperienceValue = LHMiracleRoadTool.evaluateFormula(playerOccupationAttribute.getEmpiricalCalculationFormula(),playerOccupationAttribute.getOccupationLevel());
         pointsComponent = Component.translatable("lhmiracleroad.gui.attribute.text.points", playerOccupationAttribute.getPoints());
-        levelComponent = Component.translatable("lhmiracleroad.gui.attribute.text.level",playerOccupationAttribute.getOccupationLevel());
+        int occupationLevel = playerOccupationAttribute.getOccupationLevel();
+        for (String key : playerOccupationAttribute.getCurioAttributeLevel().keySet()) {
+            occupationLevel += playerOccupationAttribute.getCurioAttributeLevelValue(key);
+        }
+        levelComponent = Component.translatable("lhmiracleroad.gui.attribute.text.level",occupationLevel);
     }
 
     public int setShowDetailedAttributePage(){

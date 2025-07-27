@@ -102,7 +102,7 @@ public class PlayerAttributeTool {
      * @param attributeLevel
      * @param playerOccupationAttribute
      */
-    private static void setAttribute(ServerPlayer player, JsonObject jsonObject, int attributeLevel, PlayerOccupationAttribute playerOccupationAttribute,String attributeTypeName){
+    public static void setAttribute(ServerPlayer player, JsonObject jsonObject, int attributeLevel, PlayerOccupationAttribute playerOccupationAttribute,String attributeTypeName){
         for (JsonElement jsonElement : LHMiracleRoadTool.isAsJsonArray(jsonObject.get("points_rewards"))) {
             JsonObject object = jsonElement.getAsJsonObject();
             String attributeName = LHMiracleRoadTool.isAsString(object.get("attribute"));
@@ -113,6 +113,10 @@ public class PlayerAttributeTool {
             String operationString = LHMiracleRoadTool.isAsString(object.get("operation"));
             double attributeValue;
             double min = LHMiracleRoadTool.isAsDouble(object.get("min"));
+
+            int curioAttributeLevelValue = playerOccupationAttribute.getCurioAttributeLevelValue(attributeTypeName);
+            attributeLevel += curioAttributeLevelValue;
+
             attributeValue = LHMiracleRoadTool.calculateTotalIncrease(attributeLevel, value, levelPromoteValue, levelPromote, min);
             addExtraAttributes(player,attributeName,attributeValue,operationString,playerOccupationAttribute,attributeTypeName);
         }

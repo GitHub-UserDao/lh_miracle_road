@@ -11,12 +11,14 @@ import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.data.ClientData;
+import dev.lhkongyu.lhmiracleroad.data.loot.nbt.CreedTalismanData;
 import dev.lhkongyu.lhmiracleroad.data.reloader.EquipmentReloadListener;
 import dev.lhkongyu.lhmiracleroad.tool.AttributesNameTool;
 import dev.lhkongyu.lhmiracleroad.tool.ItemPunishmentTool;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import dev.lhkongyu.lhmiracleroad.tool.ResourceLocationTool;
 import net.minecraft.ChatFormatting;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -24,12 +26,15 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.ItemAttributeModifierEvent;
+import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -69,7 +74,10 @@ public class ItemEvent {
                Map<String, Integer> occupationAttributeLevel = playerOccupationAttribute.getOccupationAttributeLevel();
                Integer attributeLevel = 0;
                for (String key : occupationAttributeLevel.keySet()){
-                   if (attributeId.equals(key)) attributeLevel = occupationAttributeLevel.get(key);
+                   if (attributeId.equals(key)) {
+                       attributeLevel = occupationAttributeLevel.get(key);
+                       attributeLevel += playerOccupationAttribute.getCurioAttributeLevelValue(key);
+                   }
                }
                if (attributeLevel < needPoints) {
                    tooltip.add(Component.translatable(describeText, needPoints).withStyle(ChatFormatting.RED));

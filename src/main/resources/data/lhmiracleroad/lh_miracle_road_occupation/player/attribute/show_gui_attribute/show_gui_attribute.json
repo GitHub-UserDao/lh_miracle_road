@@ -34,6 +34,11 @@
     "show_value_type": "base"
   },
   {
+    "attribute": "damage_addition",
+    "attribute_text": "damage_addition",
+    "show_value_type": "extra_percentage"
+  },
+  {
     "attribute": "attack_damage",
     "attribute_text": "power_attack_damage",
     "show_value_type": "base"
@@ -49,6 +54,11 @@
     "show_value_type": "base_percentage"
   },
   {
+    "attribute": "critical_hit_damage",
+    "attribute_text": "critical_hit_damage",
+    "show_value_type": "base_percentage"
+  },
+  {
     "attribute": "hunger",
     "attribute_text": "sturdy_hunger",
     "show_value_type": "extra_percentage"
@@ -58,6 +68,11 @@
     "attribute": "epicfight:staminar",
     "attribute_text": "sturdy_sturdy",
     "show_value_type": "base"
+  },
+  {
+    "attribute": "damage_reduction",
+    "attribute_text": "damage_reduction",
+    "show_value_type": "extra_percentage"
   },
   {
     "attribute": "armor",

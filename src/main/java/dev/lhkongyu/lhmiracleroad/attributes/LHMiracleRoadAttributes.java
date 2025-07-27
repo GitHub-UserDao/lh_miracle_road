@@ -100,10 +100,10 @@ public class LHMiracleRoadAttributes {
 			Double.MAX_VALUE
 	).setSyncable(true);
 
-	public static final String INJURED_ID = "attribute.name."+LHMiracleRoad.MODID+"."+ AttributesNameTool.INJURED;
+	public static final String DAMAGE_REDUCTION_ID = "attribute.name."+LHMiracleRoad.MODID+"."+ AttributesNameTool.DAMAGE_REDUCTION;
 
-	public static final Attribute INJURED = create(
-			INJURED_ID,
+	public static final Attribute DAMAGE_REDUCTION = create(
+			DAMAGE_REDUCTION_ID,
 			1,
 			0,
 			Double.MAX_VALUE
@@ -147,7 +147,7 @@ public class LHMiracleRoadAttributes {
 		ForgeRegistries.ATTRIBUTES.register(AttributesNameTool.JUMP, JUMP);
 		ForgeRegistries.ATTRIBUTES.register(AttributesNameTool.CRITICAL_HIT_RATE, CRITICAL_HIT_RATE);
 		ForgeRegistries.ATTRIBUTES.register(AttributesNameTool.CRITICAL_HIT_DAMAGE, CRITICAL_HIT_DAMAGE);
-		ForgeRegistries.ATTRIBUTES.register(AttributesNameTool.INJURED, INJURED);
+		ForgeRegistries.ATTRIBUTES.register(AttributesNameTool.DAMAGE_REDUCTION, DAMAGE_REDUCTION);
 		ForgeRegistries.ATTRIBUTES.register(AttributesNameTool.SOUL_INCREASE, SOUL_INCREASE);
 		ForgeRegistries.ATTRIBUTES.register(AttributesNameTool.DAMAGE_ADDITION, DAMAGE_ADDITION);
 	}
@@ -162,7 +162,7 @@ public class LHMiracleRoadAttributes {
 		event.add(EntityType.PLAYER, JUMP);
 		event.add(EntityType.PLAYER, CRITICAL_HIT_RATE);
 		event.add(EntityType.PLAYER, CRITICAL_HIT_DAMAGE);
-		event.add(EntityType.PLAYER, INJURED);
+		event.add(EntityType.PLAYER, DAMAGE_REDUCTION);
 		event.add(EntityType.PLAYER, SOUL_INCREASE);
 		event.add(EntityType.PLAYER, DAMAGE_ADDITION);
 	}

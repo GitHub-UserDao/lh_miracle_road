@@ -11,11 +11,11 @@
     "lhmiracleroad:recovery_ring",
     "lhmiracleroad:ring_strength",
     "lhmiracleroad:shielding_ring",
-    "lhmiracleroad:vigilance_ring_distant",
-    "lhmiracleroad:vigilance_ring_near",
     "lhmiracleroad:poison_invading_ring",
     "lhmiracleroad:water_avoidance_ring",
     "lhmiracleroad:ancient_spellcraft_ring",
-    "lhmiracleroad:frost_ring"
+    "lhmiracleroad:frost_ring",
+    "lhmiracleroad:whisper_ring",
+    "lhmiracleroad:cosset_ring"
   ]
 }

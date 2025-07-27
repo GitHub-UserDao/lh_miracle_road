@@ -15,7 +15,7 @@ public class HeavyBracelet {
 
     public static BraceletItem addAttributeModifier(){
         ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
-        builder.put(LHMiracleRoadAttributes.BURDEN, new AttributeModifier(UUID.fromString("6110368f-7515-9a71-48cd-380057d57219"), "", .15, AttributeModifier.Operation.MULTIPLY_TOTAL));
+        builder.put(LHMiracleRoadAttributes.BURDEN, new AttributeModifier(UUID.fromString("6110368f-7515-9a71-48cd-380057d57219"), "", .18, AttributeModifier.Operation.MULTIPLY_TOTAL));
         return new BraceletItem(new Item.Properties().rarity(Rarity.RARE),builder.build());
     }
 

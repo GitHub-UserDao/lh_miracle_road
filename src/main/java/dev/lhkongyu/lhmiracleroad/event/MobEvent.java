@@ -2,7 +2,9 @@ package dev.lhkongyu.lhmiracleroad.event;
 
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerCurioProvider;
+import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.entity.player.PlayerSoulEntity;
+import dev.lhkongyu.lhmiracleroad.items.curio.talisman.HeartOfBloodLust;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -35,13 +37,18 @@ public class MobEvent {
                 if (playerCurio.isEquipHunterMark()){
                     playerCurio.addHunterMarkKillAmount();
                 }
+
+                if (playerCurio.isEquipHeartOfBloodLust()){
+                    HeartOfBloodLust.killRestoreHp(player);
+                }
             });
         }
 
         if (entity instanceof Player player){
+            if (LHMiracleRoadConfig.COMMON.SOUL_LOSS_COUNT.get() >= 1 || LHMiracleRoadConfig.COMMON.SOUL_LOSS_COUNT.get() < 0) return;
             Level level = event.getEntity().level();
             PlayerSoulEntity playerSoulEntity = new PlayerSoulEntity(level,player);
-            playerSoulEntity.setPos(player.position());
+            playerSoulEntity.setPos(player.position().add(0,1.5,0));
             level.addFreshEntity(playerSoulEntity);
         }
     }

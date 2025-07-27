@@ -28,7 +28,7 @@ public class LHMiracleRoadConfig {
 
         public final ForgeConfigSpec.DoubleValue EMPIRICAL_BASE_MULTIPLIER;
 
-//        public final ForgeConfigSpec.DoubleValue SOUL_LOSS_COUNT;
+        public final ForgeConfigSpec.DoubleValue SOUL_LOSS_COUNT;
 
         public final ForgeConfigSpec.BooleanValue IS_SKILL_POINTS_RESTRICT;
 
@@ -85,7 +85,7 @@ public class LHMiracleRoadConfig {
             PUNISHMENT_OVERWEIGHT = builder.comment("overweight").defineInRange("punishment_overweight",-0.6,-0.99,1);
             EMPIRICAL_CALCULATION_FORMULA = builder.comment("empirical calculation formula").define("empirical_calculation_formula","min(pow(3.02 * lv,2) + 98.4 * lv, 19999999)");
             EMPIRICAL_BASE_MULTIPLIER = builder.comment("empirical base multiplier").defineInRange("empirical_base_multiplier",8.0,1.0,100.0);
-//            SOUL_LOSS_COUNT = builder.comment("The percentage amount of soul loss: 1 means no loss, 0 means loss is cleared, and 0.5 means half of the loss.").defineInRange("soul_loss_count",0.5,0,1);
+            SOUL_LOSS_COUNT = builder.comment("The percentage amount of soul loss: 1 means no loss, 0 means loss is cleared, and 0.5 means half of the loss.").defineInRange("soul_loss_count",0.0,0,1);
             IS_SKILL_POINTS_RESTRICT = builder.comment("Enable skill points restrict or not").define("is_skill_points_restrict",true);
             ATTRIBUTE_MAX_LEVEL = builder.comment("Enable skill points restrict or not").defineInRange("attribute_max_level",0,0,Integer.MAX_VALUE);
             MAX_LEVEL = builder.comment("player max level").defineInRange("max_level",Integer.MAX_VALUE,0,Integer.MAX_VALUE);

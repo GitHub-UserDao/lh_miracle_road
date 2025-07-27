@@ -40,8 +40,6 @@ public class RingItem extends LHMiracleRoadCurioItem{
             case "item.lhmiracleroad.poison_invading_ring" -> PoisonInvadingRing.removeEffect(slotContext.entity());
             case "item.lhmiracleroad.water_avoidance_ring" -> WaterAvoidanceRing.setEffect(slotContext.entity());
             case "item.lhmiracleroad.radiance_ring" -> RadianceRing.setEquipRadianceRing(slotContext.entity());
-            case "item.lhmiracleroad.vigilance_ring_distant" -> VigilanceRingDistant.setVigilanceRingDistant(slotContext.entity());
-            case "item.lhmiracleroad.vigilance_ring_near" -> VigilanceRingNear.setVigilanceRingNear(slotContext.entity());
             case "item.lhmiracleroad.frost_ring" -> FrostRing.ignoreFrost(slotContext.entity());
         }
     }
@@ -52,10 +50,9 @@ public class RingItem extends LHMiracleRoadCurioItem{
         switch (item.getDescriptionId()) {
             case "item.lhmiracleroad.fire_resistance_ring" -> FireResistanceRing.addEffect(slotContext.entity());
             case "item.lhmiracleroad.water_avoidance_ring" -> WaterAvoidanceRing.addEffect(slotContext.entity());
-            case "item.lhmiracleroad.life_ring" -> LifeRing.hpSynchronous((Player) slotContext.entity());
+//            case "item.lhmiracleroad.life_ring" -> LifeRing.hpSynchronous((Player) slotContext.entity());
             case "item.lhmiracleroad.radiance_ring" -> RadianceRing.resettingEffect(slotContext.entity());
-            case "item.lhmiracleroad.vigilance_ring_distant" -> VigilanceRingDistant.initVigilanceRingDistant(slotContext.entity(),true);
-            case "item.lhmiracleroad.vigilance_ring_near" -> VigilanceRingNear.initVigilanceRingNear(slotContext.entity(),true);
+            case "item.lhmiracleroad.whisper_ring" -> WhisperRing.equipWhisperRing(slotContext.entity(),true);
         }
     }
 
@@ -63,10 +60,9 @@ public class RingItem extends LHMiracleRoadCurioItem{
     public void onUnequip(SlotContext slotContext, ItemStack newStack, ItemStack stack) {
         Item item = stack.getItem();
         switch (item.getDescriptionId()) {
-            case "item.lhmiracleroad.life_ring" -> LifeRing.hpSynchronous((Player) slotContext.entity());
+//            case "item.lhmiracleroad.life_ring" -> LifeRing.hpSynchronous((Player) slotContext.entity());
             case "item.lhmiracleroad.radiance_ring" -> RadianceRing.equipRadianceRing(slotContext.entity(),false);
-            case "item.lhmiracleroad.vigilance_ring_distant" -> VigilanceRingDistant.initVigilanceRingDistant(slotContext.entity(),false);
-            case "item.lhmiracleroad.vigilance_ring_near" -> VigilanceRingNear.initVigilanceRingNear(slotContext.entity(),false);
+            case "item.lhmiracleroad.whisper_ring" -> WhisperRing.equipWhisperRing(slotContext.entity(),false);
         }
     }
 
@@ -85,7 +81,7 @@ public class RingItem extends LHMiracleRoadCurioItem{
         int baseMaxWidth = font.width("K");
 
         switch (item.getDescriptionId()) {
-            case "item.lhmiracleroad.greedy_gold_serpent_ring","item.lhmiracleroad.radiance_ring" -> {
+            case "item.lhmiracleroad.greedy_gold_serpent_ring","item.lhmiracleroad.radiance_ring","item.lhmiracleroad.whisper_ring" -> {
                 MutableComponent detailsA = Component.translatable(item.getDescriptionId() + ".tooltip.details.1");
                 List<String> strings = LHMiracleRoadTool.baseTextWidthSplitText(font,detailsA,baseMaxWidth * 32,0,0);
                 for (String string : strings){
@@ -101,17 +97,12 @@ public class RingItem extends LHMiracleRoadCurioItem{
                 MutableComponent mutableComponent = Component.translatable(item.getDescriptionId() + ".tooltip.details");
                 lines.add(mutableComponent.withStyle(ChatFormatting.YELLOW));
             }
-            case "item.lhmiracleroad.vigilance_ring_distant","item.lhmiracleroad.vigilance_ring_near" -> {
-                MutableComponent detailsA = Component.translatable(item.getDescriptionId() + ".tooltip.details.1");
-                List<String> strings = LHMiracleRoadTool.baseTextWidthSplitText(font,detailsA,baseMaxWidth * 32,0,0);
+            case "item.lhmiracleroad.cosset_ring" ->{
+                MutableComponent mutableComponent = Component.translatable(item.getDescriptionId() + ".tooltip.details.1");
+                List<String> strings = LHMiracleRoadTool.baseTextWidthSplitText(font,mutableComponent,baseMaxWidth * 32,0,0);
                 for (String string : strings){
                     lines.add(Component.literal(string));
                 }
-                MutableComponent detailsB = Component.translatable(item.getDescriptionId() + ".tooltip.details.2");
-                lines.add(detailsB.withStyle(ChatFormatting.DARK_PURPLE));
-
-                MutableComponent detailsC = Component.translatable(item.getDescriptionId() + ".tooltip.details.3");
-                lines.add(detailsC.withStyle(ChatFormatting.DARK_PURPLE));
             }
             default -> {
                 MutableComponent mutableComponent = Component.translatable(item.getDescriptionId() + ".tooltip.details");

@@ -1,9 +1,9 @@
 package dev.lhkongyu.lhmiracleroad.event;
 
 import com.google.common.collect.Lists;
-import com.mojang.datafixers.kinds.IdF;
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
+import dev.lhkongyu.lhmiracleroad.data.loot.function.CurioFunction;
 import dev.lhkongyu.lhmiracleroad.registry.ItemsRegistry;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
@@ -64,7 +64,7 @@ public class LootEvent {
 
             //避水戒指
             event.getTable().addPool(LootPool.lootPool()
-                    .when(LootItemRandomChanceCondition.randomChance(0.01f))
+                    .when(LootItemRandomChanceCondition.randomChance(0.025f))
                     .add(LootItem.lootTableItem(ItemsRegistry.WATER_AVOIDANCE_RING.get()))
                     .build());
 
@@ -76,7 +76,7 @@ public class LootEvent {
             rareLootTable(event);
             //避水戒指
             event.getTable().addPool(LootPool.lootPool()
-                    .when(LootItemRandomChanceCondition.randomChance(0.05f))
+                    .when(LootItemRandomChanceCondition.randomChance(0.1f))
                     .add(LootItem.lootTableItem(ItemsRegistry.WATER_AVOIDANCE_RING.get()))
                     .build());
 
@@ -105,9 +105,11 @@ public class LootEvent {
 
             //贪婪银蛇戒指
             event.getTable().addPool(LootPool.lootPool()
-                    .when(LootItemRandomChanceCondition.randomChance(0.1f))
+                    .when(LootItemRandomChanceCondition.randomChance(0.12f))
                     .add(LootItem.lootTableItem(ItemsRegistry.GREEDY_SILVER_SERPENT_RING.get()))
                     .build());
+
+            commonCuriosLoot(event);
         }
 
         //丛林神庙
@@ -117,7 +119,7 @@ public class LootEvent {
             rareLootTable(event);
 
             event.getTable().addPool(LootPool.lootPool()
-                    .when(LootItemRandomChanceCondition.randomChance(0.05f))
+                    .when(LootItemRandomChanceCondition.randomChance(0.1f))
                     .add(LootItem.lootTableItem(ItemsRegistry.HUNTERS_MARK.get()))
                     .build());
 
@@ -132,9 +134,11 @@ public class LootEvent {
 
             //贪婪银蛇戒指
             event.getTable().addPool(LootPool.lootPool()
-                    .when(LootItemRandomChanceCondition.randomChance(0.1f))
+                    .when(LootItemRandomChanceCondition.randomChance(0.08f))
                     .add(LootItem.lootTableItem(ItemsRegistry.GREEDY_SILVER_SERPENT_RING.get()))
                     .build());
+
+            commonCuriosLoot(event);
         }
 
         //雪屋
@@ -143,7 +147,7 @@ public class LootEvent {
 
             //冰霜戒指
             event.getTable().addPool(LootPool.lootPool()
-                    .when(LootItemRandomChanceCondition.randomChance(0.25f))
+                    .when(LootItemRandomChanceCondition.randomChance(0.334f))
                     .add(LootItem.lootTableItem(ItemsRegistry.FROST_RING.get()))
                     .build());
         }
@@ -164,17 +168,6 @@ public class LootEvent {
         //末地城
         if (event.getName().equals(BuiltInLootTables.END_CITY_TREASURE)) {
             superlativeCurrencyLootTable(event);
-
-            //双眼戒指
-            event.getTable().addPool(LootPool.lootPool()
-                    .when(LootItemRandomChanceCondition.randomChance(0.05f))
-                    .add(LootItem.lootTableItem(ItemsRegistry.VIGILANCE_RING_DISTANT.get()))
-                    .build());
-
-            event.getTable().addPool(LootPool.lootPool()
-                    .when(LootItemRandomChanceCondition.randomChance(0.05f))
-                    .add(LootItem.lootTableItem(ItemsRegistry.VIGILANCE_RING_NEAR.get()))
-                    .build());
         }
 
     }
@@ -203,39 +196,45 @@ public class LootEvent {
 
     private static void commonCuriosLoot(final LootTableLoadEvent event){
         event.getTable().addPool(LootPool.lootPool()
-                .when(LootItemRandomChanceCondition.randomChance(0.01f))
+                .when(LootItemRandomChanceCondition.randomChance(0.02f))
                 .add(LootItem.lootTableItem(ItemsRegistry.LIFE_RING.get()))
                 .build());
 
         event.getTable().addPool(LootPool.lootPool()
-                .when(LootItemRandomChanceCondition.randomChance(0.01f))
+                .when(LootItemRandomChanceCondition.randomChance(0.02f))
                 .add(LootItem.lootTableItem(ItemsRegistry.RECOVERY_RING.get()))
                 .build());
 
 
         event.getTable().addPool(LootPool.lootPool()
-                .when(LootItemRandomChanceCondition.randomChance(0.01f))
+                .when(LootItemRandomChanceCondition.randomChance(0.02f))
                 .add(LootItem.lootTableItem(ItemsRegistry.RING_STRENGTH.get()))
                 .build());
 
         event.getTable().addPool(LootPool.lootPool()
-                .when(LootItemRandomChanceCondition.randomChance(0.01f))
+                .when(LootItemRandomChanceCondition.randomChance(0.02f))
                 .add(LootItem.lootTableItem(ItemsRegistry.SHIELDING_RING.get()))
                 .build());
 
         event.getTable().addPool(LootPool.lootPool()
-                .when(LootItemRandomChanceCondition.randomChance(0.01f))
+                .when(LootItemRandomChanceCondition.randomChance(0.02f))
                 .add(LootItem.lootTableItem(ItemsRegistry.BERSERK_BRACELET.get()))
                 .build());
 
         event.getTable().addPool(LootPool.lootPool()
-                .when(LootItemRandomChanceCondition.randomChance(0.01f))
+                .when(LootItemRandomChanceCondition.randomChance(0.02f))
                 .add(LootItem.lootTableItem(ItemsRegistry.HEAVY_BRACELET.get()))
                 .build());
 
         event.getTable().addPool(LootPool.lootPool()
-                .when(LootItemRandomChanceCondition.randomChance(0.01f))
+                .when(LootItemRandomChanceCondition.randomChance(0.02f))
                 .add(LootItem.lootTableItem(ItemsRegistry.LUCKY_BRACELET.get()))
+                .build());
+
+        event.getTable().addPool(LootPool.lootPool()
+                .when(LootItemRandomChanceCondition.randomChance(0.02f))
+                .add(LootItem.lootTableItem(ItemsRegistry.CREED_TALISMAN.get()))
+                .apply(CurioFunction.builder())
                 .build());
     }
 
@@ -265,6 +264,12 @@ public class LootEvent {
         event.getTable().addPool(LootPool.lootPool()
                 .when(LootItemRandomChanceCondition.randomChance(LHMiracleRoadConfig.COMMON.KING_SOUL_PROBABILITY.get().floatValue()))
                 .add(LootItem.lootTableItem(ItemsRegistry.KING_SOUL.get()))
+                .build());
+
+        event.getTable().addPool(LootPool.lootPool()
+                .when(LootItemRandomChanceCondition.randomChance(0.05f))
+                .add(LootItem.lootTableItem(ItemsRegistry.MIRACULOUS_TALISMAN.get()))
+                .apply(CurioFunction.builder())
                 .build());
     }
 
@@ -370,19 +375,19 @@ public class LootEvent {
             //配置监守者掉落
         }else if (event.getName().equals(EntityType.WARDEN.getDefaultLootTable())){
             event.getTable().addPool(LootPool.lootPool()
-                    .when(LootItemRandomChanceCondition.randomChance(0.1f))
+                    .when(LootItemRandomChanceCondition.randomChance(0.15f))
                     .add(LootItem.lootTableItem(ItemsRegistry.GREEDY_GOLD_SERPENT_RING.get()))
                     .build());
             //配置烈焰人掉落
         }else if (event.getName().equals(EntityType.BLAZE.getDefaultLootTable())){
             event.getTable().addPool(LootPool.lootPool()
-                    .when(LootItemRandomChanceCondition.randomChance(0.01f))
+                    .when(LootItemRandomChanceCondition.randomChance(0.03f))
                     .add(LootItem.lootTableItem(ItemsRegistry.FIRE_RESISTANCE_RING.get()))
                     .build());
             //配置女巫掉落
         }else if (event.getName().equals(EntityType.WITCH.getDefaultLootTable())){
             event.getTable().addPool(LootPool.lootPool()
-                    .when(LootItemRandomChanceCondition.randomChance(0.02f))
+                    .when(LootItemRandomChanceCondition.randomChance(0.03f))
                     .add(LootItem.lootTableItem(ItemsRegistry.POISON_INVADING_RING.get()))
                     .build());
             //配置凋灵掉落

@@ -3,9 +3,11 @@ package dev.lhkongyu.lhmiracleroad.mixin;
 
 import dev.lhkongyu.lhmiracleroad.attributes.AttributeInstanceAccess;
 import dev.lhkongyu.lhmiracleroad.attributes.LHMiracleRoadAttributes;
+import dev.lhkongyu.lhmiracleroad.capability.PlayerCurioProvider;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.items.curio.ring.RadianceRing;
+import dev.lhkongyu.lhmiracleroad.items.curio.ring.WhisperRing;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -49,18 +51,6 @@ public abstract class LivingEntityMixin {
 				var attribute = ((AttributeInstanceAccess) player.getAttribute(LHMiracleRoadAttributes.RANGED_DAMAGE));
 				damage = (float) attribute.computeIncreasedValueForInitial(damage);
 			}
-			if(!player.level().isClientSide) {
-				double criticalHitRate = player.getAttribute(LHMiracleRoadAttributes.CRITICAL_HIT_RATE).getValue();
-				double criticalHitDamage = player.getAttribute(LHMiracleRoadAttributes.CRITICAL_HIT_DAMAGE).getValue();
-				if (LHMiracleRoadTool.percentageProbability(criticalHitRate)) {
-					damage = (float) (damage * criticalHitDamage);
-					LivingEntity entity = (LivingEntity) (Object) this;
-					int particleCount = (int) (15 * entity.getBbWidth() * entity.getBbHeight()); // 基于实体体积调整粒子数量
-					ServerLevel serverLevel = (ServerLevel) player.level();
-					serverLevel.sendParticles((ServerPlayer) player, ParticleTypes.CRIT, true, entity.getX(), entity.getY() + entity.getBbHeight() * 0.5, entity.getZ(), particleCount, entity.getBbWidth() / 2, entity.getBbHeight() / 2, entity.getBbWidth() / 2,0.2);
-					serverLevel.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.PLAYER_ATTACK_CRIT, SoundSource.PLAYERS, 1.5F, 1.0F);
-				}
-			}
 		}
 		return damage;
 	}
@@ -91,6 +81,10 @@ public abstract class LivingEntityMixin {
 		if (((LivingEntity) (Object) this) instanceof Player player) {
 			var attribute = ((AttributeInstanceAccess) player.getAttribute(LHMiracleRoadAttributes.JUMP));
 			reduction += (attribute.computeIncreasedValueForInitial(1.0f) - 1.0f) * 10.0f;
+
+			if(WhisperRing.getIsEquipWhisperRing(player)){
+				reduction += 20;
+			}
 		}
 		return reduction;
 	}
@@ -99,7 +93,7 @@ public abstract class LivingEntityMixin {
 	private void injectAtDrop(DamageSource source, CallbackInfo ci) {
 		if (source.getEntity() instanceof ServerPlayer player) {
 			player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).ifPresent(playerOccupationAttribute -> {
-				playerOccupationAttribute.addOccupationExperience((int) (entityDroppedXp * LHMiracleRoadConfig.COMMON.EMPIRICAL_BASE_MULTIPLIER.get()));
+				entityDroppedXp = Math.max(entityDroppedXp,20);
 				int occupationExperience = (int) (entityDroppedXp * LHMiracleRoadConfig.COMMON.EMPIRICAL_BASE_MULTIPLIER.get());
 
 				AttributeInstance attributeInstance = player.getAttribute(LHMiracleRoadAttributes.SOUL_INCREASE);
@@ -109,7 +103,6 @@ public abstract class LivingEntityMixin {
 				playerOccupationAttribute.addOccupationExperience(occupationExperience);
 			});
 		}
-
 	}
 
 	@ModifyArg(method = "dropExperience", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/ExperienceOrb;award(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/phys/Vec3;I)V"), index = 2)

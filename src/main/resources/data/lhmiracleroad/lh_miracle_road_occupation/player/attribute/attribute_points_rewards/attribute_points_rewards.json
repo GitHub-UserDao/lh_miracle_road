@@ -123,17 +123,19 @@
       "points_rewards": [
         {
           "attribute": "armor",
-          "value": 0.2,
-          "level_promote": 0,
-          "level_promote_value": 0,
-          "operation": "addition"
+          "value": 1,
+          "level_promote": 20,
+          "level_promote_value": -0.5,
+          "operation": "addition",
+          "min": 0.1
         },
         {
           "attribute": "armor_toughness",
-          "value": 0.1,
-          "level_promote": 0,
-          "level_promote_value": 0,
-          "operation": "addition"
+          "value": 0.5,
+          "level_promote": 20,
+          "level_promote_value": -0.25,
+          "operation": "addition",
+          "min": 0.1
         }
       ]
     }

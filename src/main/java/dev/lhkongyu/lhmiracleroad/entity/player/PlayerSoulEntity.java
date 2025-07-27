@@ -1,6 +1,7 @@
 package dev.lhkongyu.lhmiracleroad.entity.player;
 
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
+import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.particle.SoulParticleOption;
 import dev.lhkongyu.lhmiracleroad.registry.EntityRegistry;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
@@ -84,7 +85,8 @@ public class PlayerSoulEntity extends Entity {
         this.setInvulnerable(true);
         this.setNoGravity(true);
         owner.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).ifPresent(playerOccupationAttribute -> {
-            this.setSoulCount(playerOccupationAttribute.getOccupationExperience());
+            int soulCount = (int) (playerOccupationAttribute.getOccupationExperience() * LHMiracleRoadConfig.COMMON.SOUL_LOSS_COUNT.get());
+            this.setSoulCount(soulCount);
         });
     }
 
@@ -137,7 +139,7 @@ public class PlayerSoulEntity extends Entity {
             }
 
             LHMiracleRoadTool.getSoulParticle((ServerLevel) level, (ServerPlayer) player,soulCount,150,200,this);
-            playerOccupationAttribute.setOccupationExperience(soulCount);
+            playerOccupationAttribute.setOccupationExperience(playerOccupationAttribute.getOccupationExperience() + soulCount);
             clean();
         });
     }

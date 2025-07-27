@@ -200,8 +200,10 @@ public class ItemPunishmentTool {
 
             String attributeId = LHMiracleRoadTool.isAsString(jsonObject.get("attribute_id"));
             int needPoints = LHMiracleRoadTool.isAsInt(jsonObject.get("need_points"));
-            Integer mapAttributeLevel = occupationAttributeLevel.get(attributeId);
-            int attributeLevel = mapAttributeLevel == null ? 0 : mapAttributeLevel;
+            Integer mapOccupationAttributeLevel = occupationAttributeLevel.get(attributeId);
+            int mapCurioAttributeLevel = playerOccupationAttribute.getCurioAttributeLevelValue(attributeId);
+            int attributeLevel = mapOccupationAttributeLevel == null ? 0 : mapOccupationAttributeLevel;
+            attributeLevel += mapCurioAttributeLevel;
 
             if (attributeLevel < needPoints) {
                 String punishmentId = LHMiracleRoadTool.isAsString(jsonObject.get("punishment_id"));

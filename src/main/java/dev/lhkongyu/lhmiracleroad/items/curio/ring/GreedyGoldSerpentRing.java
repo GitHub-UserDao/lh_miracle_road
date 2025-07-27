@@ -17,7 +17,7 @@ public class GreedyGoldSerpentRing {
 
     public static RingItem addAttributeModifier(){
         ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
-        builder.put(LHMiracleRoadAttributes.SOUL_INCREASE, new AttributeModifier(UUID.fromString("018a834b-ae02-0854-07c5-ceb6aeee1113"), "", .3, AttributeModifier.Operation.MULTIPLY_TOTAL));
+        builder.put(LHMiracleRoadAttributes.SOUL_INCREASE, new AttributeModifier(UUID.fromString("018a834b-ae02-0854-07c5-ceb6aeee1113"), "", .5, AttributeModifier.Operation.MULTIPLY_TOTAL));
         return new RingItem(new Item.Properties().rarity(Rarity.UNCOMMON),builder.build());
     }
 }

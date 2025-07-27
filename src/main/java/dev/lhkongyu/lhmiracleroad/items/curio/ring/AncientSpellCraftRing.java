@@ -17,7 +17,7 @@ public class AncientSpellCraftRing {
 
     public static RingItem addAttributeModifier(){
         ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
-        builder.put(LHMiracleRoadAttributes.DAMAGE_ADDITION, new AttributeModifier(UUID.fromString("d051e99d-c3ea-56dc-b6cb-f60f5623322e"), "", .12, AttributeModifier.Operation.MULTIPLY_TOTAL));
+        builder.put(LHMiracleRoadAttributes.DAMAGE_ADDITION, new AttributeModifier(UUID.fromString("d051e99d-c3ea-56dc-b6cb-f60f5623322e"), "", .16, AttributeModifier.Operation.MULTIPLY_TOTAL));
         return new RingItem(new Item.Properties().rarity(Rarity.EPIC),builder.build());
     }
 }

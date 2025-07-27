@@ -31,6 +31,8 @@ public class PlayerOccupationAttribute {
 
     private Map<String, Integer> occupationAttributeLevel = Maps.newHashMap();
 
+    private Map<String, Integer> curioAttributeLevel = Maps.newHashMap();
+
     private AttributeModifier heavyAttributeModifier = null;
 
     private double offhandHeavy;
@@ -107,6 +109,35 @@ public class PlayerOccupationAttribute {
 
     public void putOccupationAttributeLevel(String key,Integer value){
         this.occupationAttributeLevel.put(key,value);
+    }
+
+    public Map<String, Integer> getCurioAttributeLevel() {
+        return curioAttributeLevel;
+    }
+
+    public void setCurioAttributeLevel(Map<String, Integer> curioAttributeLevel) {
+        this.curioAttributeLevel = curioAttributeLevel;
+    }
+
+    public int getCurioAttributeLevelValue(String key) {
+       return this.curioAttributeLevel.get(key) == null ? 0 : this.curioAttributeLevel.get(key);
+    }
+
+
+    public void addCurioAttributeLevel(String key,Integer value){
+        if (this.curioAttributeLevel.get(key) != null){
+            Integer originalValue = this.curioAttributeLevel.get(key);
+            this.curioAttributeLevel.put(key,originalValue + value);
+        }else {
+            this.curioAttributeLevel.put(key,value);
+        }
+    }
+
+    public void subtractCurioAttributeLevel(String key,Integer value){
+        if (this.curioAttributeLevel.get(key) != null){
+            Integer originalValue = this.curioAttributeLevel.get(key);
+            this.curioAttributeLevel.put(key,originalValue - value);
+        }
     }
 
     public Map<String, AttributeModifier> getPunishmentAttributeModifier() {
@@ -219,6 +250,14 @@ public class PlayerOccupationAttribute {
             compoundTag.put("occupationAttributeLevel", levelTags);
         }
 
+        if (curioAttributeLevel != null) {
+            CompoundTag levelTags = new CompoundTag();
+            for (Map.Entry<String, Integer> entry : curioAttributeLevel.entrySet()) {
+                levelTags.putInt(entry.getKey(), entry.getValue());
+            }
+            compoundTag.put("curioAttributeLevel", levelTags);
+        }
+
         if (heavyAttributeModifier != null){
             compoundTag.put("heavyAttributeModifier",heavyAttributeModifier.save());
         }
@@ -265,6 +304,15 @@ public class PlayerOccupationAttribute {
             }
         }
 
+        if (compoundTag.contains("curioAttributeLevel", Tag.TAG_COMPOUND)) {
+            CompoundTag levelTags = compoundTag.getCompound("curioAttributeLevel");
+            curioAttributeLevel = Maps.newHashMap();
+            for (String key : levelTags.getAllKeys()) {
+                int value = levelTags.getInt(key);
+                curioAttributeLevel.put(key, value);
+            }
+        }
+
         if (compoundTag.contains("heavyAttributeModifier", Tag.TAG_STRING)) {
             CompoundTag heavyAttributeModifierTags = compoundTag.getCompound("heavyAttributeModifier");
             heavyAttributeModifier = AttributeModifier.load(heavyAttributeModifierTags);
@@ -290,6 +338,11 @@ public class PlayerOccupationAttribute {
         JsonObject occupationAttributeLevel = new JsonObject();
         this.occupationAttributeLevel.forEach(occupationAttributeLevel::addProperty);
         playerOccupationAttributeObject.add("occupationAttributeLevel",occupationAttributeLevel);
+
+        JsonObject curioAttributeLevel = new JsonObject();
+        this.curioAttributeLevel.forEach(curioAttributeLevel::addProperty);
+        playerOccupationAttributeObject.add("curioAttributeLevel",curioAttributeLevel);
+
         return playerOccupationAttributeObject;
     }
 

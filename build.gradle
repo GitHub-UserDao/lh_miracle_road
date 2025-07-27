@@ -173,6 +173,7 @@ dependencies {
     // curios
     implementation fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}:api")
     runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")
+
 //    //geckolib
 //    implementation fg.deobf("curse.maven:geckolib-388172:5188427")
 //    //playeranimator
@@ -183,10 +184,10 @@ dependencies {
 //    implementation fg.deobf("curse.maven:ars-nouveau-306770:4966125")
 //    implementation fg.deobf("curse.maven:attributefix-280510:4911083")
 //    implementation fg.deobf("curse.maven:applied-energistics-2-223794:5253401")
-
+//
 //    // paragliders
 //    implementation fg.deobf("curse.maven:paragliders-289240:5046069")
-
+//
 //    implementation fg.deobf("curse.maven:tslatentitystatus-tes-830420:5011935")
     // Specify the version of Minecraft to use.
     // Any artifact can be supplied so long as it has a "userdev" classifier artifact and is a compatible patcher artifact.

@@ -295,6 +295,7 @@ public class LHMiracleRoadMainScreen extends Screen {
 
         for (String key : ClientData.ATTRIBUTE_TYPES.keySet()) {
             Integer level = playerOccupationAttribute.getOccupationAttributeLevel().get(key);
+            level += playerOccupationAttribute.getCurioAttributeLevelValue(key);
             String nameText = ResourceLocationTool.ATTRIBUTE_NAME_PREFIX + key;
             Component componentNameText = Component.translatable(nameText);
 
@@ -343,7 +344,7 @@ public class LHMiracleRoadMainScreen extends Screen {
                 String showValue = "";
                 int percentageBase = 100;
                 if (attributeName.equals(AttributesNameTool.MOVEMENT_SPEED)) percentageBase = 1000;
-                if (LHMiracleRoadTool.isLHMiracleRoadAttribute(attributeName)) {
+                if (LHMiracleRoadTool.isEspeciallyAttributeView(attributeName)) {
                     showValue = LHMiracleRoadTool.getShowLHMiracleRoadValueType(modifiers, attributeName, percentageBase);
                 } else {
                     showValue = LHMiracleRoadTool.getShowValueType(showValueType, value, baseValue, percentageBase, attributeName);
@@ -414,6 +415,12 @@ public class LHMiracleRoadMainScreen extends Screen {
     }
 
     private void pointsAttributeName(String attributeTypeName){
+        JsonObject data = ClientData.ATTRIBUTE_POINTS_REWARDS.get(attributeTypeName);
+        int maxLevel = LHMiracleRoadTool.isAsInt(data.get("max_level"));
+        int currentLevel = playerOccupationAttribute.getOccupationAttributeLevel().get(attributeTypeName);
+        int attributeMaxLevel = playerOccupationAttribute.getAttributeMaxLevel();
+        if (!LHMiracleRoadTool.isShowPointsButton(currentLevel, maxLevel, attributeMaxLevel)) return;
+
         PlayerAttributeChannel.sendToServer(new PlayerAttributePointsMessage(attributeTypeName));
 
         Optional<PlayerOccupationAttribute> optionalPlayerOccupationAttribute = getPlayer().getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).resolve();

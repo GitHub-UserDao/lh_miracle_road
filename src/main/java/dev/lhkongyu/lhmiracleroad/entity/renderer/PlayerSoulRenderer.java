@@ -79,14 +79,14 @@ public class PlayerSoulRenderer extends EntityRenderer<Entity> {
         this.main.render(poseStack, consumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY,redColorA.x,redColorA.y,redColorA.z,.6f);
         poseStack.popPose();
 
-        poseStack.pushPose();
-        float scale = this.scale * 1.1f;
-        poseStack.mulPose(Axis.XP.rotationDegrees(180));
-        poseStack.scale(scale, scale, scale);
-        this.main.render(poseStack, consumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY,redColorB.x,redColorB.y,redColorB.z,.3f);
-        poseStack.popPose();
+//        poseStack.pushPose();
+//        float scale = this.scale * 1.1f;
+//        poseStack.mulPose(Axis.XP.rotationDegrees(180));
+//        poseStack.scale(scale, scale, scale);
+//        this.main.render(poseStack, consumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY,redColorB.x,redColorB.y,redColorB.z,.3f);
+//        poseStack.popPose();
 
-        // 渲染名称标签（核心代码）
+        // 渲染名称标签
         if (entity.isCustomNameVisible()) {
             renderNameTag(entity, Objects.requireNonNull(entity.getCustomName()), poseStack, bufferSource, LightTexture.FULL_BRIGHT);
         }

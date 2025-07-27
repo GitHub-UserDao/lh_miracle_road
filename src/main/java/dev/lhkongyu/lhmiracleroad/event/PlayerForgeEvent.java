@@ -1,5 +1,6 @@
 package dev.lhkongyu.lhmiracleroad.event;
 
+import com.google.common.collect.Maps;
 import com.google.gson.JsonObject;
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
 import dev.lhkongyu.lhmiracleroad.attributes.LHMiracleRoadAttributes;
@@ -8,8 +9,9 @@ import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.entity.player.PlayerSoulEntity;
-import dev.lhkongyu.lhmiracleroad.items.curio.ring.VigilanceRingDistant;
-import dev.lhkongyu.lhmiracleroad.items.curio.ring.VigilanceRingNear;
+import dev.lhkongyu.lhmiracleroad.items.curio.talisman.ConsecratedCombatPlume;
+import dev.lhkongyu.lhmiracleroad.items.curio.talisman.HuntingBowTalisman;
+import dev.lhkongyu.lhmiracleroad.items.curio.talisman.SpanningWings;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import dev.lhkongyu.lhmiracleroad.tool.PlayerAttributeTool;
 import net.minecraft.core.particles.ParticleTypes;
@@ -18,7 +20,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -84,8 +85,8 @@ public class PlayerForgeEvent {
         player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).ifPresent(playerOccupationAttribute -> {
             againAttachAttribute(playerOccupationAttribute,player);
             //死亡后的灵魂量
-//            int soulCount = (int) (playerOccupationAttribute.getOccupationExperience() * LHMiracleRoadConfig.COMMON.SOUL_LOSS_COUNT.get());
-            int soulCount = 0;
+            int soulCount = (int) (playerOccupationAttribute.getOccupationExperience() * LHMiracleRoadConfig.COMMON.SOUL_LOSS_COUNT.get());
+//            int soulCount = 0;
             playerOccupationAttribute.setOccupationExperience(soulCount);
         });
     }
@@ -111,6 +112,7 @@ public class PlayerForgeEvent {
         Player player = event.getEntity();
         player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).ifPresent(playerOccupationAttribute -> {
             loggedInSyncAttribute(playerOccupationAttribute, (ServerPlayer) player);
+            playerOccupationAttribute.setCurioAttributeLevel(Maps.newHashMap());
             LHMiracleRoadTool.synchronizationClient(playerOccupationAttribute, (ServerPlayer) player);
             LHMiracleRoadTool.synchronizationShowAttribute((ServerPlayer) player);
             //更新玩家奖惩状态
@@ -187,12 +189,16 @@ public class PlayerForgeEvent {
         if (directEntity instanceof  Player player){
             //饰品伤害加成
             player.getCapability(PlayerCurioProvider.PLAYER_CURIO_PROVIDER).ifPresent(playerCurio -> {
-                if (playerCurio.isVigilanceRingDistant()){
-                    VigilanceRingDistant.damageCount(player,event.getEntity(), event);
+                if (playerCurio.isEquipHuntingBowTalisman()){
+                    HuntingBowTalisman.damageCount(player,event.getEntity(), event);
                 }
 
-                if (playerCurio.isVigilanceRingNear()){
-                    VigilanceRingNear.damageCount(player,event.getEntity(), event);
+                if (playerCurio.isEquipConsecratedCombatPlume()){
+                    ConsecratedCombatPlume.damageCount(player, event);
+                }
+
+                if (playerCurio.isEquipSpanningWings()){
+                    SpanningWings.damageCount(player, event);
                 }
             });
             //伤害加成
@@ -218,9 +224,10 @@ public class PlayerForgeEvent {
 
         //玩家受到伤害最后计算
         if (event.getEntity() instanceof Player player) {
-            AttributeInstance attributeInstance = player.getAttribute(LHMiracleRoadAttributes.INJURED);
+            AttributeInstance attributeInstance = player.getAttribute(LHMiracleRoadAttributes.DAMAGE_REDUCTION);
             if (attributeInstance != null) {
-                float damage = (float) (event.getAmount() * attributeInstance.getValue());
+                double damageReduction = Math.max(1 - attributeInstance.getValue() + 1,0.1);
+                float damage = (float) (event.getAmount() * damageReduction);
                 event.setAmount(damage);
             }
         }

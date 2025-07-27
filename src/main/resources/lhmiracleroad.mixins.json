@@ -7,6 +7,7 @@
   "refmap": "lhmiracleroad.refmap.json",
   "mixins": [
     "AttributeInstanceMixin",
+    "ItemStackMixin",
     "LivingEntityMixin",
     "PlayerMixin"
   ],

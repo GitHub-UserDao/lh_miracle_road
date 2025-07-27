@@ -15,7 +15,7 @@ public class BerserkBracelet {
 
     public static BraceletItem addAttributeModifier(){
         ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
-        builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(UUID.fromString("99b866e7-f2b0-1873-7665-1c3389f647d2"), "", .20, AttributeModifier.Operation.MULTIPLY_TOTAL));
+        builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(UUID.fromString("99b866e7-f2b0-1873-7665-1c3389f647d2"), "", .3, AttributeModifier.Operation.MULTIPLY_TOTAL));
         return new BraceletItem(new Item.Properties().rarity(Rarity.RARE),builder.build());
     }
 

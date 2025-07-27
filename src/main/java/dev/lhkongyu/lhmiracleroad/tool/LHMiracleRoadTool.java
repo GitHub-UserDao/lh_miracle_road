@@ -27,6 +27,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -46,6 +47,8 @@ import java.math.RoundingMode;
 import java.util.*;
 
 public class LHMiracleRoadTool {
+
+    public static RandomSource randomSource = RandomSource.create();
 
     /**
      * 转入路径转换为 带 modid 的 ResourceLocation对象
@@ -414,7 +417,7 @@ public class LHMiracleRoadTool {
             case AttributesNameTool.JUMP -> LHMiracleRoadAttributes.JUMP;
             case AttributesNameTool.CRITICAL_HIT_RATE -> LHMiracleRoadAttributes.CRITICAL_HIT_RATE;
             case AttributesNameTool.CRITICAL_HIT_DAMAGE -> LHMiracleRoadAttributes.CRITICAL_HIT_DAMAGE;
-            case AttributesNameTool.INJURED -> LHMiracleRoadAttributes.INJURED;
+            case AttributesNameTool.DAMAGE_REDUCTION -> LHMiracleRoadAttributes.DAMAGE_REDUCTION;
             case AttributesNameTool.SOUL_INCREASE -> LHMiracleRoadAttributes.SOUL_INCREASE;
             case AttributesNameTool.DAMAGE_ADDITION -> LHMiracleRoadAttributes.DAMAGE_ADDITION;
             default -> AttributePointsRewardsReloadListener.recordAttribute.get(attributeName);
@@ -422,14 +425,25 @@ public class LHMiracleRoadTool {
     }
 
     /**
-     * 判断是否是本模组的属性对象
+     * 判断是否进行格外加成的显示
      * @param attributeName
      * @return
      */
-    public static boolean isLHMiracleRoadAttribute(String attributeName){
+    public static boolean isEspeciallyAttributeView(String attributeName){
         if (attributeName == null) return false;
         return switch (attributeName) {
-            case AttributesNameTool.RANGED_DAMAGE, AttributesNameTool.JUMP, AttributesNameTool.HUNGER, AttributesNameTool.HEALING, AttributesNameTool.HEAVY, AttributesNameTool.BURDEN, AttributesNameTool.CRITICAL_HIT_RATE, AttributesNameTool.CRITICAL_HIT_DAMAGE -> true;
+            case AttributesNameTool.RANGED_DAMAGE,
+                    AttributesNameTool.JUMP,
+                    AttributesNameTool.HUNGER,
+                    AttributesNameTool.HEALING,
+                    AttributesNameTool.HEAVY,
+                    AttributesNameTool.BURDEN,
+                    AttributesNameTool.CRITICAL_HIT_RATE
+//                    AttributesNameTool.CRITICAL_HIT_DAMAGE,
+//                    AttributesNameTool.DAMAGE_REDUCTION,
+//                    AttributesNameTool.SOUL_INCREASE,
+//                    AttributesNameTool.DAMAGE_ADDITION
+                    -> true;
             default -> false;
         };
     }
