@@ -14,6 +14,7 @@ import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.data.ClientData;
 import dev.lhkongyu.lhmiracleroad.data.reloader.*;
+import dev.lhkongyu.lhmiracleroad.entity.player.PlayerSoulEntity;
 import dev.lhkongyu.lhmiracleroad.packet.ClientDataMessage;
 import dev.lhkongyu.lhmiracleroad.packet.ClientOccupationMessage;
 import dev.lhkongyu.lhmiracleroad.packet.PlayerAttributeChannel;
@@ -47,6 +48,8 @@ import java.math.RoundingMode;
 import java.util.*;
 
 public class LHMiracleRoadTool {
+
+    public static final Map<UUID, PlayerSoulEntity> SOUL_ENTITY_MAP = new HashMap<>();
 
     public static RandomSource randomSource = RandomSource.create();
 

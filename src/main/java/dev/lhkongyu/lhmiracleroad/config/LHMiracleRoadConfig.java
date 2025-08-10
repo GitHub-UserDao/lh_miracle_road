@@ -74,6 +74,8 @@ public class LHMiracleRoadConfig {
 
         public final ForgeConfigSpec.IntValue MAX_LEVEL;
 
+        public final ForgeConfigSpec.BooleanValue DARK_SOUL;
+
         public Common(ForgeConfigSpec.Builder builder) {
             builder.push("base");
             INIT_BURDEN = builder.comment("init burden").defineInRange("init_burden",60,10,1000);
@@ -89,6 +91,7 @@ public class LHMiracleRoadConfig {
             IS_SKILL_POINTS_RESTRICT = builder.comment("Enable skill points restrict or not").define("is_skill_points_restrict",true);
             ATTRIBUTE_MAX_LEVEL = builder.comment("Enable skill points restrict or not").defineInRange("attribute_max_level",0,0,Integer.MAX_VALUE);
             MAX_LEVEL = builder.comment("player max level").defineInRange("max_level",Integer.MAX_VALUE,0,Integer.MAX_VALUE);
+            DARK_SOUL = builder.comment("When Dark Soul mode is enabled, dying will always erase the soul remnant from your previous death.").define("dark_soul",false);
             builder.pop();
 
             builder.push("items loot probability");

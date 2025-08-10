@@ -194,18 +194,19 @@
   "item.lhmiracleroad.creed_talisman.tooltip.details.2": "%s + %s",
   "item.lhmiracleroad.miraculous_talisman.tooltip.details.1": "触此符者，即触神迹回响。",
   "item.lhmiracleroad.miraculous_talisman.tooltip.details.2": "%s + %s",
-  "item.lhmiracleroad.big_shield_talisman.tooltip.details": "钝器冲击会变成闷响，利刃划过只留白痕。",
-  "item.lhmiracleroad.consecrated_combat_plume.tooltip.details.1": "此身不破，此心不败，献予己身的最强加冕。",
+  "item.lhmiracleroad.big_shield_talisman.tooltip.details": "钝器冲击只剩闷响，利刃划过只留白痕。",
+  "item.lhmiracleroad.consecrated_combat_plume.tooltip.details.1": "此身不破，此心不败，献予己身，最强加冕。",
   "item.lhmiracleroad.consecrated_combat_plume.tooltip.details.2": "满血增伤",
-  "item.lhmiracleroad.heart_of_bloodlust.tooltip.details.1": "搏动如战鼓，啜饮敌血续狂心。",
+  "item.lhmiracleroad.heart_of_bloodlust.tooltip.details.1": "搏动声响如战鼓，啜饮敌血续狂心。",
   "item.lhmiracleroad.heart_of_bloodlust.tooltip.details.2": "此心不竭，此躯不陨。",
-  "item.lhmiracleroad.hunting_bow_talisman.tooltip.details.1": "百步之外，风亦成弦——距离愈长，箭锋所凝杀意愈烈。",
-  "item.lhmiracleroad.hunting_bow_talisman.tooltip.details.2": "远距离增伤",
+  "item.lhmiracleroad.hunting_bow_talisman.tooltip.details.1": "百步之外，风亦成弦。",
+  "item.lhmiracleroad.hunting_bow_talisman.tooltip.details.2": "距离愈长，箭锋所凝杀意愈烈。",
   "item.lhmiracleroad.many_weapons_talisman.tooltip.details": "臂悬刀斧，腰挎弓刃，步履未滞反愈疾。",
   "item.lhmiracleroad.spanning_wings.tooltip.details.1": "翼折骨裂，其影愈凶。",
   "item.lhmiracleroad.spanning_wings.tooltip.details.2": "低血增伤",
-  "item.lhmiracleroad.warrior_talisman.tooltip.details": "纵使此躯碎尽疆场，亦当裹铁血荣光而归。",
+  "item.lhmiracleroad.warrior_talisman.tooltip.details": "纵使此躯碎尽疆场，亦当裹血凯旋而归。",
 
 
-  "tooltip.lhmiracleroad.talisman.nbt.null": "护符没有被赋予神秘的力量"
+  "tooltip.lhmiracleroad.talisman.nbt.null": "护符没有被赋予神秘的力量",
+  "entity.lhmiracleroad.soul": "的灵魂"
 }

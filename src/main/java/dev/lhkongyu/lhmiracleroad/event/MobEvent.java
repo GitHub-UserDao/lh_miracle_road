@@ -19,6 +19,7 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.util.List;
 import java.util.Optional;
 
 @Mod.EventBusSubscriber(modid = LHMiracleRoad.MODID,bus = Mod.EventBusSubscriber.Bus.FORGE)
@@ -46,7 +47,14 @@ public class MobEvent {
 
         if (entity instanceof Player player){
             if (LHMiracleRoadConfig.COMMON.SOUL_LOSS_COUNT.get() >= 1 || LHMiracleRoadConfig.COMMON.SOUL_LOSS_COUNT.get() < 0) return;
-            Level level = event.getEntity().level();
+            Level level = player.level();
+            if (LHMiracleRoadConfig.COMMON.DARK_SOUL.get()) {
+                PlayerSoulEntity oldSoul = LHMiracleRoadTool.SOUL_ENTITY_MAP.get(player.getUUID());
+                if (oldSoul != null && oldSoul.isAlive()) {
+                    oldSoul.discard();
+                }
+            }
+
             PlayerSoulEntity playerSoulEntity = new PlayerSoulEntity(level,player);
             playerSoulEntity.setPos(player.position().add(0,1.5,0));
             level.addFreshEntity(playerSoulEntity);

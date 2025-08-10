@@ -1,10 +1,13 @@
 package dev.lhkongyu.lhmiracleroad.entity.player;
 
+import com.mojang.authlib.GameProfile;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.particle.SoulParticleOption;
 import dev.lhkongyu.lhmiracleroad.registry.EntityRegistry;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -17,12 +20,14 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LightBlock;
 import net.minecraftforge.fluids.FluidType;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public class PlayerSoulEntity extends Entity {
@@ -36,6 +41,9 @@ public class PlayerSoulEntity extends Entity {
     private int soulCount;
 
     private static final EntityDataAccessor<Integer> DURATION = SynchedEntityData.defineId(Entity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Optional<UUID>> SOUL_UUID = SynchedEntityData.defineId(PlayerSoulEntity.class, EntityDataSerializers.OPTIONAL_UUID);
+    private static final EntityDataAccessor<String> SOUL_NAME = SynchedEntityData.defineId(PlayerSoulEntity.class, EntityDataSerializers.STRING);
+
 
     public Entity getOwner() {
         if (this.cachedOwner != null && !this.cachedOwner.isRemoved()) {
@@ -78,6 +86,8 @@ public class PlayerSoulEntity extends Entity {
         super(entityType, level);
     }
 
+    private GameProfile profile;
+
     public PlayerSoulEntity(Level level,Player owner) {
         this(EntityRegistry.PLAYER_SOUL.get(), level);
         setOwner(owner);
@@ -85,9 +95,32 @@ public class PlayerSoulEntity extends Entity {
         this.setInvulnerable(true);
         this.setNoGravity(true);
         owner.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).ifPresent(playerOccupationAttribute -> {
-            int soulCount = (int) (playerOccupationAttribute.getOccupationExperience() * LHMiracleRoadConfig.COMMON.SOUL_LOSS_COUNT.get());
+            int soulCount = playerOccupationAttribute.getOccupationExperience() - (int) (playerOccupationAttribute.getOccupationExperience() * LHMiracleRoadConfig.COMMON.SOUL_LOSS_COUNT.get());
             this.setSoulCount(soulCount);
         });
+
+        setSoulProfile(owner.getGameProfile());
+        if (LHMiracleRoadConfig.COMMON.DARK_SOUL.get()) {
+            LHMiracleRoadTool.SOUL_ENTITY_MAP.put(owner.getUUID(), this);
+        }
+    }
+
+    public void setSoulProfile(GameProfile profile) {
+        this.profile = profile;
+        this.getEntityData().set(SOUL_NAME, profile.getName());
+        this.getEntityData().set(SOUL_UUID, Optional.ofNullable(profile.getId()));
+    }
+
+    public GameProfile getProfile() {
+        if (this.profile == null && this.level().isClientSide) {
+            Optional<UUID> uuidOpt = this.getEntityData().get(SOUL_UUID);
+            String name = this.getEntityData().get(SOUL_NAME);
+            String soul = I18n.get("entity.lhmiracleroad.soul");
+            if (uuidOpt.isPresent() && name != null && !name.isEmpty()) {
+                this.profile = new GameProfile(uuidOpt.get(), name + soul);
+            }
+        }
+        return this.profile;
     }
 
     public void trailParticles() {
@@ -147,6 +180,8 @@ public class PlayerSoulEntity extends Entity {
     @Override
     public void defineSynchedData() {
         this.getEntityData().define(DURATION, LHMiracleRoadTool.getDuration(1));
+        this.getEntityData().define(SOUL_UUID, Optional.empty());
+        this.getEntityData().define(SOUL_NAME, "");
     }
 
     @Override
@@ -162,6 +197,12 @@ public class PlayerSoulEntity extends Entity {
             compoundTag.putString("CustomName", Component.Serializer.toJson(this.getCustomName()));
         }
         compoundTag.putBoolean("CustomNameVisible", this.isCustomNameVisible());
+
+        Optional<UUID> uuidOpt = this.getEntityData().get(SOUL_UUID);
+        if (uuidOpt.isPresent()) {
+            compoundTag.putUUID("SoulUUID", uuidOpt.get());
+        }
+        compoundTag.putString("SoulName", this.getEntityData().get(SOUL_NAME));
     }
 
     @Override
@@ -177,6 +218,13 @@ public class PlayerSoulEntity extends Entity {
             this.setCustomName(Component.Serializer.fromJson(compoundTag.getString("CustomName")));
         }
         this.setCustomNameVisible(compoundTag.getBoolean("CustomNameVisible"));
+
+        if (compoundTag.contains("SoulName")) {
+            this.getEntityData().set(SOUL_NAME, compoundTag.getString("SoulName"));
+        }
+        if (compoundTag.hasUUID("SoulUUID")) {
+            this.getEntityData().set(SOUL_UUID, Optional.of(compoundTag.getUUID("SoulUUID")));
+        }
     }
 
     //不让流体推动法术实体

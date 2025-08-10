@@ -33,7 +33,7 @@ public class SoulParticle extends TextureSheetParticle {
             double dz = z - ownerCenter.z;
             double distance = Math.sqrt(dx*dx + dy*dy + dz*dz);
 
-            this.lifetime = Math.max((int) distance * 2 + random.nextInt(5), 20 + random.nextInt(5));
+            this.lifetime = Math.max((int) distance * 3 + random.nextInt(5), 30 + random.nextInt(5));
         } else {
             this.lifetime = 20 + random.nextInt(5);
             this.gravity = -0.1F;
@@ -57,34 +57,41 @@ public class SoulParticle extends TextureSheetParticle {
     public void tick() {
         super.tick();
         Entity owner = getEntity();
-        if (age > lifetime * .6 && owner != null) {
+        if (owner != null) {
             Vec3 ownerPos = getOwnerPosition(owner);
             Vec3 currentPos = new Vec3(x, y, z);
 
             double distance = currentPos.distanceTo(ownerPos);
 
-            double baseSpeedFactor = 0.5 + (distance / 50.0) * 0.5;
-            double speedMultiplier = 1.8 * baseSpeedFactor;
+            if (age > lifetime * .5) {
+                double baseSpeedFactor = 0.5 + (distance / 50.0) * 0.5;
+                double speedMultiplier = 1.8 * baseSpeedFactor;
 
-            Vec3 direction = ownerPos.subtract(currentPos).normalize();
-            Vec3 finalDirection = direction.scale(speedMultiplier);
+                Vec3 direction = ownerPos.subtract(currentPos).normalize();
+                Vec3 finalDirection = direction.scale(speedMultiplier);
 
-            this.xd = this.xd * 0.2 + finalDirection.x;
-            this.yd = this.yd * 0.2 + finalDirection.y;
-            this.zd = this.zd * 0.2 + finalDirection.z;
+                this.xd = this.xd * 0.2 + finalDirection.x;
+                this.yd = this.yd * 0.2 + finalDirection.y;
+                this.zd = this.zd * 0.2 + finalDirection.z;
 
-            double accelerationFactor = 1.0 + (distance / 200.0);
-            this.xd *= 1.075 * accelerationFactor;
-            this.yd *= 1.075 * accelerationFactor;
-            this.zd *= 1.075 * accelerationFactor;
+                double accelerationFactor = 1.0 + (distance / 200.0);
+                this.xd *= 1.075 * accelerationFactor;
+                this.yd *= 1.075 * accelerationFactor;
+                this.zd *= 1.075 * accelerationFactor;
 
-            double maxSpeed = 1.0 + (distance / 100.0) * 0.5;
-            Vec3 velocity = new Vec3(xd, yd, zd);
-            if (velocity.length() > maxSpeed) {
-                velocity = velocity.normalize().scale(maxSpeed);
-                this.xd = velocity.x;
-                this.yd = velocity.y;
-                this.zd = velocity.z;
+                double maxSpeed = 1.0 + (distance / 100.0) * 0.5;
+                Vec3 velocity = new Vec3(xd, yd, zd);
+                if (velocity.length() > maxSpeed) {
+                    velocity = velocity.normalize().scale(maxSpeed);
+                    this.xd = velocity.x;
+                    this.yd = velocity.y;
+                    this.zd = velocity.z;
+                }
+
+                if (distance < 0.5) {
+                    this.remove();
+                    return;
+                }
             }
         }
         this.setSpriteFromAge(this.sprite);

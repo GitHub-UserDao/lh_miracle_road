@@ -206,5 +206,6 @@
   "item.lhmiracleroad.spanning_wings.tooltip.details.2": "Increased damage at low health",
   "item.lhmiracleroad.warrior_talisman.tooltip.details": "Even should this body shatter upon the battlefield, it shall return wrapped in the glory of iron and blood.",
 
-  "tooltip.lhmiracleroad.talisman.nbt.null": "The talisman has not been endowed with mysterious power."
+  "tooltip.lhmiracleroad.talisman.nbt.null": "The talisman has not been endowed with mysterious power.",
+  "entity.lhmiracleroad.soul": "The soul of"
 }
