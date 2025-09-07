@@ -86,10 +86,6 @@
   {
     "id": "mage",
     "init_difficulty_level": 10,
-    "conditions": [
-      "irons_spellbooks",
-      "ars_nouveau"
-    ],
     "init_attribute": [
       {
         "id": "hp",

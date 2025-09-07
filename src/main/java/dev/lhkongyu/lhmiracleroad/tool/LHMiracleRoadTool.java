@@ -6,6 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
+import dev.lhkongyu.lhmiracleroad.attributes.AttributeInstanceAccess;
 import dev.lhkongyu.lhmiracleroad.attributes.LHMiracleRoadAttributes;
 import dev.lhkongyu.lhmiracleroad.attributes.ShowAttributesTypes;
 import dev.lhkongyu.lhmiracleroad.capability.ItemStackPunishmentAttribute;
@@ -15,37 +16,47 @@ import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.data.ClientData;
 import dev.lhkongyu.lhmiracleroad.data.reloader.*;
 import dev.lhkongyu.lhmiracleroad.entity.player.PlayerSoulEntity;
+import dev.lhkongyu.lhmiracleroad.event.InteractionEvent;
+import dev.lhkongyu.lhmiracleroad.generator.SpellDamageTypes;
 import dev.lhkongyu.lhmiracleroad.packet.ClientDataMessage;
 import dev.lhkongyu.lhmiracleroad.packet.ClientOccupationMessage;
-import dev.lhkongyu.lhmiracleroad.packet.PlayerAttributeChannel;
-import dev.lhkongyu.lhmiracleroad.particle.SoulParticleOption;
+import dev.lhkongyu.lhmiracleroad.packet.ClientSoulMessage;
+import dev.lhkongyu.lhmiracleroad.packet.PlayerChannel;
+import dev.lhkongyu.lhmiracleroad.client.particle.SoulParticleOption;
+import dev.lhkongyu.lhmiracleroad.registry.ItemsRegistry;
 import dev.lhkongyu.lhmiracleroad.tool.mathcalculator.MathCalculatorUtil;
 import net.minecraft.client.gui.Font;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.fml.ModList;
+import org.joml.Math;
 import org.joml.Vector3f;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class LHMiracleRoadTool {
 
@@ -405,49 +416,37 @@ public class LHMiracleRoadTool {
         }
 
         return switch (attributeName) {
-            case AttributesNameTool.MAX_HEALTH -> Attributes.MAX_HEALTH;
-            case AttributesNameTool.ATTACK_DAMAGE -> Attributes.ATTACK_DAMAGE;
-            case AttributesNameTool.RANGED_DAMAGE -> LHMiracleRoadAttributes.RANGED_DAMAGE;
-            case AttributesNameTool.BURDEN -> LHMiracleRoadAttributes.BURDEN;
-            case AttributesNameTool.HEAVY -> LHMiracleRoadAttributes.HEAVY;
-            case AttributesNameTool.ARMOR -> Attributes.ARMOR;
-            case AttributesNameTool.ARMOR_TOUGHNESS -> Attributes.ARMOR_TOUGHNESS;
-            case AttributesNameTool.ATTACK_SPEED -> Attributes.ATTACK_SPEED;
-            case AttributesNameTool.MOVEMENT_SPEED -> Attributes.MOVEMENT_SPEED;
-            case AttributesNameTool.LUCK -> Attributes.LUCK;
-            case AttributesNameTool.HEALING -> LHMiracleRoadAttributes.HEALING;
-            case AttributesNameTool.HUNGER -> LHMiracleRoadAttributes.HUNGER;
-            case AttributesNameTool.JUMP -> LHMiracleRoadAttributes.JUMP;
-            case AttributesNameTool.CRITICAL_HIT_RATE -> LHMiracleRoadAttributes.CRITICAL_HIT_RATE;
-            case AttributesNameTool.CRITICAL_HIT_DAMAGE -> LHMiracleRoadAttributes.CRITICAL_HIT_DAMAGE;
-            case AttributesNameTool.DAMAGE_REDUCTION -> LHMiracleRoadAttributes.DAMAGE_REDUCTION;
-            case AttributesNameTool.SOUL_INCREASE -> LHMiracleRoadAttributes.SOUL_INCREASE;
-            case AttributesNameTool.DAMAGE_ADDITION -> LHMiracleRoadAttributes.DAMAGE_ADDITION;
+            case NameTool.MAX_HEALTH -> Attributes.MAX_HEALTH;
+            case NameTool.ATTACK_DAMAGE -> Attributes.ATTACK_DAMAGE;
+            case NameTool.RANGED_DAMAGE -> LHMiracleRoadAttributes.RANGED_DAMAGE;
+            case NameTool.BURDEN -> LHMiracleRoadAttributes.BURDEN;
+            case NameTool.HEAVY -> LHMiracleRoadAttributes.HEAVY;
+            case NameTool.ARMOR -> Attributes.ARMOR;
+            case NameTool.ARMOR_TOUGHNESS -> Attributes.ARMOR_TOUGHNESS;
+            case NameTool.ATTACK_SPEED -> Attributes.ATTACK_SPEED;
+            case NameTool.MOVEMENT_SPEED -> Attributes.MOVEMENT_SPEED;
+            case NameTool.LUCK -> Attributes.LUCK;
+            case NameTool.HEALING -> LHMiracleRoadAttributes.HEALING;
+            case NameTool.HUNGER -> LHMiracleRoadAttributes.HUNGER;
+            case NameTool.JUMP -> LHMiracleRoadAttributes.JUMP;
+            case NameTool.CRITICAL_HIT_RATE -> LHMiracleRoadAttributes.CRITICAL_HIT_RATE;
+            case NameTool.CRITICAL_HIT_DAMAGE -> LHMiracleRoadAttributes.CRITICAL_HIT_DAMAGE;
+            case NameTool.DAMAGE_REDUCTION -> LHMiracleRoadAttributes.DAMAGE_REDUCTION;
+            case NameTool.SOUL_INCREASE -> LHMiracleRoadAttributes.SOUL_INCREASE;
+            case NameTool.DAMAGE_ADDITION -> LHMiracleRoadAttributes.DAMAGE_ADDITION;
+            case NameTool.MINING_SPEED -> LHMiracleRoadAttributes.MINING_SPEED;
+            case NameTool.MAGIC_DAMAGE_ADDITION -> LHMiracleRoadAttributes.MAGIC_DAMAGE_ADDITION;
+            case NameTool.MAGIC_ATTRIBUTE_DAMAGE -> LHMiracleRoadAttributes.MAGIC_ATTRIBUTE_DAMAGE;
+            case NameTool.FLAME_ATTRIBUTE_DAMAGE -> LHMiracleRoadAttributes.FLAME_ATTRIBUTE_DAMAGE;
+            case NameTool.LIGHTNING_ATTRIBUTE_DAMAGE -> LHMiracleRoadAttributes.LIGHTNING_ATTRIBUTE_DAMAGE;
+            case NameTool.DARK_ATTRIBUTE_DAMAGE -> LHMiracleRoadAttributes.DARK_ATTRIBUTE_DAMAGE;
+            case NameTool.HOLY_ATTRIBUTE_DAMAGE -> LHMiracleRoadAttributes.HOLY_ATTRIBUTE_DAMAGE;
+            case NameTool.ATTACK_CONVERT_MAGIC -> LHMiracleRoadAttributes.ATTACK_CONVERT_MAGIC;
+            case NameTool.ATTACK_CONVERT_FLAME -> LHMiracleRoadAttributes.ATTACK_CONVERT_FLAME;
+            case NameTool.ATTACK_CONVERT_LIGHTNING -> LHMiracleRoadAttributes.ATTACK_CONVERT_LIGHTNING;
+            case NameTool.ATTACK_CONVERT_DARK -> LHMiracleRoadAttributes.ATTACK_CONVERT_DARK;
+            case NameTool.ATTACK_CONVERT_HOLY -> LHMiracleRoadAttributes.ATTACK_CONVERT_HOLY;
             default -> AttributePointsRewardsReloadListener.recordAttribute.get(attributeName);
-        };
-    }
-
-    /**
-     * 判断是否进行格外加成的显示
-     * @param attributeName
-     * @return
-     */
-    public static boolean isEspeciallyAttributeView(String attributeName){
-        if (attributeName == null) return false;
-        return switch (attributeName) {
-            case AttributesNameTool.RANGED_DAMAGE,
-                    AttributesNameTool.JUMP,
-                    AttributesNameTool.HUNGER,
-                    AttributesNameTool.HEALING,
-                    AttributesNameTool.HEAVY,
-                    AttributesNameTool.BURDEN,
-                    AttributesNameTool.CRITICAL_HIT_RATE
-//                    AttributesNameTool.CRITICAL_HIT_DAMAGE,
-//                    AttributesNameTool.DAMAGE_REDUCTION,
-//                    AttributesNameTool.SOUL_INCREASE,
-//                    AttributesNameTool.DAMAGE_ADDITION
-                    -> true;
-            default -> false;
         };
     }
 
@@ -504,21 +503,35 @@ public class LHMiracleRoadTool {
         playerOccupationAttribute.setBurden(burdenValue);
         JsonObject playerOccupationAttributeObject = playerOccupationAttribute.getPlayerOccupationAttribute(playerUUID);
         ClientOccupationMessage message = new ClientOccupationMessage(playerOccupationAttributeObject);
-        PlayerAttributeChannel.sendToClient(message, player);
+        PlayerChannel.sendToClient(message, player);
     }
 
     //同步显示的数据信息
     public static void synchronizationShowAttribute(ServerPlayer player){
         //同步显示的数据信息
         JsonObject showAttributeData = new JsonObject();
-        Map<String, JsonObject> showAttributeMap = setShowAttribute(player);
-        JsonObject showAttribute = new JsonObject();
-        showAttributeMap.forEach(showAttribute::add);
+        JsonObject showAttribute = setShowAttribute(player);
         showAttributeData.addProperty("key","showAttribute");
         showAttributeData.add("data",showAttribute);
 
         ClientDataMessage attributeTypesMessage = new ClientDataMessage(showAttributeData);
-        PlayerAttributeChannel.sendToClient(attributeTypesMessage, player);
+        PlayerChannel.sendToClient(attributeTypesMessage, player);
+    }
+
+    /**
+     * 同步获取的灵魂
+     * @param occupationExperience
+     * @param player
+     * @param soulStart
+     */
+    public static void synchronizationSoul(Integer occupationExperience, ServerPlayer player,Integer soulStart) {
+        UUID playerUUID = player.getUUID();
+        JsonObject playerOccupationAttributeObject = new JsonObject();
+        playerOccupationAttributeObject.addProperty("playerUUID",playerUUID.toString());
+        playerOccupationAttributeObject.addProperty("occupationExperience",occupationExperience);
+        playerOccupationAttributeObject.addProperty("soulStart",soulStart);
+        ClientSoulMessage message = new ClientSoulMessage(playerOccupationAttributeObject);
+        PlayerChannel.sendToClient(message, player);
     }
 
     /**
@@ -534,32 +547,63 @@ public class LHMiracleRoadTool {
     }
 
     /**
+     * 解析并计算字符串公式
+     * @param formula
+     * @param exp
+     * @param hp
+     * @param atk
+     * @param arm
+     * @param atou
+     * @param buff
+     * @return
+     */
+    public static int evaluateFormula(String formula,int exp, int hp,int atk,int arm,int atou,int buff) {
+        formula = formula.replaceAll("exp", String.valueOf(exp));
+        formula = formula.replaceAll("hp", String.valueOf(hp));
+        formula = formula.replaceAll("atk", String.valueOf(atk));
+        formula = formula.replaceAll("arm", String.valueOf(arm));
+        formula = formula.replaceAll("atou", String.valueOf(atou));
+        formula = formula.replaceAll("buff", String.valueOf(buff));
+        return MathCalculatorUtil.getCalculatorInt(formula);
+    }
+
+    /**
      * 设置在gui显示的属性信息
      *
      * @param player
      * @return
      */
-    public static Map<String, JsonObject> setShowAttribute(ServerPlayer player) {
-        Map<String, JsonObject> showAttribute = Maps.newLinkedHashMap();
+    public static JsonObject setShowAttribute(ServerPlayer player) {
+        JsonObject showAttribute =  new JsonObject();
         for (JsonObject attributeObject : ShowGuiAttributeReloadListener.SHOW_GUI_ATTRIBUTE) {
             String attributeName = LHMiracleRoadTool.isAsString(attributeObject.get("attribute"));
-            JsonObject showAttributeObject = new JsonObject();
+            ShowAttributesTypes showValueType = ShowAttributesTypes.fromString(LHMiracleRoadTool.isAsString(attributeObject.get("show_value_type")));
 
             Attribute attribute = stringConversionAttribute(attributeName);
             if (attribute == null) continue;
             AttributeInstance attributeInstance = player.getAttribute(attribute);
             if (attributeInstance == null) continue;
 
-            showAttributeObject.addProperty("v", attributeInstance.getValue());
-            showAttributeObject.addProperty("b", attributeInstance.getBaseValue());
-            JsonArray jsonArray = new JsonArray();
-            attributeInstance.getModifiers().forEach(modifier -> {
-                JsonObject modifierObject = new JsonObject();
-                modifierObject.addProperty("a", modifier.getAmount());
-                jsonArray.add(modifierObject);
-            });
-            showAttributeObject.add("m", jsonArray);
-            showAttribute.put(attributeName, showAttributeObject);
+//            showAttributeObject.addProperty("v", attributeInstance.getValue());
+//            showAttributeObject.addProperty("b", attributeInstance.getBaseValue());
+            double modifierValue = 0.0;
+            AttributeInstanceAccess attributeInstanceAccess = ((AttributeInstanceAccess) attributeInstance);
+            switch (showValueType){
+                case BASE,BASE_PERCENTAGE:
+                    if (attributeInstance.getBaseValue() > 0){
+                        modifierValue = attributeInstanceAccess.computeIncreasedValueForInitial(0);
+                        break;
+                    }
+                case EXTRA_BASE,EXTRA_PERCENTAGE:
+                    modifierValue = attributeInstanceAccess.computeIncreasedValueForInitial(attributeInstance.getBaseValue() > 0 ? 0 : 1);
+                    if (attributeName.equals(NameTool.CRITICAL_HIT_RATE) && modifierValue == 100) {
+                        modifierValue = attributeInstanceAccess.computeIncreasedValueForInitial(0);
+                        break;
+                    }
+                    modifierValue -= attributeInstance.getBaseValue() > 0 ? attributeInstance.getBaseValue() : 1;
+                    break;
+            };
+            showAttribute.addProperty(attributeName, modifierValue);
         }
         return showAttribute;
     }
@@ -667,53 +711,15 @@ public class LHMiracleRoadTool {
      * 显示的value格式
      * @return
      */
-    public static String getShowValueType(ShowAttributesTypes showValueType,double value,double baseValue,int percentageBase,String attributeName){
-        String showValue = "";
-//        if (detailedAttribute != null) {
-//            showValue = detailedAttribute.get(attributeName);
-//            if (showValue != null) return showValue;
-//        }
-        double base = new BigDecimal(value).setScale(4, RoundingMode.HALF_UP).doubleValue();
-        double extra = new BigDecimal(value - baseValue).setScale(4, RoundingMode.HALF_UP).doubleValue();
-        showValue = switch (showValueType){
-            case BASE -> String.valueOf(base);
-            case EXTRA_BASE -> "+" + extra;
-            case BASE_PERCENTAGE ->  new BigDecimal(value * percentageBase).setScale(4, RoundingMode.HALF_UP).doubleValue() + "%";
-            case EXTRA_PERCENTAGE -> "+" + new BigDecimal((value - baseValue) * percentageBase).setScale(4, RoundingMode.HALF_UP).doubleValue() + "%";
+    public static String getShowValueType(ShowAttributesTypes showValueType,double modifierValue,int percentageBase){
+        final double v = new BigDecimal(modifierValue).setScale(4, RoundingMode.HALF_UP).doubleValue();
+        final BigDecimal bigDecimal = new BigDecimal(modifierValue * percentageBase).setScale(4, RoundingMode.HALF_UP);
+        return switch (showValueType){
+            case BASE -> String.valueOf(v);
+            case EXTRA_BASE -> "+" + v;
+            case BASE_PERCENTAGE -> bigDecimal.doubleValue() + "%";
+            case EXTRA_PERCENTAGE -> "+" + bigDecimal.doubleValue() + "%";
         };
-//        detailedAttribute.put(attributeName,showValue);
-        return showValue;
-    }
-
-    /**
-     * 显示的由本模组自定义属性的value格式
-     * @return
-     */
-    public static String getShowLHMiracleRoadValueType(JsonArray modifiers,String attributeName,int percentageBase){
-        String showValue = "";
-//        if (detailedAttribute != null) {
-//            showValue = detailedAttribute.get(attributeName);
-//            if (showValue != null) return showValue;
-//        }
-        for (String key : ClientData.POINTS_REWARDS.keySet()){
-            if (key.equals(attributeName)){
-                JsonObject pointsReward = ClientData.POINTS_REWARDS.get(key);
-                String operation = isAsString(pointsReward.get("operation"));
-                double amount = 0.0;
-;                for (JsonElement jsonElement: modifiers){
-                    JsonObject object = isAsJsonObject(jsonElement);
-                    amount += isAsDouble(object.get("a"));
-                }
-                showValue = switch (operation) {
-                    case "addition" -> "+" + new BigDecimal(amount).setScale(4, RoundingMode.HALF_UP).doubleValue();
-                    case "multiply_base", "multiply_total" -> "+" + new BigDecimal(amount * percentageBase).setScale(4, RoundingMode.HALF_UP).doubleValue() + "%";
-                    default -> "";
-                };
-//                detailedAttribute.put(attributeName,showValue);
-                return showValue;
-            }
-        }
-        return showValue;
     }
 
     public static boolean isShowPointsButton(int currentLevel,int maxLevel,int attributeMaxLevel){
@@ -755,5 +761,103 @@ public class LHMiracleRoadTool {
         int particleCount = Math.min(Math.max(soulCount / soulCountDivisor,min),max);
         float speed = .1f + ((float) particleCount / max * .025f);
         serverLevel.sendParticles(player,new SoulParticleOption(player.getId()), true, target.getX(), target.getY() + target.getBbHeight() * 0.5, target.getZ(), particleCount, 0.1, 0.1, 0.1,speed);
+    }
+
+    public static double getAttributeValue(AttributeInstance attributeInstance){
+        if (attributeInstance != null) return attributeInstance.getValue();
+        return 0;
+    }
+
+    public static Queue<Integer> getIntegerSequence(int start,int end){
+        Queue<Integer> queue = new LinkedList<>();
+        int steps = 150;
+        int intervals = steps - 1; // 间隔数
+
+        int difference = end - start;
+
+        int step = difference / intervals;
+
+        for (int i = 1; i < steps - 1; i++) {
+            int value = start + i * step;
+            queue.add(value);
+            if (value == end) return queue;
+        }
+        queue.add(end);
+
+        return queue;
+    }
+
+    public static String getGemType(ItemStack itemStack){
+        if (itemStack.getDescriptionId().equals(ItemsRegistry.FLAME_GEM.get().getDescriptionId())){
+            return NameTool.FLAME;
+        }else if (itemStack.getDescriptionId().equals(ItemsRegistry.LIGHTNING_GEM.get().getDescriptionId())){
+            return NameTool.LIGHTNING;
+        }else if (itemStack.getDescriptionId().equals(ItemsRegistry.DARK_GEM.get().getDescriptionId())){
+            return NameTool.DARK;
+        }else if (itemStack.getDescriptionId().equals(ItemsRegistry.BLOOD_GEM.get().getDescriptionId())){
+            return NameTool.BLOOD;
+        }else if (itemStack.getDescriptionId().equals(ItemsRegistry.MAGIC_GEM.get().getDescriptionId())){
+            return NameTool.MAGIC;
+        }else if (itemStack.getDescriptionId().equals(ItemsRegistry.SHARP_GEM.get().getDescriptionId())){
+            return NameTool.SHARP;
+        }else if (itemStack.getDescriptionId().equals(ItemsRegistry.HOLY_GEM.get().getDescriptionId())){
+            return NameTool.HOLY;
+        }else if (itemStack.getDescriptionId().equals(ItemsRegistry.ICE_GEM.get().getDescriptionId())){
+            return NameTool.ICE;
+        }else if (itemStack.getDescriptionId().equals(ItemsRegistry.POISON_GEM.get().getDescriptionId())){
+            return NameTool.POISON;
+        }else return null;
+    }
+
+    public static boolean itemIsWeaponsAll(ItemStack left){
+        return itemIsWeapons(left) || itemIsRangedWeapons(left);
+    }
+
+    public static boolean itemIsWeapons(ItemStack left){
+        return left.is(InteractionEvent.WEAPONS)
+                || left.getItem() instanceof SwordItem
+                || left.getItem() instanceof AxeItem
+                || left.getItem() instanceof TridentItem;
+    }
+
+    public static boolean itemIsRangedWeapons(ItemStack left){
+        return left.is(InteractionEvent.RANGED_WEAPONS) || left.getItem() instanceof ProjectileWeaponItem;
+    }
+
+//    /**
+//     * 获取造成的伤害类型 并且无视护甲
+//     * @param entity
+//     * @param resourceKey
+//     * @return
+//     */
+//    public static DamageSource getDamageSourceType(Entity entity, ResourceKey<DamageType> resourceKey,TagKey<DamageType> tagKey){
+//        Set<TagKey<DamageType>> tagSet = new HashSet<>();
+//        tagSet.add(tagKey);
+//        return getDamageSource(entity,resourceKey,tagSet);
+//    }
+
+    /**
+     * 获取攻击类型
+     * @param entity
+     * @return
+     */
+    public static DamageSource getDamageSource(Entity entity, ResourceKey<DamageType> key) {
+        return entity.level().registryAccess()
+                .registryOrThrow(Registries.DAMAGE_TYPE)
+                .getHolder(key)
+                .<DamageSource>map(holder -> new DamageSource(holder, entity))
+                .orElse(entity.level().damageSources().generic());
+    }
+
+    public static boolean isMagicDamage(DamageSource damageSource){
+        if (damageSource.is(SpellDamageTypes.FLAME_MAGIC)){
+            return true;
+        }else if (damageSource.is(SpellDamageTypes.HOLY_MAGIC)){
+            return true;
+        }else if (damageSource.is(SpellDamageTypes.DARK_MAGIC)){
+            return true;
+        }else if (damageSource.is(SpellDamageTypes.LIGHTNING_MAGIC)){
+            return true;
+        }else return damageSource.is(SpellDamageTypes.MAGIC);
     }
 }

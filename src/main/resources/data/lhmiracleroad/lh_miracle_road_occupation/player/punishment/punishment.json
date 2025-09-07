@@ -4,17 +4,12 @@
     "punishments": [
       {
         "attribute": "attack_damage",
-        "value": -0.9,
-        "operation": "multiply_total"
-      },
-      {
-        "attribute": "attack_speed",
-        "value": -0.9,
+        "value": -0.7,
         "operation": "multiply_total"
       },
       {
         "attribute": "ranged_damage",
-        "value": -0.9,
+        "value": -0.7,
         "operation": "multiply_total"
       }
     ]
@@ -24,7 +19,7 @@
     "punishments": [
       {
         "attribute": "ranged_damage",
-        "value": -0.9,
+        "value": -0.7,
         "operation": "multiply_total"
       }
     ]
@@ -34,7 +29,7 @@
     "punishments": [
       {
         "attribute": "irons_spellbooks:spell_power",
-        "value": -0.9,
+        "value": -0.7,
         "operation": "multiply_total"
       }
     ]
@@ -49,7 +44,7 @@
       },
       {
         "attribute": "ars_nouveau:ars_nouveau.perk.max_mana",
-        "value": -0.99,
+        "value": -0.7,
         "operation": "multiply_total"
       }
     ]

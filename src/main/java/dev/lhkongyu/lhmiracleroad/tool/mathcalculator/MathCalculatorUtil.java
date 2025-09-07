@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.*;
 
 public class MathCalculatorUtil {
@@ -229,60 +230,79 @@ public class MathCalculatorUtil {
         if (selfMathFormulaEnum == null) {
             throw new RuntimeException("非法数学公式名称");
         }
+        BigDecimal bd;
         switch (selfMathFormulaEnum) {
             case abs:
                 result = Math.abs(Double.parseDouble(args[0]));
+                bd = new BigDecimal(result).setScale(2, RoundingMode.HALF_UP);
                 break;
             case acos:
                 result = Math.acos(Double.parseDouble(args[0]));
+                bd = new BigDecimal(result).setScale(2, RoundingMode.HALF_UP);
                 break;
             case asin:
                 result =  Math.asin(Double.parseDouble(args[0]));
+                bd = new BigDecimal(result).setScale(2, RoundingMode.HALF_UP);
                 break;
             case atan:
                 result = Math.atan(Double.parseDouble(args[0]));
+                bd = new BigDecimal(result).setScale(2, RoundingMode.HALF_UP);
                 break;
             case ceil:
                 result = Math.ceil(Double.parseDouble(args[0]));
+                bd = new BigDecimal(result).setScale(2, RoundingMode.HALF_UP);
                 break;
             case cos:
                 result = Math.cos(Double.parseDouble(args[0]));
+                bd = new BigDecimal(result).setScale(2, RoundingMode.HALF_UP);
                 break;
             case exp:
                 result = Math.exp(Double.parseDouble(args[0]));
+                bd = new BigDecimal(result).setScale(2, RoundingMode.HALF_UP);
                 break;
             case floor:
                 result = Math.floor(Double.parseDouble(args[0]));
+                bd = new BigDecimal(result).setScale(2, RoundingMode.HALF_UP);
                 break;
             case log:
                 result = Math.log(Double.parseDouble(args[0]));
+                bd = new BigDecimal(result).setScale(2, RoundingMode.HALF_UP);
                 break;
             case max:
                 result = Math.max(Double.parseDouble(args[0]), Double.parseDouble(args[1]));
+                bd = new BigDecimal(result).setScale(2, RoundingMode.HALF_UP);
                 break;
             case min:
                 result = Math.min(Double.parseDouble(args[0]), Double.parseDouble(args[1]));
+                bd = new BigDecimal(result).setScale(2, RoundingMode.HALF_UP);
                 break;
             case pow:
                 result = Math.pow(Double.parseDouble(args[0]), Double.parseDouble(args[1]));
+                bd = new BigDecimal(result).setScale(2, RoundingMode.HALF_UP);
                 break;
             case round:
                 result = Math.round(Double.parseDouble(args[0]));
+                bd = new BigDecimal(result).setScale(2, RoundingMode.HALF_UP);
                 break;
             case sin:
                 result = Math.sin(Double.parseDouble(args[0]));
+                bd = new BigDecimal(result).setScale(2, RoundingMode.HALF_UP);
                 break;
             case sqrt:
                 result = Math.sqrt(Double.parseDouble(args[0]));
+                bd = new BigDecimal(result).setScale(2, RoundingMode.HALF_UP);
                 break;
             case tan:
                 result = Math.tan(Double.parseDouble(args[0]));
+                bd = new BigDecimal(result).setScale(2, RoundingMode.HALF_UP);
                 break;
             default:
                 throw new RuntimeException("找不到匹配的计算公式！");
 
         }
-        return String.valueOf(result);
+        double doubleValue = bd.doubleValue();
+        DecimalFormat df = new DecimalFormat("0.00");
+        return df.format(doubleValue);
     }
 
 
@@ -478,7 +498,9 @@ public class MathCalculatorUtil {
     }
 
     public static void main(String args[]){
-        String k2 ="min(pow(3.02 * lv,2) + 98.4 * lv, 19999999)";
-        System.err.println(LHMiracleRoadTool.evaluateFormula(k2,15));
+//        String k2 ="min(pow(3.02 * lv,2) + 98.4 * lv, 19999999)";
+//        System.err.println(LHMiracleRoadTool.evaluateFormula(k2,15));
+        String k2 ="(exp / 7 + max(hp,20) * 12) * (1 + atk * 0.15 + arm * 0.1 + atou * 0.15 + buff * 0.05)";
+        System.err.println(LHMiracleRoadTool.evaluateFormula(k2,40000,120,40,40,20,0));
     }
 }

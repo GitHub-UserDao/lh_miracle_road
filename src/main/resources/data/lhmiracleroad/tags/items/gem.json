@@ -1,0 +1,15 @@
+{
+  "replace": false,
+  "values": [
+    "lhmiracleroad:flame_gem",
+    "lhmiracleroad:lightning_gem",
+    "lhmiracleroad:dark_gem",
+    "lhmiracleroad:blood_gem",
+    "lhmiracleroad:magic_gem",
+    "lhmiracleroad:sharp_gem",
+    "lhmiracleroad:holy_gem",
+    "lhmiracleroad:ice_gem",
+    "lhmiracleroad:poison_gem",
+    "lhmiracleroad:whetstone"
+  ]
+}

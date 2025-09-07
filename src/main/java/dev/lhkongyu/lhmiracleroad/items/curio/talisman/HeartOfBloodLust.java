@@ -38,14 +38,33 @@ public class HeartOfBloodLust {
     }
 
     public static void restoreHp(LivingEntity entity){
-        if (entity.getHealth() >= entity.getMaxHealth()) return;
-        entity.heal(4);
+        float toAdd = 2f;
+        int hpA = (int) Math.max(entity.getMaxHealth() * .025f,1);
+        int absorptionUpperLimit = (int) (entity.getMaxHealth() * 0.45F);
+        if (entity.getHealth() >= entity.getMaxHealth()) {
+            float absorption = entity.getAbsorptionAmount();
+            if (absorption < absorptionUpperLimit) {
+                float newAbsorption = Math.min(absorption + toAdd +hpA, absorptionUpperLimit);
+                entity.setAbsorptionAmount(newAbsorption);
+            }
+            return;
+        }
+        int hpB = (int) Math.max((entity.getMaxHealth() - entity.getHealth()) * .025f,1);
+        entity.heal(toAdd + hpA + hpB);
     }
 
     public static void killRestoreHp(LivingEntity entity){
-        if (entity.getHealth() >= entity.getMaxHealth()) return;
-        int hpB = (int) Math.max((entity.getMaxHealth() - entity.getHealth()) * .1f,1);
+        float toAdd = 4f;
+        int hpA = (int) Math.max(entity.getMaxHealth() * .025f,1);
+        int absorptionUpperLimit = (int) (entity.getMaxHealth() * 0.45F);
+        float absorption = entity.getAbsorptionAmount();
+        if (absorption < absorptionUpperLimit) {
+            float newAbsorption = Math.min(absorption + toAdd + hpA, absorptionUpperLimit);
+            entity.setAbsorptionAmount(newAbsorption);
+        }
+        if (entity.getHealth() >= entity.getMaxHealth())  return;
 
-        entity.heal(2 + hpB);
+        int hpB = (int) Math.max((entity.getMaxHealth() - entity.getHealth()) * .1f,1);
+        entity.heal(toAdd + hpB);
     }
 }

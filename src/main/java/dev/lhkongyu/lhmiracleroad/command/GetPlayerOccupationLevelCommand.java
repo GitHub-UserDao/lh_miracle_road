@@ -5,6 +5,9 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
+import dev.lhkongyu.lhmiracleroad.data.loot.nbt.CreedTalismanData;
+import dev.lhkongyu.lhmiracleroad.data.loot.nbt.MiraculousTalismanData;
+import dev.lhkongyu.lhmiracleroad.registry.ItemsRegistry;
 import dev.lhkongyu.lhmiracleroad.tool.FileTool;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import dev.lhkongyu.lhmiracleroad.tool.PlayerAttributeTool;
@@ -15,6 +18,8 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.Optional;
 
@@ -134,6 +139,32 @@ public class GetPlayerOccupationLevelCommand {
                                   )
                           )
                   )
+                  .then(Commands.literal("talisman")
+                          .requires(e -> e.hasPermission(2))
+                          .then(Commands.literal("CreedTalisman")
+                                  .executes(context -> {
+                                      ServerPlayer player = context.getSource().getPlayer();
+                                      ItemStack itemStack = ItemsRegistry.CREED_TALISMAN.get().getDefaultInstance();
+                                      CreedTalismanData.setCreedTalismanData(itemStack);
+                                      if (player != null) {
+                                          LHMiracleRoadTool.addItemStack(player,itemStack);
+                                      }
+                                      return 0;
+                                  })
+                          )
+                          .then(Commands.literal("MiraculousTalisman")
+                                  .executes(context -> {
+                                      ServerPlayer player = context.getSource().getPlayer();
+                                      ItemStack itemStack = ItemsRegistry.MIRACULOUS_TALISMAN.get().getDefaultInstance();
+                                      MiraculousTalismanData.setMiraculousTalismanData(itemStack);
+                                      if (player != null) {
+                                          LHMiracleRoadTool.addItemStack(player,itemStack);
+                                      }
+                                      return 0;
+                                  })
+                          )
+                  )
+
           );
     }
 }

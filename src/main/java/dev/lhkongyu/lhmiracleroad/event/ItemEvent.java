@@ -11,9 +11,10 @@ import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.data.ClientData;
-import dev.lhkongyu.lhmiracleroad.data.loot.nbt.CreedTalismanData;
 import dev.lhkongyu.lhmiracleroad.data.reloader.EquipmentReloadListener;
-import dev.lhkongyu.lhmiracleroad.tool.AttributesNameTool;
+import dev.lhkongyu.lhmiracleroad.items.gem.AttributeGem;
+import dev.lhkongyu.lhmiracleroad.items.gem.StrengthenGem;
+import dev.lhkongyu.lhmiracleroad.tool.NameTool;
 import dev.lhkongyu.lhmiracleroad.tool.ItemPunishmentTool;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import dev.lhkongyu.lhmiracleroad.tool.ResourceLocationTool;
@@ -26,15 +27,12 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.ItemAttributeModifierEvent;
-import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -42,6 +40,7 @@ import net.minecraftforge.fml.common.Mod;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 @Mod.EventBusSubscriber(modid = LHMiracleRoad.MODID,bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ItemEvent {
@@ -101,7 +100,7 @@ public class ItemEvent {
             JsonObject equipment = LHMiracleRoadTool.getEquipment(EquipmentReloadListener.EQUIPMENT,item.getDescriptionId());
             equipment = equipment != null ? equipment : LHMiracleRoadTool.getEquipment(ClientData.EQUIPMENT,item.getDescriptionId());
             if (equipment != null){
-                int heavy = LHMiracleRoadTool.isAsInt(equipment.get(AttributesNameTool.HEAVY));
+                int heavy = LHMiracleRoadTool.isAsInt(equipment.get(NameTool.HEAVY));
                 JsonArray attributeNeed = LHMiracleRoadTool.isAsJsonArray(equipment.get("attribute_need"));
                 itemStackPunishmentAttribute.setHeavy(heavy);
                 ItemPunishmentTool.setHeavyAttributeModifier(itemStackPunishmentAttribute,attributeNeed);
@@ -140,12 +139,44 @@ public class ItemEvent {
     public static void itemAttributeModifier(ItemAttributeModifierEvent event) {
         ItemStack stack = event.getItemStack();
         Item item = stack.getItem();
+        CompoundTag gemTag = stack.getTagElement("lh_gem");
         if (item instanceof ArmorItem armorItem) {
             if (armorItem.getType().getSlot() != event.getSlotType()) return;
+            //武器附加重量
             ItemPunishmentTool.itemStackAddPunishmentAttribute(stack, event);
-        } else {
-            if (event.getSlotType() != EquipmentSlot.MAINHAND) return;
+
+            //宝石强化 盔甲
+            if (gemTag != null) {
+                int strengthenLV = gemTag.getInt("strengthen_lv");
+                StrengthenGem.setGemStrengthenArmorAttribute(strengthenLV,event);
+            }
+        } else if (event.getSlotType() == EquipmentSlot.MAINHAND){
+            //武器附加重量
             ItemPunishmentTool.itemStackAddPunishmentAttribute(stack, event);
+
+            //宝石强化 近战武器
+            if (gemTag != null && LHMiracleRoadTool.itemIsWeapons(stack)) {
+                int strengthenLV = gemTag.getInt("strengthen_lv");
+                StrengthenGem.setWeaponsAttribute(strengthenLV,event,gemTag);
+            }
+
+            //宝石强化 远程武器
+            if (gemTag != null && LHMiracleRoadTool.itemIsRangedWeapons(stack)) {
+                int strengthenLV = gemTag.getInt("strengthen_lv");
+                StrengthenGem.setRangedWeaponsAttribute(strengthenLV,event,gemTag);
+            }
+
+            //武器质变
+            if (gemTag != null) {
+                AttributeGem.setAttributeStrengthen(gemTag, event);
+            }
+
+
+        }else if (item instanceof ElytraItem elytraItem && gemTag != null){
+            if (elytraItem.getEquipmentSlot() != event.getSlotType()) return;
+            //宝石强化 鞘翅
+            int strengthenLV = gemTag.getInt("strengthen_lv");
+            StrengthenGem.setGemStrengthenArmorAttribute(strengthenLV,event);
         }
     }
 
@@ -190,4 +221,5 @@ public class ItemEvent {
             }
         }
     }
+
 }

@@ -42,12 +42,13 @@ public class MiraculousTalisman {
                 else
                     playerOccupationAttribute.subtractCurioAttributeLevel(key, MiraculousTalismanData.level);
 
-                int level = playerOccupationAttribute.getOccupationAttributeLevel().get(key);
+                Integer level = playerOccupationAttribute.getOccupationAttributeLevel().get(key);
+                if (level == null) return;
 
                 JsonObject jsonObject = AttributePointsRewardsReloadListener.ATTRIBUTE_POINTS_REWARDS.get(key);
                 if (jsonObject == null) return;
                 //给对应属性类型进行 属性增长/减少
-                PlayerAttributeTool.setAttribute(serverPlayer, jsonObject, level, playerOccupationAttribute, key);
+                PlayerAttributeTool.setAttributeNotRecoverHP(serverPlayer, jsonObject, level, playerOccupationAttribute, key);
 
                 LHMiracleRoadTool.synchronizationClient(playerOccupationAttribute,serverPlayer);
                 //更新玩家奖惩状态

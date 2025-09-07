@@ -94,7 +94,7 @@ public class ItemsRegistry {
 
     public static final RegistryObject<Item> RING_STRENGTH = ITEMS.register("ring_strength", RingStrength::addAttributeModifier);
 
-    public static final RegistryObject<Item> SHIELDING_RING = ITEMS.register("shielding_ring", ShieldingRing::addAttributeModifier);
+    public static final RegistryObject<Item> SHIELDING_RING = ITEMS.register("shielding_ring", () -> new ShieldingRing(new Item.Properties().rarity(Rarity.COMMON),null));
 
     //手镯
     public static final RegistryObject<Item> HUNTERS_MARK = ITEMS.register("hunter_mark", () -> new BraceletItem(new Item.Properties().rarity(Rarity.EPIC),null));
@@ -106,7 +106,7 @@ public class ItemsRegistry {
     public static final RegistryObject<Item> LUCKY_BRACELET = ITEMS.register("lucky_bracelet", LuckyBracelet::addAttributeModifier);
 
     //护符
-    public static final RegistryObject<Item> BIG_SHIELD_TALISMAN = ITEMS.register("big_shield_talisman", BigShieldTalisman::addAttributeModifier);
+    public static final RegistryObject<Item> BIG_SHIELD_TALISMAN = ITEMS.register("big_shield_talisman", () -> new BigShieldTalisman(new Item.Properties().rarity(Rarity.COMMON),null));
 
     public static final RegistryObject<Item> CONSECRATED_COMBAT_PLUME = ITEMS.register("consecrated_combat_plume", ConsecratedCombatPlume::addAttributeModifier);
 
@@ -125,6 +125,49 @@ public class ItemsRegistry {
     public static final RegistryObject<Item> SPANNING_WINGS = ITEMS.register("spanning_wings", SpanningWings::addAttributeModifier);
 
     public static final RegistryObject<Item> WARRIOR_TALISMAN = ITEMS.register("warrior_talisman", WarriorTalisman::addAttributeModifier);
+
+    //营地
+    public static final RegistryObject<Item> CAMPSITE = ITEMS.register("campsite", () -> new Item(new Item.Properties().rarity(Rarity.COMMON)));
+
+    //战利品
+    public static final RegistryObject<Item> COMMON_TROPHY = ITEMS.register("common_trophy", () -> new Item(new Item.Properties().rarity(Rarity.COMMON)));
+
+    public static final RegistryObject<Item> EXQUISITE_TROPHY = ITEMS.register("exquisite_trophy", () -> new Item(new Item.Properties().rarity(Rarity.RARE)));
+
+    public static final RegistryObject<Item> RARE_TROPHY = ITEMS.register("rare_trophy", () -> new Item(new Item.Properties().rarity(Rarity.RARE)));
+
+    public static final RegistryObject<Item> EPIC_TROPHY = ITEMS.register("epic_trophy", () -> new Item(new Item.Properties().rarity(Rarity.EPIC)));
+
+    public static final RegistryObject<Item> LEGEND_TROPHY = ITEMS.register("legend_trophy", () -> new Item(new Item.Properties().rarity(Rarity.UNCOMMON)));
+
+    //宝石
+    public static final RegistryObject<Item> FLAME_GEM = ITEMS.register("flame_gem", () -> new Item(new Item.Properties().rarity(Rarity.EPIC)));
+
+    public static final RegistryObject<Item> LIGHTNING_GEM = ITEMS.register("lightning_gem", () -> new Item(new Item.Properties().rarity(Rarity.EPIC)));
+
+    public static final RegistryObject<Item> DARK_GEM = ITEMS.register("dark_gem", () -> new Item(new Item.Properties().rarity(Rarity.EPIC)));
+
+    public static final RegistryObject<Item> BLOOD_GEM = ITEMS.register("blood_gem", () -> new Item(new Item.Properties().rarity(Rarity.EPIC)));
+
+    public static final RegistryObject<Item> MAGIC_GEM = ITEMS.register("magic_gem", () -> new Item(new Item.Properties().rarity(Rarity.EPIC)));
+
+    public static final RegistryObject<Item> HOLY_GEM = ITEMS.register("holy_gem", () -> new Item(new Item.Properties().rarity(Rarity.EPIC)));
+
+    public static final RegistryObject<Item> ICE_GEM = ITEMS.register("ice_gem", () -> new Item(new Item.Properties().rarity(Rarity.EPIC)));
+
+    public static final RegistryObject<Item> POISON_GEM = ITEMS.register("poison_gem", () -> new Item(new Item.Properties().rarity(Rarity.EPIC)));
+
+    public static final RegistryObject<Item> SHARP_GEM = ITEMS.register("sharp_gem", () -> new Item(new Item.Properties().rarity(Rarity.EPIC)));
+
+    public static final RegistryObject<Item> WHETSTONE = ITEMS.register("whetstone", () -> new Item(new Item.Properties().rarity(Rarity.RARE)));
+
+    public static final RegistryObject<Item> METEORITE_DISK = ITEMS.register("meteorite_disk", () -> new Item(new Item.Properties().rarity(Rarity.UNCOMMON)));
+
+    public static final RegistryObject<Item> METEORIC_IRON_BLOCK = ITEMS.register("meteoric_iron_block", () -> new Item(new Item.Properties().rarity(Rarity.EPIC)));
+
+    public static final RegistryObject<Item> METEORIC_IRON_BIG_FRAGMENT = ITEMS.register("meteoric_iron_big_fragment", () -> new Item(new Item.Properties().rarity(Rarity.RARE)));
+
+    public static final RegistryObject<Item> METEORIC_IRON_FRAGMENT = ITEMS.register("meteoric_iron_fragment", () -> new Item(new Item.Properties().rarity(Rarity.COMMON)));
 
 
     public static void register(IEventBus eventBus) {

@@ -38,6 +38,11 @@
         "attribute": "ars_nouveau:ars_nouveau.perk.mana_regen",
         "condition": "ars_nouveau",
         "describe": "focus_ars_nouveau_mana_regen"
+      },
+      {
+        "attribute": "irons_spellbooks:cooldown_reduction",
+        "condition": "irons_spellbooks",
+        "describe": "trick_chanting_cd"
       }
     ]
   },
@@ -51,6 +56,10 @@
       {
         "attribute": "ranged_damage",
         "describe": "power_ranged_damage"
+      },
+      {
+        "attribute": "mining_speed",
+        "describe": "mining_speed"
       }
     ]
   },
@@ -69,12 +78,7 @@
       {
         "attribute": "hunger",
         "describe": "sturdy_hunger"
-      }
-    ]
-  },
-  {
-    "id": "endurance",
-    "describes": [
+      },
       {
         "attribute": "armor",
         "describe": "endurance_armor"
@@ -87,15 +91,70 @@
   },
   {
     "id": "brain",
-    "conditions": [
-      "irons_spellbooks",
-      "ars_nouveau"
-    ],
     "describes": [
       {
-        "attribute": "irons_spellbooks:spell_power",
+        "attribute": "irons_spellbooks:blood_spell_power",
         "condition": "irons_spellbooks",
-        "describe": "brain_iron"
+        "describe": "blood_spell_power"
+      },
+      {
+        "attribute": "irons_spellbooks:ender_spell_power",
+        "condition": "irons_spellbooks",
+        "describe": "ender_spell_power"
+      },
+      {
+        "attribute": "irons_spellbooks:fire_spell_power",
+        "condition": "irons_spellbooks",
+        "describe": "fire_spell_power"
+      },
+      {
+        "attribute": "irons_spellbooks:ice_spell_power",
+        "condition": "irons_spellbooks",
+        "describe": "ice_spell_power"
+      },
+      {
+        "attribute": "irons_spellbooks:lightning_spell_power",
+        "condition": "irons_spellbooks",
+        "describe": "lightning_spell_power"
+      },
+      {
+        "attribute": "irons_spellbooks:holy_spell_power",
+        "condition": "irons_spellbooks",
+        "describe": "holy_spell_power"
+      },
+      {
+        "attribute": "irons_spellbooks:eldritch_spell_power",
+        "condition": "irons_spellbooks",
+        "describe": "eldritch_spell_power"
+      },
+      {
+        "attribute": "traveloptics:aqua_spell_power",
+        "condition": "traveloptics",
+        "describe": "aqua_spell_power"
+      },
+      {
+        "attribute": "cataclysm_spellbooks:technomancy_spell_power",
+        "condition": "cataclysm_spellbooks",
+        "describe": "technomancy_spell_power"
+      },
+      {
+        "attribute": "cataclysm_spellbooks:abyssal_spell_power",
+        "condition": "cataclysm_spellbooks",
+        "describe": "abyssal_spell_power"
+      },
+      {
+        "attribute": "magic_damage_addition",
+        "describe": "brain_magic_damage_addition"
+      },
+      {
+        "attribute": "irons_spellbooks:evocation_spell_power",
+        "condition": "irons_spellbooks",
+        "describe": "evocation_spell_power"
+      },
+      {
+        "attribute": "irons_spellbooks:nature_spell_power",
+        "condition": "irons_spellbooks",
+        "describe": "nature_spell_power"
       },
       {
         "attribute": "ars_nouveau:ars_nouveau.perk.spell_damage",
@@ -108,6 +167,10 @@
     "id": "agile",
     "describes": [
       {
+        "attribute": "attack_damage",
+        "describe": "power_attack_damage"
+      },
+      {
         "attribute": "attack_speed",
         "describe": "agile_attack_speed"
       },
@@ -116,24 +179,9 @@
         "describe": "agile_movement_speed"
       },
       {
-        "attribute": "jump",
-        "describe": "agile_jump"
-      }
-    ]
-  },
-  {
-    "id": "trick",
-    "conditions": [
-      "irons_spellbooks"
-    ],
-    "describes": [
-      {
         "attribute": "irons_spellbooks:cast_time_reduction",
+        "condition": "irons_spellbooks",
         "describe": "trick_cooling_cd"
-      },
-      {
-        "attribute": "irons_spellbooks:cooldown_reduction",
-        "describe": "trick_chanting_cd"
       }
     ]
   },

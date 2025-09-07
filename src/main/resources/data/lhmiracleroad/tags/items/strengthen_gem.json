@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "lhmiracleroad:meteorite_disk",
+    "lhmiracleroad:meteoric_iron_block",
+    "lhmiracleroad:meteoric_iron_big_fragment",
+    "lhmiracleroad:meteoric_iron_fragment"
+  ]
+}

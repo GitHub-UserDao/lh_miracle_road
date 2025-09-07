@@ -105,7 +105,7 @@ public class LootEvent {
 
             //贪婪银蛇戒指
             event.getTable().addPool(LootPool.lootPool()
-                    .when(LootItemRandomChanceCondition.randomChance(0.12f))
+                    .when(LootItemRandomChanceCondition.randomChance(0.1f))
                     .add(LootItem.lootTableItem(ItemsRegistry.GREEDY_SILVER_SERPENT_RING.get()))
                     .build());
 
@@ -196,44 +196,98 @@ public class LootEvent {
 
     private static void commonCuriosLoot(final LootTableLoadEvent event){
         event.getTable().addPool(LootPool.lootPool()
-                .when(LootItemRandomChanceCondition.randomChance(0.02f))
+                .when(LootItemRandomChanceCondition.randomChance(0.03f))
                 .add(LootItem.lootTableItem(ItemsRegistry.LIFE_RING.get()))
                 .build());
 
         event.getTable().addPool(LootPool.lootPool()
-                .when(LootItemRandomChanceCondition.randomChance(0.02f))
+                .when(LootItemRandomChanceCondition.randomChance(0.03f))
                 .add(LootItem.lootTableItem(ItemsRegistry.RECOVERY_RING.get()))
                 .build());
 
 
         event.getTable().addPool(LootPool.lootPool()
-                .when(LootItemRandomChanceCondition.randomChance(0.02f))
+                .when(LootItemRandomChanceCondition.randomChance(0.03f))
                 .add(LootItem.lootTableItem(ItemsRegistry.RING_STRENGTH.get()))
                 .build());
 
         event.getTable().addPool(LootPool.lootPool()
-                .when(LootItemRandomChanceCondition.randomChance(0.02f))
+                .when(LootItemRandomChanceCondition.randomChance(0.03f))
                 .add(LootItem.lootTableItem(ItemsRegistry.SHIELDING_RING.get()))
                 .build());
 
         event.getTable().addPool(LootPool.lootPool()
-                .when(LootItemRandomChanceCondition.randomChance(0.02f))
+                .when(LootItemRandomChanceCondition.randomChance(0.03f))
                 .add(LootItem.lootTableItem(ItemsRegistry.BERSERK_BRACELET.get()))
                 .build());
 
         event.getTable().addPool(LootPool.lootPool()
-                .when(LootItemRandomChanceCondition.randomChance(0.02f))
+                .when(LootItemRandomChanceCondition.randomChance(0.03f))
                 .add(LootItem.lootTableItem(ItemsRegistry.HEAVY_BRACELET.get()))
                 .build());
 
         event.getTable().addPool(LootPool.lootPool()
-                .when(LootItemRandomChanceCondition.randomChance(0.02f))
+                .when(LootItemRandomChanceCondition.randomChance(0.03f))
                 .add(LootItem.lootTableItem(ItemsRegistry.LUCKY_BRACELET.get()))
                 .build());
 
         event.getTable().addPool(LootPool.lootPool()
-                .when(LootItemRandomChanceCondition.randomChance(0.02f))
+                .when(LootItemRandomChanceCondition.randomChance(0.03f))
                 .add(LootItem.lootTableItem(ItemsRegistry.CREED_TALISMAN.get()))
+                .apply(CurioFunction.builder())
+                .build());
+
+        event.getTable().addPool(LootPool.lootPool()
+                .when(LootItemRandomChanceCondition.randomChance(0.015f))
+                .add(LootItem.lootTableItem(ItemsRegistry.WHISPER_RING.get()))
+                .apply(CurioFunction.builder())
+                .build());
+
+        event.getTable().addPool(LootPool.lootPool()
+                .when(LootItemRandomChanceCondition.randomChance(0.01f))
+                .add(LootItem.lootTableItem(ItemsRegistry.BIG_SHIELD_TALISMAN.get()))
+                .apply(CurioFunction.builder())
+                .build());
+
+        event.getTable().addPool(LootPool.lootPool()
+                .when(LootItemRandomChanceCondition.randomChance(0.015f))
+                .add(LootItem.lootTableItem(ItemsRegistry.CONSECRATED_COMBAT_PLUME.get()))
+                .apply(CurioFunction.builder())
+                .build());
+
+        event.getTable().addPool(LootPool.lootPool()
+                .when(LootItemRandomChanceCondition.randomChance(0.01f))
+                .add(LootItem.lootTableItem(ItemsRegistry.HEART_OF_BLOODLUST.get()))
+                .apply(CurioFunction.builder())
+                .build());
+
+        event.getTable().addPool(LootPool.lootPool()
+                .when(LootItemRandomChanceCondition.randomChance(0.015f))
+                .add(LootItem.lootTableItem(ItemsRegistry.HUNTING_BOW_TALISMAN.get()))
+                .apply(CurioFunction.builder())
+                .build());
+
+        event.getTable().addPool(LootPool.lootPool()
+                .when(LootItemRandomChanceCondition.randomChance(0.015f))
+                .add(LootItem.lootTableItem(ItemsRegistry.MANY_WEAPONS_TALISMAN.get()))
+                .apply(CurioFunction.builder())
+                .build());
+
+        event.getTable().addPool(LootPool.lootPool()
+                .when(LootItemRandomChanceCondition.randomChance(0.015f))
+                .add(LootItem.lootTableItem(ItemsRegistry.SPANNING_WINGS.get()))
+                .apply(CurioFunction.builder())
+                .build());
+
+        event.getTable().addPool(LootPool.lootPool()
+                .when(LootItemRandomChanceCondition.randomChance(0.03f))
+                .add(LootItem.lootTableItem(ItemsRegistry.WARRIOR_TALISMAN.get()))
+                .apply(CurioFunction.builder())
+                .build());
+
+        event.getTable().addPool(LootPool.lootPool()
+                .when(LootItemRandomChanceCondition.randomChance(0.0025f))
+                .add(LootItem.lootTableItem(ItemsRegistry.COSSET_RING.get()))
                 .apply(CurioFunction.builder())
                 .build());
     }
@@ -267,10 +321,29 @@ public class LootEvent {
                 .build());
 
         event.getTable().addPool(LootPool.lootPool()
-                .when(LootItemRandomChanceCondition.randomChance(0.05f))
+                .when(LootItemRandomChanceCondition.randomChance(0.08f))
+                .add(LootItem.lootTableItem(ItemsRegistry.CREED_TALISMAN.get()))
+                .apply(CurioFunction.builder())
+                .build());
+
+        event.getTable().addPool(LootPool.lootPool()
+                .when(LootItemRandomChanceCondition.randomChance(0.03f))
                 .add(LootItem.lootTableItem(ItemsRegistry.MIRACULOUS_TALISMAN.get()))
                 .apply(CurioFunction.builder())
                 .build());
+
+        event.getTable().addPool(LootPool.lootPool()
+                .when(LootItemRandomChanceCondition.randomChance(0.025f))
+                .add(LootItem.lootTableItem(ItemsRegistry.HEART_OF_BLOODLUST.get()))
+                .apply(CurioFunction.builder())
+                .build());
+
+        event.getTable().addPool(LootPool.lootPool()
+                .when(LootItemRandomChanceCondition.randomChance(0.015f))
+                .add(LootItem.lootTableItem(ItemsRegistry.COSSET_RING.get()))
+                .apply(CurioFunction.builder())
+                .build());
+
     }
 
     private static void entityLoot(final  LootTableLoadEvent event){

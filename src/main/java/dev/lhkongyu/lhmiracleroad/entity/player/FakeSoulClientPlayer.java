@@ -8,4 +8,7 @@ public class FakeSoulClientPlayer extends AbstractClientPlayer {
     public FakeSoulClientPlayer(ClientLevel level, GameProfile profile) {
         super(level, profile);
     }
+
+    @Override
+    public boolean isBaby() { return false; }
 }

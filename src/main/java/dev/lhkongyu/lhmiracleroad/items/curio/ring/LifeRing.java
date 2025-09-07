@@ -18,7 +18,7 @@ public class LifeRing {
 
     public static RingItem addAttributeModifier(){
         ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
-        builder.put(Attributes.MAX_HEALTH, new AttributeModifier(UUID.fromString("e8e52ef2-a768-b716-ac00-6e77077b1f8a"), "", .25, AttributeModifier.Operation.MULTIPLY_TOTAL));
+        builder.put(Attributes.MAX_HEALTH, new AttributeModifier(UUID.fromString("e8e52ef2-a768-b716-ac00-6e77077b1f8a"), "", .25, AttributeModifier.Operation.MULTIPLY_BASE));
         return new RingItem(new Item.Properties().rarity(Rarity.RARE),builder.build());
     }
 

@@ -123,6 +123,33 @@ public class PlayerAttributeTool {
     }
 
     /**
+     * 给对应能力进行属性的增加
+     * @param player
+     * @param jsonObject
+     * @param attributeLevel
+     * @param playerOccupationAttribute
+     */
+    public static void setAttributeNotRecoverHP(ServerPlayer player, JsonObject jsonObject, int attributeLevel, PlayerOccupationAttribute playerOccupationAttribute,String attributeTypeName){
+        for (JsonElement jsonElement : LHMiracleRoadTool.isAsJsonArray(jsonObject.get("points_rewards"))) {
+            JsonObject object = jsonElement.getAsJsonObject();
+            String attributeName = LHMiracleRoadTool.isAsString(object.get("attribute"));
+            double value = LHMiracleRoadTool.isAsDouble(object.get("value"));
+            if (value == 0) continue;
+            int levelPromote = LHMiracleRoadTool.isAsInt(object.get("level_promote"));
+            double levelPromoteValue = LHMiracleRoadTool.isAsDouble(object.get("level_promote_value"));
+            String operationString = LHMiracleRoadTool.isAsString(object.get("operation"));
+            double attributeValue;
+            double min = LHMiracleRoadTool.isAsDouble(object.get("min"));
+
+            int curioAttributeLevelValue = playerOccupationAttribute.getCurioAttributeLevelValue(attributeTypeName);
+            attributeLevel += curioAttributeLevelValue;
+
+            attributeValue = LHMiracleRoadTool.calculateTotalIncrease(attributeLevel, value, levelPromoteValue, levelPromote, min);
+            addExtraAttributesNotRecoverHP(player,attributeName,attributeValue,operationString,playerOccupationAttribute,attributeTypeName);
+        }
+    }
+
+    /**
      * 将计算后的数据添加进能力当中去
      * @param player
      * @param attributeName
@@ -144,6 +171,29 @@ public class PlayerAttributeTool {
             if (attribute.getDescriptionId().equals(Attributes.MAX_HEALTH.getDescriptionId())){
                 player.setHealth((float) player.getAttribute(attribute).getValue());
             }
+            playerOccupationAttribute.addAttributeModifier(attributeName + "#" + attributeTypeName,attributeModifier);
+        }
+    }
+
+    /**
+     * 将计算后的数据添加进能力当中去
+     * @param player
+     * @param attributeName
+     * @param attributeValue
+     * @param operationString
+     * @param playerOccupationAttribute
+     */
+    private static void addExtraAttributesNotRecoverHP(ServerPlayer player,String attributeName,double attributeValue,String operationString, PlayerOccupationAttribute playerOccupationAttribute,String attributeTypeName){
+        AttributeModifier.Operation operation = LHMiracleRoadTool.stringConversionOperation(operationString);
+        if (operation == null) return;
+        Attribute attribute = LHMiracleRoadTool.stringConversionAttribute(attributeName);
+        if (attribute != null){
+            AttributeModifier attributeModifier = new AttributeModifier(UUID.randomUUID(), "", attributeValue, operation);
+
+            AttributeModifier playerAttributeModifier = playerOccupationAttribute.getAttributeModifier().get(attributeName + "#" + attributeTypeName);
+            if (playerAttributeModifier != null) player.getAttribute(attribute).removeModifier(playerAttributeModifier);
+
+            player.getAttribute(attribute).addTransientModifier(attributeModifier);
             playerOccupationAttribute.addAttributeModifier(attributeName + "#" + attributeTypeName,attributeModifier);
         }
     }

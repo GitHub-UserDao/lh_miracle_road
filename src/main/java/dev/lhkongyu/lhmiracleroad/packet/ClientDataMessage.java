@@ -61,17 +61,6 @@ public record ClientDataMessage(JsonObject data) {
                 JsonObject attributePointsRewardsObj = DataCompressTool.attributePointsRewardsDataRestore(LHMiracleRoadTool.isAsJsonObject(jsonElement.getValue()));
                 ClientData.ATTRIBUTE_POINTS_REWARDS.put(jsonElement.getKey(), attributePointsRewardsObj);
             }
-
-            //从 ATTRIBUTE_POINTS_REWARDS 里获取 POINTS_REWARDS
-            ClientData.POINTS_REWARDS.clear();
-            for (String key : ClientData.ATTRIBUTE_POINTS_REWARDS.keySet()) {
-                JsonObject data = ClientData.ATTRIBUTE_POINTS_REWARDS.get(key);
-                for (JsonElement pointsRewardElement : LHMiracleRoadTool.isAsJsonArray(data.get("points_rewards"))) {
-                    JsonObject pointsRewardObj = pointsRewardElement.getAsJsonObject();
-                    String attributeName = LHMiracleRoadTool.isAsString(pointsRewardObj.get("attribute"));
-                    ClientData.POINTS_REWARDS.put(attributeName, pointsRewardObj);
-                }
-            }
         }
     }
 
@@ -117,9 +106,9 @@ public record ClientDataMessage(JsonObject data) {
 
     private void showAttributeManage(JsonObject showAttribute){
         if (showAttribute != null) {
-            ClientData.SHOW_ATTRIBUTE.clear();
+            ClientData.SHOW_ATTRIBUTE_VALUE.clear();
             for (Map.Entry<String, JsonElement> jsonElement : showAttribute.entrySet()) {
-                ClientData.SHOW_ATTRIBUTE.put(jsonElement.getKey(), LHMiracleRoadTool.isAsJsonObject(jsonElement.getValue()));
+                ClientData.SHOW_ATTRIBUTE_VALUE.put(jsonElement.getKey(), LHMiracleRoadTool.isAsDouble(jsonElement.getValue()));
             }
         }
     }

@@ -46,7 +46,7 @@
   {
     "attribute": "ranged_damage",
     "attribute_text": "power_ranged_damage",
-    "show_value_type": "base"
+    "show_value_type": "base_percentage"
   },
   {
     "attribute": "critical_hit_rate",
@@ -107,11 +107,6 @@
     "show_value_type": "extra_percentage"
   },
   {
-    "attribute": "jump",
-    "attribute_text": "agile_jump",
-    "show_value_type": "extra_percentage"
-  },
-  {
     "condition": "irons_spellbooks",
     "attribute": "irons_spellbooks:cast_time_reduction",
     "attribute_text": "trick_chanting_cd",
@@ -127,5 +122,112 @@
     "attribute": "luck",
     "attribute_text": "luck",
     "show_value_type": "base"
+  },
+  {
+    "attribute": "magic_damage_addition",
+    "attribute_text": "brain_magic_damage_addition",
+    "show_value_type": "extra_percentage"
+  },
+  {
+    "attribute": "mining_speed",
+    "attribute_text": "mining_speed",
+    "show_value_type": "extra_percentage"
+  },
+  {
+    "attribute": "magic_attribute_damage",
+    "attribute_text": "magic_attribute_damage",
+    "show_value_type": "base"
+  },
+  {
+    "attribute": "flame_attribute_damage",
+    "attribute_text": "flame_attribute_damage",
+    "show_value_type": "base"
+  },
+  {
+    "attribute": "lightning_attribute_damage",
+    "attribute_text": "lightning_attribute_damage",
+    "show_value_type": "base"
+  },
+  {
+    "attribute": "dark_attribute_damage",
+    "attribute_text": "dark_attribute_damage",
+    "show_value_type": "base"
+  },
+  {
+    "attribute": "holy_attribute_damage",
+    "attribute_text": "holy_attribute_damage",
+    "show_value_type": "base"
+  },
+  {
+    "condition": "irons_spellbooks",
+    "attribute": "irons_spellbooks:blood_spell_power",
+    "attribute_text": "blood_spell_power",
+    "show_value_type": "base_percentage"
+  },
+  {
+    "condition": "irons_spellbooks",
+    "attribute": "irons_spellbooks:ender_spell_power",
+    "attribute_text": "ender_spell_power",
+    "show_value_type": "base_percentage"
+  },
+  {
+    "condition": "irons_spellbooks",
+    "attribute": "irons_spellbooks:fire_spell_power",
+    "attribute_text": "fire_spell_power",
+    "show_value_type": "base_percentage"
+  },
+  {
+    "condition": "irons_spellbooks",
+    "attribute": "irons_spellbooks:ice_spell_power",
+    "attribute_text": "ice_spell_power",
+    "show_value_type": "base_percentage"
+  },
+  {
+    "condition": "irons_spellbooks",
+    "attribute": "irons_spellbooks:lightning_spell_power",
+    "attribute_text": "lightning_spell_power",
+    "show_value_type": "base_percentage"
+  },
+  {
+    "condition": "irons_spellbooks",
+    "attribute": "irons_spellbooks:holy_spell_power",
+    "attribute_text": "holy_spell_power",
+    "show_value_type": "base_percentage"
+  },
+  {
+    "condition": "irons_spellbooks",
+    "attribute": "irons_spellbooks:eldritch_spell_power",
+    "attribute_text": "eldritch_spell_power",
+    "show_value_type": "base_percentage"
+  },
+  {
+    "condition": "traveloptics",
+    "attribute": "traveloptics:aqua_spell_power",
+    "attribute_text": "aqua_spell_power",
+    "show_value_type": "base_percentage"
+  },
+  {
+    "condition": "cataclysm_spellbooks",
+    "attribute": "cataclysm_spellbooks:technomancy_spell_power",
+    "attribute_text": "technomancy_spell_power",
+    "show_value_type": "base_percentage"
+  },
+  {
+    "condition": "cataclysm_spellbooks",
+    "attribute": "cataclysm_spellbooks:abyssal_spell_power",
+    "attribute_text": "abyssal_spell_power",
+    "show_value_type": "base_percentage"
+  },
+  {
+    "condition": "irons_spellbooks",
+    "attribute": "irons_spellbooks:evocation_spell_power",
+    "attribute_text": "evocation_spell_power",
+    "show_value_type": "base_percentage"
+  },
+  {
+    "condition": "irons_spellbooks",
+    "attribute": "irons_spellbooks:nature_spell_power",
+    "attribute_text": "nature_spell_power",
+    "show_value_type": "base_percentage"
   }
 ]

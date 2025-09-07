@@ -8,9 +8,10 @@ import net.minecraft.world.entity.LivingEntity;
 
 public class HunterMark {
 
-    private static final int maxDamageAddition = 100;
+    private static final int maxDamageAddition = 200;
 
     public static void setHunterMark(LivingEntity livingEntity, boolean isVigilanceRingDistant){
+        if (livingEntity.tickCount % 20 != 0) return;
         livingEntity.getCapability(PlayerCurioProvider.PLAYER_CURIO_PROVIDER).ifPresent(playerCurio -> {
             playerCurio.setEquipHunterMark(isVigilanceRingDistant);
             if (playerCurio.getHunterMarkKillAmount() > 0) {

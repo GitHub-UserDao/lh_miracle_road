@@ -35,4 +35,12 @@ public class ConsecratedCombatPlume {
         }
     }
 
+    public static void damageReduction(LivingEntity source, LivingDamageEvent event){
+        if (source.getHealth() == source.getMaxHealth()){
+            float damage = 0.2f;
+            float amount = event.getAmount();
+            event.setAmount(amount - (amount * damage));
+        }
+    }
+
 }

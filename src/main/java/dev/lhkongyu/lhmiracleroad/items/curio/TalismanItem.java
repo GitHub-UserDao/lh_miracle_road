@@ -30,6 +30,7 @@ public class TalismanItem extends LHMiracleRoadCurioItem{
         Item item = stack.getItem();
         switch (item.getDescriptionId()) {
             case "item.lhmiracleroad.heart_of_bloodlust" -> HeartOfBloodLust.bloodLust(slotContext.entity());
+            case "item.lhmiracleroad.spanning_wings" -> SpanningWings.addSpanningWingsEffect(slotContext.entity());
         }
     }
 

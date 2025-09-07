@@ -163,9 +163,9 @@ dependencies {
     //mixin
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 //    // lhmobdifficultyincrease
-//    implementation fg.deobf("curse.maven:mob-difficulty-increase-999584:5243499")
+//    implementation fg.deobf("curse.maven:mob-difficulty-increase-999584:6924054")
 //    // epicfight
-//    implementation fg.deobf("curse.maven:epic-fight-mod-405076:5159623")
+//    implementation fg.deobf("curse.maven:epic-fight-mod-405076:6145747")
 //    // irons_spellbooks
 //    implementation fg.deobf("curse.maven:irons-spells-n-spellbooks-855414:5341949")
 //    // caelus

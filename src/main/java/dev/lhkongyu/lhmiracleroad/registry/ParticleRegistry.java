@@ -2,7 +2,7 @@ package dev.lhkongyu.lhmiracleroad.registry;
 
 import com.mojang.serialization.Codec;
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
-import dev.lhkongyu.lhmiracleroad.particle.SoulParticleOption;
+import dev.lhkongyu.lhmiracleroad.client.particle.SoulParticleOption;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;

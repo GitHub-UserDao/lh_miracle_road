@@ -15,8 +15,8 @@ import java.util.UUID;
 public class LuckyBracelet {
     public static BraceletItem addAttributeModifier(){
         ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
-        builder.put(LHMiracleRoadAttributes.CRITICAL_HIT_RATE, new AttributeModifier(UUID.fromString("083b9b40-cd06-bff4-6be7-3110d5112f34"), "", 12, AttributeModifier.Operation.ADDITION));
-        builder.put(Attributes.LUCK, new AttributeModifier(UUID.fromString("ff1a1dce-06d4-77ff-5119-a5b2ff4ae316"), "", 12, AttributeModifier.Operation.ADDITION));
+        builder.put(LHMiracleRoadAttributes.CRITICAL_HIT_RATE, new AttributeModifier(UUID.fromString("083b9b40-cd06-bff4-6be7-3110d5112f34"), "", 10, AttributeModifier.Operation.ADDITION));
+        builder.put(Attributes.LUCK, new AttributeModifier(UUID.fromString("ff1a1dce-06d4-77ff-5119-a5b2ff4ae316"), "", 2, AttributeModifier.Operation.ADDITION));
         return new BraceletItem(new Item.Properties().rarity(Rarity.RARE),builder.build());
     }
 

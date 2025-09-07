@@ -3,6 +3,7 @@ package dev.lhkongyu.lhmiracleroad.event;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonObject;
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
+import dev.lhkongyu.lhmiracleroad.attributes.AttributeInstanceAccess;
 import dev.lhkongyu.lhmiracleroad.attributes.LHMiracleRoadAttributes;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerCurioProvider;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
@@ -11,7 +12,6 @@ import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.entity.player.PlayerSoulEntity;
 import dev.lhkongyu.lhmiracleroad.items.curio.talisman.ConsecratedCombatPlume;
 import dev.lhkongyu.lhmiracleroad.items.curio.talisman.HuntingBowTalisman;
-import dev.lhkongyu.lhmiracleroad.items.curio.talisman.SpanningWings;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import dev.lhkongyu.lhmiracleroad.tool.PlayerAttributeTool;
 import net.minecraft.core.particles.ParticleTypes;
@@ -20,6 +20,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -27,6 +28,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -70,6 +72,7 @@ public class PlayerForgeEvent {
             playerOccupationAttribute.setBurden(optional.getBurden());
             playerOccupationAttribute.setAttributeMaxLevel(optional.getAttributeMaxLevel());
             playerOccupationAttribute.setMaxLevel(optional.getMaxLevel());
+            playerOccupationAttribute.setPoints(optional.getPoints());
 
             LHMiracleRoadTool.synchronizationClient(playerOccupationAttribute, (ServerPlayer) player);
         });
@@ -110,14 +113,18 @@ public class PlayerForgeEvent {
     @SubscribeEvent
     public static void playerLoggedInEvent(PlayerEvent.PlayerLoggedInEvent event){
         Player player = event.getEntity();
-        player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).ifPresent(playerOccupationAttribute -> {
+        Optional<PlayerOccupationAttribute> playerOccupationAttributeOptional = event.getEntity().getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).resolve();
+        if (playerOccupationAttributeOptional.isPresent()) {
+            PlayerOccupationAttribute playerOccupationAttribute = playerOccupationAttributeOptional.get();
             loggedInSyncAttribute(playerOccupationAttribute, (ServerPlayer) player);
             playerOccupationAttribute.setCurioAttributeLevel(Maps.newHashMap());
             LHMiracleRoadTool.synchronizationClient(playerOccupationAttribute, (ServerPlayer) player);
             LHMiracleRoadTool.synchronizationShowAttribute((ServerPlayer) player);
             //更新玩家奖惩状态
             LHMiracleRoadTool.playerPunishmentStateUpdate((ServerPlayer) player, playerOccupationAttribute);
-        });
+        }else {
+            LHMiracleRoadTool.synchronizationSoul(0, (ServerPlayer) player,0);
+        }
     }
 
     //交互事件
@@ -185,20 +192,31 @@ public class PlayerForgeEvent {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void damageAddition(LivingDamageEvent event) {
+        if (event.isCanceled()) return;
         Entity directEntity = event.getSource().getEntity();
         if (directEntity instanceof  Player player){
+            //魔法伤害加成
+          if (event.getSource().is(DamageTypes.INDIRECT_MAGIC) || event.getSource().is(DamageTypes.MAGIC)
+                    || event.getSource().is(DamageTypes.IN_FIRE) || event.getSource().is(DamageTypes.ON_FIRE)
+                    || event.getSource().is(DamageTypes.LAVA) || event.getSource().is(DamageTypes.FREEZE) || LHMiracleRoadTool.isMagicDamage(event.getSource())){
+                AttributeInstance magicInstance = player.getAttribute(LHMiracleRoadAttributes.MAGIC_DAMAGE_ADDITION);
+                if (magicInstance != null) {
+                    var attribute = ((AttributeInstanceAccess) magicInstance);
+                    float magnification = (float) attribute.computeIncreasedValueForInitial(1 - magicInstance.getBaseValue());
+                    if (LHMiracleRoadTool.isMagicDamage(event.getSource())) magnification = (magnification - 1) * 0.25f + 1;
+                    float damage = event.getAmount() * magnification;
+                    event.setAmount(damage);
+                }
+            }
+
             //饰品伤害加成
             player.getCapability(PlayerCurioProvider.PLAYER_CURIO_PROVIDER).ifPresent(playerCurio -> {
-                if (playerCurio.isEquipHuntingBowTalisman()){
+                if (playerCurio.isEquipHuntingBowTalisman() && event.getSource().getDirectEntity() instanceof Arrow){
                     HuntingBowTalisman.damageCount(player,event.getEntity(), event);
                 }
 
                 if (playerCurio.isEquipConsecratedCombatPlume()){
                     ConsecratedCombatPlume.damageCount(player, event);
-                }
-
-                if (playerCurio.isEquipSpanningWings()){
-                    SpanningWings.damageCount(player, event);
                 }
             });
             //伤害加成
@@ -230,6 +248,12 @@ public class PlayerForgeEvent {
                 float damage = (float) (event.getAmount() * damageReduction);
                 event.setAmount(damage);
             }
+            //饰品伤害减免
+            player.getCapability(PlayerCurioProvider.PLAYER_CURIO_PROVIDER).ifPresent(playerCurio -> {
+                if (playerCurio.isEquipConsecratedCombatPlume()){
+                    ConsecratedCombatPlume.damageReduction(player, event);
+                }
+            });
         }
     }
 }

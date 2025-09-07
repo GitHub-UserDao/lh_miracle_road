@@ -1,18 +1,16 @@
 package dev.lhkongyu.lhmiracleroad.packet;
 
 import com.google.common.collect.Maps;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
-import dev.lhkongyu.lhmiracleroad.data.ClientData;
+import dev.lhkongyu.lhmiracleroad.client.screen.overlay.SoulHudOverlay;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.network.NetworkEvent;
 
@@ -91,6 +89,8 @@ public record ClientOccupationMessage(JsonObject playerOccupationAttributeObject
                 playerOccupationAttribute.setBurden(burden);
                 playerOccupationAttribute.setAttributeMaxLevel(attributeMaxLevel);
                 playerOccupationAttribute.setMaxLevel(maxLevel);
+
+                SoulHudOverlay.synchronizeSoul(occupationExperience);
             }
         });
         context.setPacketHandled(true);

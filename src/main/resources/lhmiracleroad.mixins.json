@@ -9,7 +9,9 @@
     "AttributeInstanceMixin",
     "ItemStackMixin",
     "LivingEntityMixin",
-    "PlayerMixin"
+    "PlayerMixin",
+    "ItemRendererMixin",
+    "RenderBuffersMixin"
   ],
   "client": [
   ],

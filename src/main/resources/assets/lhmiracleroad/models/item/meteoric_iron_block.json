@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0" : "lhmiracleroad:item/gem/meteoric_iron_block"
+  }
+}

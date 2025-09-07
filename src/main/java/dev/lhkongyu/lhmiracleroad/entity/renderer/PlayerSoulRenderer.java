@@ -1,16 +1,17 @@
 package dev.lhkongyu.lhmiracleroad.entity.renderer;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
-import dev.lhkongyu.lhmiracleroad.entity.CommonRenderType;
+import dev.lhkongyu.lhmiracleroad.renderType.CommonRenderType;
 import dev.lhkongyu.lhmiracleroad.entity.player.FakeSoulClientPlayer;
 import dev.lhkongyu.lhmiracleroad.entity.player.PlayerSoulEntity;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
+import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
@@ -24,10 +25,7 @@ import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
 import org.joml.Vector3f;
-
-import java.util.Objects;
 
 public class PlayerSoulRenderer extends EntityRenderer<PlayerSoulEntity> {
 
@@ -43,13 +41,22 @@ public class PlayerSoulRenderer extends EntityRenderer<PlayerSoulEntity> {
 
     private final PlayerRenderer fakePlayerRenderer;
 
+    private final PlayerModel<FakeSoulClientPlayer> model;
+
     public PlayerSoulRenderer(EntityRendererProvider.Context context, float scale) {
         super(context);
         this.scale = scale;
         ModelPart modelpart = context.bakeLayer(MODEL_LAYER_LOCATION);
         this.main = modelpart.getChild("main");
 
-        this.fakePlayerRenderer = new PlayerRenderer(context, false);
+        this.fakePlayerRenderer = new PlayerRenderer(context, true);
+
+        model = new PlayerModel<>(
+                context.bakeLayer(ModelLayers.PLAYER),
+                true
+        );
+
+        model.young = false;
     }
 
     public static LayerDefinition createBodyLayer() {
@@ -93,21 +100,58 @@ public class PlayerSoulRenderer extends EntityRenderer<PlayerSoulEntity> {
 
             // 渲染名称标签
             if (entity.isCustomNameVisible()) {
-                Component name = Component.translatable("entity.lhmiracleroad.soul", entity.getCustomName());
-                renderNameTag(entity, name, poseStack, bufferSource, LightTexture.FULL_BRIGHT);
+                if (entity.getOwner() != null) {
+                    Component name = Component.translatable("entity.lhmiracleroad.soul",entity.getOwner().getName());
+                    renderNameTag(entity, name, poseStack, bufferSource, LightTexture.FULL_BRIGHT);
+                }
             }
         }else {
-            poseStack.pushPose();
-            double floatOffset = Math.sin((entity.tickCount + partialTicks) / 15.0) * 0.4;
-            poseStack.translate(0, floatOffset, 0);
+//            poseStack.pushPose();
+//            double floatOffset = Math.sin((entity.tickCount + partialTicks) / 15.0) * 0.4;
+//            poseStack.translate(0, floatOffset, 0);
+//
+//            Minecraft mc = Minecraft.getInstance();
+//            ClientLevel clientLevel = mc.level;
+//            FakeSoulClientPlayer fake = new FakeSoulClientPlayer(clientLevel, entity.getProfile());
+//
+//            fakePlayerRenderer.render(fake, 0, 0, poseStack, bufferSource, light / 2);
+//
+//            poseStack.popPose();
 
-            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 0.4f);
+            double floatOffset;
+            poseStack.pushPose();
+            poseStack.translate(0.0D, 1.5D * scale, 0.0D);
+
             Minecraft mc = Minecraft.getInstance();
             ClientLevel clientLevel = mc.level;
+            floatOffset = Math.sin((entity.tickCount + partialTicks) / 15.0) * 0.4;
+            poseStack.translate(0, floatOffset, 0);
+
+            poseStack.mulPose(Axis.XP.rotationDegrees(180));
+
             FakeSoulClientPlayer fake = new FakeSoulClientPlayer(clientLevel, entity.getProfile());
-            fakePlayerRenderer.render(fake, 0, 0, poseStack, bufferSource, light);
-            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+            ResourceLocation skin = fake.getSkinTextureLocation();
+            VertexConsumer consumer = bufferSource.getBuffer(RenderType.entityTranslucent(skin));
+
+            model.renderToBuffer(
+                    poseStack, consumer,
+                    light / 2, OverlayTexture.NO_OVERLAY,
+                    1.0F, 1.0F, 1.0F, 0.75F
+            );
+
             poseStack.popPose();
+
+            poseStack.pushPose();
+            // 渲染名称标签
+            if (entity.isCustomNameVisible()) {
+                floatOffset = Math.sin((entity.tickCount + partialTicks) / 15.0) * 0.4;
+                poseStack.translate(0, floatOffset, 0);
+                Component name = Component.translatable("entity.lhmiracleroad.soul",entity.getProfile().getName());
+                renderNameTag(entity, name, poseStack, bufferSource, LightTexture.FULL_BRIGHT);
+            }
+            poseStack.popPose();
+
         }
 
 //        Component name = entity.getCustomName().copy().append(Component.translatable("entity.lhmiracleroad.soul"));

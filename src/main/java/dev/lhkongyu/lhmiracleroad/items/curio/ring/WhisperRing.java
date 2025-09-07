@@ -28,8 +28,8 @@ public class WhisperRing {
 
     public static RingItem addAttributeModifier(){
         ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
-        builder.put(Attributes.MOVEMENT_SPEED, new AttributeModifier(UUID.fromString("ff008da9-a580-c426-a561-95bf73fdef45"), "", .30, AttributeModifier.Operation.MULTIPLY_TOTAL));
-        builder.put(LHMiracleRoadAttributes.JUMP, new AttributeModifier(UUID.fromString("d3eca14b-7993-bfbb-f12e-e2336d48bf6a"), "", .30, AttributeModifier.Operation.MULTIPLY_TOTAL));
+        builder.put(Attributes.MOVEMENT_SPEED, new AttributeModifier(UUID.fromString("ff008da9-a580-c426-a561-95bf73fdef45"), "", .30, AttributeModifier.Operation.MULTIPLY_BASE));
+        builder.put(LHMiracleRoadAttributes.JUMP, new AttributeModifier(UUID.fromString("d3eca14b-7993-bfbb-f12e-e2336d48bf6a"), "", .30, AttributeModifier.Operation.MULTIPLY_BASE));
 
         return new RingItem(new Item.Properties().rarity(Rarity.EPIC),builder.build());
     }

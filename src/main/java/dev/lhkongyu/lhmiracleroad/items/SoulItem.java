@@ -1,8 +1,6 @@
 package dev.lhkongyu.lhmiracleroad.items;
 
-import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
-import dev.lhkongyu.lhmiracleroad.particle.SoulParticleOption;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -10,12 +8,10 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
@@ -25,9 +21,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
-import java.awt.*;
 import java.util.List;
-import java.util.Optional;
 
 public class SoulItem extends Item {
     public SoulItem(Properties properties) {
@@ -91,7 +85,9 @@ public class SoulItem extends Item {
 
     private void addSoul(int amount, ServerPlayer player,ItemStack itemStack){
         player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).ifPresent(playerOccupationAttribute -> {
+            int soulStart = playerOccupationAttribute.getOccupationExperience();
             playerOccupationAttribute.addOccupationExperience(amount);
+            LHMiracleRoadTool.synchronizationSoul(playerOccupationAttribute.getOccupationExperience(),player,soulStart);
             ServerLevel serverLevel = (ServerLevel) player.level();
             if (amount >= 100000) {
                 serverLevel.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 0.6F, 0.6F);
@@ -113,15 +109,21 @@ public class SoulItem extends Item {
             if (playerOccupationAttribute.getOccupationExperience() >= 100000){
                 ServerLevel serverLevel = (ServerLevel) player.level();
                 if (LHMiracleRoadTool.percentageProbability(50)){
+                    int soulStart = playerOccupationAttribute.getOccupationExperience();
                     playerOccupationAttribute.addOccupationExperience(playerOccupationAttribute.getOccupationExperience());
                     LHMiracleRoadTool.getSoulParticle(serverLevel,player,playerOccupationAttribute.getOccupationExperience(),150);
+
+                    LHMiracleRoadTool.synchronizationSoul(playerOccupationAttribute.getOccupationExperience(),player,soulStart);
 
                     serverLevel.sendParticles(player, ParticleTypes.FLASH, true, player.getX(), player.getY(), player.getZ(), 1, 0.1, 0.1, 0.1,0.1);
                     serverLevel.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 0.6F, 0.6F);
                 }else {
                     serverLevel.sendParticles(player, ParticleTypes.SOUL_FIRE_FLAME, true, player.getX(), player.getY() + player.getBbHeight() * 0.5, player.getZ(), 50, 0.1, 0.1, 0.1,0.1);
                     serverLevel.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.FIRE_EXTINGUISH, SoundSource.PLAYERS, 1F, 1F);
+                    int soulStart = playerOccupationAttribute.getOccupationExperience();
                     playerOccupationAttribute.setOccupationExperience(0);
+
+                    LHMiracleRoadTool.synchronizationSoul(playerOccupationAttribute.getOccupationExperience(),player,soulStart);
                 }
                 playerOccupationAttribute.addPoints(1);
                 itemStack.shrink(1);

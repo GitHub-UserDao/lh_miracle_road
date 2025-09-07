@@ -3,11 +3,9 @@ package dev.lhkongyu.lhmiracleroad.entity.player;
 import com.mojang.authlib.GameProfile;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
-import dev.lhkongyu.lhmiracleroad.particle.SoulParticleOption;
+import dev.lhkongyu.lhmiracleroad.client.particle.SoulParticleOption;
 import dev.lhkongyu.lhmiracleroad.registry.EntityRegistry;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -20,7 +18,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -115,9 +112,9 @@ public class PlayerSoulEntity extends Entity {
         if (this.profile == null && this.level().isClientSide) {
             Optional<UUID> uuidOpt = this.getEntityData().get(SOUL_UUID);
             String name = this.getEntityData().get(SOUL_NAME);
-            String soul = I18n.get("entity.lhmiracleroad.soul");
-            if (uuidOpt.isPresent() && name != null && !name.isEmpty()) {
-                this.profile = new GameProfile(uuidOpt.get(), name + soul);
+//            String soul = I18n.get("entity.lhmiracleroad.soul");
+            if (uuidOpt.isPresent() && !name.isEmpty()) {
+                this.profile = new GameProfile(uuidOpt.get(), name);
             }
         }
         return this.profile;
@@ -175,6 +172,15 @@ public class PlayerSoulEntity extends Entity {
             playerOccupationAttribute.setOccupationExperience(playerOccupationAttribute.getOccupationExperience() + soulCount);
             clean();
         });
+    }
+
+    @Override
+    public boolean hurt(net.minecraft.world.damagesource.DamageSource source, float amount) {
+        if (source.getEntity() instanceof Player attacker) {
+            getSoul(attacker, this.level());
+            return false;
+        }
+        return false;
     }
 
     @Override

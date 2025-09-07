@@ -3,27 +3,25 @@ package dev.lhkongyu.lhmiracleroad.mixin;
 
 import dev.lhkongyu.lhmiracleroad.attributes.AttributeInstanceAccess;
 import dev.lhkongyu.lhmiracleroad.attributes.LHMiracleRoadAttributes;
-import dev.lhkongyu.lhmiracleroad.capability.PlayerCurioProvider;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.items.curio.ring.RadianceRing;
 import dev.lhkongyu.lhmiracleroad.items.curio.ring.WhisperRing;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -32,10 +30,16 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.Optional;
+import javax.annotation.Nullable;
+import java.util.Collection;
+import java.util.List;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin {
+
+	@Shadow @Nullable public abstract AttributeInstance getAttribute(Attribute p_21052_);
+
+	@Shadow public abstract Collection<MobEffectInstance> getActiveEffects();
 
 	@Unique
 	private int entityDroppedXp = 0;
@@ -91,16 +95,50 @@ public abstract class LivingEntityMixin {
 
 	@Inject(method = "dropAllDeathLoot", at = @At("TAIL"))
 	private void injectAtDrop(DamageSource source, CallbackInfo ci) {
-		if (source.getEntity() instanceof ServerPlayer player) {
-			player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).ifPresent(playerOccupationAttribute -> {
-				entityDroppedXp = Math.max(entityDroppedXp,20);
-				int occupationExperience = (int) (entityDroppedXp * LHMiracleRoadConfig.COMMON.EMPIRICAL_BASE_MULTIPLIER.get());
+		int hp = (int) LHMiracleRoadTool.getAttributeValue(this.getAttribute(Attributes.MAX_HEALTH));
+		int atk = (int) LHMiracleRoadTool.getAttributeValue(this.getAttribute(Attributes.ATTACK_DAMAGE));
+		int arm = (int) LHMiracleRoadTool.getAttributeValue(this.getAttribute(Attributes.ARMOR));
+		int atou = (int) LHMiracleRoadTool.getAttributeValue(this.getAttribute(Attributes.ARMOR_TOUGHNESS));
+		int buff = (int) this.getActiveEffects().stream().map(MobEffectInstance::getEffect).filter(MobEffect::isBeneficial).count();
+        if (source.getEntity() instanceof ServerPlayer killer) {
+			killer.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).ifPresent(playerOccupationAttribute -> {
+				LivingEntity target = ((LivingEntity) (Object) this);
+				entityDroppedXp = Math.max(entityDroppedXp,15);
+//				int occupationExperience = (int) (entityDroppedXp * LHMiracleRoadConfig.COMMON.EMPIRICAL_BASE_MULTIPLIER.get());
 
-				AttributeInstance attributeInstance = player.getAttribute(LHMiracleRoadAttributes.SOUL_INCREASE);
+				int expValue = LHMiracleRoadTool.evaluateFormula(LHMiracleRoadConfig.COMMON.EXPERIENCE_ACQUISITION_FORMULA.get(),entityDroppedXp,hp,atk,arm,atou,buff);
+				AttributeInstance attributeInstance = killer.getAttribute(LHMiracleRoadAttributes.SOUL_INCREASE);
 				if (attributeInstance != null) {
-					occupationExperience = (int) (occupationExperience * attributeInstance.getValue());
+					expValue = (int) (expValue * attributeInstance.getValue());
 				}
-				playerOccupationAttribute.addOccupationExperience(occupationExperience);
+				int killerSoulStart = playerOccupationAttribute.getOccupationExperience();
+				playerOccupationAttribute.addOccupationExperience(expValue);
+				LHMiracleRoadTool.getSoulParticle((ServerLevel) killer.level(), killer,expValue,200,2,1000,target);
+				LHMiracleRoadTool.synchronizationSoul(playerOccupationAttribute.getOccupationExperience(),killer,killerSoulStart);
+
+				if(LHMiracleRoadConfig.COMMON.IS_EXP_SHARING.get()) {
+					double range = 64.0;
+					ServerLevel level = killer.serverLevel();
+					List<ServerPlayer> nearbyPlayers = level.getEntitiesOfClass(
+							ServerPlayer.class,
+							killer.getBoundingBox().inflate(range, range, range),
+							p -> !p.equals(killer)
+					);
+
+					if (!nearbyPlayers.isEmpty()) {
+						int sharedExp = (int) (expValue * LHMiracleRoadConfig.COMMON.EXP_SHARING_PERCENTAGE.get());
+
+						for (ServerPlayer p : nearbyPlayers) {
+							p.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).ifPresent(attr -> {
+								int pSoulStart = attr.getOccupationExperience();
+								attr.addOccupationExperience(sharedExp);
+								LHMiracleRoadTool.synchronizationSoul(attr.getOccupationExperience(),p,pSoulStart);
+							});
+							LHMiracleRoadTool.getSoulParticle((ServerLevel) p.level(), p, expValue, (int) (30 * LHMiracleRoadConfig.COMMON.EXP_SHARING_PERCENTAGE.get()), 2, 1000, target);
+						}
+					}
+				}
+
 			});
 		}
 	}

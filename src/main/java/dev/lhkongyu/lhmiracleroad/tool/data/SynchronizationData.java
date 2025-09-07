@@ -3,9 +3,8 @@ package dev.lhkongyu.lhmiracleroad.tool.data;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
-import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.packet.ClientDataMessage;
-import dev.lhkongyu.lhmiracleroad.packet.PlayerAttributeChannel;
+import dev.lhkongyu.lhmiracleroad.packet.PlayerChannel;
 import net.minecraft.server.level.ServerPlayer;
 
 public class SynchronizationData {
@@ -23,7 +22,7 @@ public class SynchronizationData {
             equipmentData.addProperty("key", "modEquipment");
             equipmentData.add("data", data);
             ClientDataMessage equipmentMessage = new ClientDataMessage(equipmentData);
-            PlayerAttributeChannel.sendToClient(equipmentMessage, player);
+            PlayerChannel.sendToClient(equipmentMessage, player);
         }
         LHMiracleRoad.LOGGER.warn("LHMiracleRoad: synchronization mod equipment");
 
@@ -35,7 +34,7 @@ public class SynchronizationData {
         attributePointsRewardsReloadListenerData.add("data",attributePointsRewards);
 
         ClientDataMessage attributePointsRewardsReloadListenerMessage = new ClientDataMessage(attributePointsRewardsReloadListenerData);
-        PlayerAttributeChannel.sendToClient(attributePointsRewardsReloadListenerMessage, player);
+        PlayerChannel.sendToClient(attributePointsRewardsReloadListenerMessage, player);
 
         LHMiracleRoad.LOGGER.warn("LHMiracleRoad: synchronization attribute points rewards");
 
@@ -46,7 +45,7 @@ public class SynchronizationData {
         attributeTypesData.add("data",attributeTypes);
 
         ClientDataMessage attributeTypesMessage = new ClientDataMessage(attributeTypesData);
-        PlayerAttributeChannel.sendToClient(attributeTypesMessage, player);
+        PlayerChannel.sendToClient(attributeTypesMessage, player);
 
         LHMiracleRoad.LOGGER.warn("LHMiracleRoad: synchronization attribute types");
 
@@ -57,7 +56,7 @@ public class SynchronizationData {
         occupationData.add("data",occupation);
 
         ClientDataMessage occupationMessage = new ClientDataMessage(occupationData);
-        PlayerAttributeChannel.sendToClient(occupationMessage, player);
+        PlayerChannel.sendToClient(occupationMessage, player);
 
         LHMiracleRoad.LOGGER.warn("LHMiracleRoad:synchronization occupation");
 
@@ -68,7 +67,7 @@ public class SynchronizationData {
         showGuiAttributeData.add("data",showGuiAttribute);
 
         ClientDataMessage showGuiAttributeMessage = new ClientDataMessage(showGuiAttributeData);
-        PlayerAttributeChannel.sendToClient(showGuiAttributeMessage, player);
+        PlayerChannel.sendToClient(showGuiAttributeMessage, player);
 
         LHMiracleRoad.LOGGER.warn("LHMiracleRoad:synchronization show gui attribute");
 
@@ -79,7 +78,7 @@ public class SynchronizationData {
         initItemData.add("data",initItem);
 
         ClientDataMessage initItemMessage = new ClientDataMessage(initItemData);
-        PlayerAttributeChannel.sendToClient(initItemMessage, player);
+        PlayerChannel.sendToClient(initItemMessage, player);
 
         LHMiracleRoad.LOGGER.warn("LHMiracleRoad:synchronization init item");
     }

@@ -16,7 +16,7 @@ public class ManyWeaponsTalisman {
 
     public static TalismanItem addAttributeModifier(){
         ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
-        builder.put(LHMiracleRoadAttributes.BURDEN, new AttributeModifier(UUID.fromString("57ddff89-6642-91bc-7e2f-655effcba86d"), "", .3, AttributeModifier.Operation.MULTIPLY_TOTAL));
+        builder.put(LHMiracleRoadAttributes.BURDEN, new AttributeModifier(UUID.fromString("57ddff89-6642-91bc-7e2f-655effcba86d"), "", .3, AttributeModifier.Operation.MULTIPLY_BASE));
 
         return new TalismanItem(new Item.Properties().rarity(Rarity.EPIC),builder.build());
     }
