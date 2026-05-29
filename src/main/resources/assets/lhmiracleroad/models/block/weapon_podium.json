@@ -1,0 +1,212 @@
+{
+	"credit": "Made with Blockbench",
+	"parent": "block/block",
+	"texture_size": [64, 64],
+	"textures": {
+		"weapon_podium": "lhmiracleroad:block/weapon_podium",
+		"particle": "lhmiracleroad:block/weapon_podium"
+	},
+	"elements": [
+		{
+			"name": "bottom",
+			"from": [3, 0, 3],
+			"to": [13, 3, 13],
+			"rotation": {"angle": 0, "axis": "y", "origin": [7, 0, 8]},
+			"faces": {
+				"north": {"uv": [11.25, 0, 13.75, 0.75], "texture": "#weapon_podium"},
+				"east": {"uv": [11.25, 1, 13.75, 1.75], "texture": "#weapon_podium"},
+				"south": {"uv": [11.25, 2, 13.75, 2.75], "texture": "#weapon_podium"},
+				"west": {"uv": [11.25, 3, 13.75, 3.75], "texture": "#weapon_podium"},
+				"up": {"uv": [11, 2.5, 8.5, 0], "texture": "#weapon_podium"},
+				"down": {"uv": [11, 2.75, 8.5, 5.25], "texture": "#weapon_podium"}
+			}
+		},
+		{
+			"name": "body",
+			"from": [6, 3, 6],
+			"to": [10, 12, 10],
+			"rotation": {"angle": 0, "axis": "y", "origin": [7, 3, 7]},
+			"faces": {
+				"north": {"uv": [5.5, 5.5, 6.5, 7.75], "texture": "#weapon_podium"},
+				"east": {"uv": [6.75, 5.5, 7.75, 7.75], "texture": "#weapon_podium"},
+				"south": {"uv": [8, 5.5, 9, 7.75], "texture": "#weapon_podium"},
+				"west": {"uv": [9.25, 5.5, 10.25, 7.75], "texture": "#weapon_podium"},
+				"up": {"uv": [5.25, 6.5, 4.25, 5.5], "texture": "#weapon_podium"},
+				"down": {"uv": [5.25, 6.75, 4.25, 7.75], "texture": "#weapon_podium"}
+			}
+		},
+		{
+			"from": [0, 12, 0],
+			"to": [16, 16, 16],
+			"rotation": {"angle": 0, "axis": "y", "origin": [7, 11, 7]},
+			"faces": {
+				"north": {"uv": [4.25, 0, 8.25, 1], "texture": "#weapon_podium"},
+				"east": {"uv": [4.25, 1.25, 8.25, 2.25], "texture": "#weapon_podium"},
+				"south": {"uv": [4.25, 2.5, 8.25, 3.5], "texture": "#weapon_podium"},
+				"west": {"uv": [4.25, 3.75, 8.25, 4.75], "texture": "#weapon_podium"},
+				"up": {"uv": [4, 4, 0, 0], "texture": "#weapon_podium"},
+				"down": {"uv": [4, 4.25, 0, 8.25], "texture": "#weapon_podium"}
+			}
+		},
+		{
+			"from": [10, 16, 0],
+			"to": [16, 17, 16],
+			"rotation": {"angle": 0, "axis": "y", "origin": [12, 16, 7]},
+			"faces": {
+				"north": {"uv": [10.25, 9.25, 11.75, 9.5], "texture": "#weapon_podium"},
+				"east": {"uv": [10.25, 8.25, 14.25, 8.5], "texture": "#weapon_podium"},
+				"south": {"uv": [10.25, 9.75, 11.75, 10], "texture": "#weapon_podium"},
+				"west": {"uv": [10.25, 8.75, 14.25, 9], "texture": "#weapon_podium"},
+				"up": {"uv": [8.5, 12.25, 7, 8.25], "texture": "#weapon_podium"},
+				"down": {"uv": [10, 8.25, 8.5, 12.25], "texture": "#weapon_podium"}
+			}
+		},
+		{
+			"from": [0, 16, 0],
+			"to": [6, 17, 6],
+			"rotation": {"angle": 0, "axis": "y", "origin": [2, 16, 6]},
+			"faces": {
+				"north": {"uv": [5.25, 8.5, 6.75, 8.75], "texture": "#weapon_podium"},
+				"east": {"uv": [5.25, 9, 6.75, 9.25], "texture": "#weapon_podium"},
+				"south": {"uv": [5.25, 9.5, 6.75, 9.75], "texture": "#weapon_podium"},
+				"west": {"uv": [5.25, 10, 6.75, 10.25], "texture": "#weapon_podium"},
+				"up": {"uv": [5, 10, 3.5, 8.5], "texture": "#weapon_podium"},
+				"down": {"uv": [5, 10, 3.5, 11.5], "texture": "#weapon_podium"}
+			}
+		},
+		{
+			"from": [0, 10, 0],
+			"to": [6, 12, 6],
+			"rotation": {"angle": 0, "axis": "y", "origin": [2, 11, 6]},
+			"faces": {
+				"north": {"uv": [1.75, 8.5, 3.25, 9], "texture": "#weapon_podium"},
+				"east": {"uv": [1.75, 9.25, 3.25, 9.75], "texture": "#weapon_podium"},
+				"south": {"uv": [1.75, 10, 3.25, 10.5], "texture": "#weapon_podium"},
+				"west": {"uv": [1.75, 10.75, 3.25, 11.25], "texture": "#weapon_podium"},
+				"up": {"uv": [1.5, 10, 0, 8.5], "texture": "#weapon_podium"},
+				"down": {"uv": [1.5, 10.25, 0, 11.75], "texture": "#weapon_podium"}
+			}
+		},
+		{
+			"from": [10, 10, 0],
+			"to": [16, 12, 6],
+			"rotation": {"angle": 0, "axis": "y", "origin": [12, 11, 6]},
+			"faces": {
+				"north": {"uv": [1.75, 11.5, 3.25, 12], "texture": "#weapon_podium"},
+				"east": {"uv": [1.75, 9.25, 3.25, 9.75], "texture": "#weapon_podium"},
+				"south": {"uv": [1.75, 10, 3.25, 10.5], "texture": "#weapon_podium"},
+				"west": {"uv": [1.75, 10.75, 3.25, 11.25], "texture": "#weapon_podium"},
+				"up": {"uv": [1.5, 10, 0, 8.5], "texture": "#weapon_podium"},
+				"down": {"uv": [1.5, 10.25, 0, 11.75], "texture": "#weapon_podium"}
+			}
+		},
+		{
+			"from": [10, 10, 10],
+			"to": [16, 12, 16],
+			"rotation": {"angle": 0, "axis": "y", "origin": [12, 11, 16]},
+			"faces": {
+				"north": {"uv": [1.75, 8.5, 3.25, 9], "texture": "#weapon_podium"},
+				"east": {"uv": [1.75, 9.25, 3.25, 9.75], "texture": "#weapon_podium"},
+				"south": {"uv": [1.75, 11.5, 3.25, 12], "texture": "#weapon_podium"},
+				"west": {"uv": [1.75, 10.75, 3.25, 11.25], "texture": "#weapon_podium"},
+				"up": {"uv": [1.5, 10, 0, 8.5], "texture": "#weapon_podium"},
+				"down": {"uv": [1.5, 10.25, 0, 11.75], "texture": "#weapon_podium"}
+			}
+		},
+		{
+			"from": [0, 10, 10],
+			"to": [6, 12, 16],
+			"rotation": {"angle": 0, "axis": "y", "origin": [2, 11, 16]},
+			"faces": {
+				"north": {"uv": [1.75, 8.5, 3.25, 9], "texture": "#weapon_podium"},
+				"east": {"uv": [1.75, 9.25, 3.25, 9.75], "texture": "#weapon_podium"},
+				"south": {"uv": [1.75, 10, 3.25, 10.5], "texture": "#weapon_podium"},
+				"west": {"uv": [1.75, 10.75, 3.25, 11.25], "texture": "#weapon_podium"},
+				"up": {"uv": [1.5, 10, 0, 8.5], "texture": "#weapon_podium"},
+				"down": {"uv": [1.5, 10.25, 0, 11.75], "texture": "#weapon_podium"}
+			}
+		},
+		{
+			"from": [0, 7, 6],
+			"to": [0, 12, 10],
+			"rotation": {"angle": 0, "axis": "y", "origin": [0, 10, 7]},
+			"faces": {
+				"north": {"uv": [16, 14.5, 16, 15.75], "texture": "#weapon_podium"},
+				"east": {"uv": [10.5, 5.5, 11.5, 6.75], "texture": "#weapon_podium"},
+				"south": {"uv": [16, 14.5, 16, 15.75], "texture": "#weapon_podium"},
+				"west": {"uv": [10.5, 5.5, 11.5, 6.75], "texture": "#weapon_podium"},
+				"up": {"uv": [16, 14.75, 16, 15.75], "texture": "#weapon_podium"},
+				"down": {"uv": [16, 14.75, 16, 15.75], "texture": "#weapon_podium"}
+			}
+		},
+		{
+			"from": [16, 8, 6],
+			"to": [16, 12, 10],
+			"rotation": {"angle": 0, "axis": "y", "origin": [16, 10, 7]},
+			"faces": {
+				"north": {"uv": [16, 14.75, 16, 15.75], "texture": "#weapon_podium"},
+				"east": {"uv": [14.25, 5.75, 15.25, 6.75], "texture": "#weapon_podium"},
+				"south": {"uv": [16, 14.75, 16, 15.75], "texture": "#weapon_podium"},
+				"west": {"uv": [14.25, 5.75, 15.25, 6.75], "texture": "#weapon_podium"},
+				"up": {"uv": [16, 14.75, 16, 15.75], "texture": "#weapon_podium"},
+				"down": {"uv": [16, 14.75, 16, 15.75], "texture": "#weapon_podium"}
+			}
+		},
+		{
+			"from": [11, 8, 0],
+			"to": [15, 10, 0],
+			"rotation": {"angle": 0, "axis": "y", "origin": [12, 8, 0]},
+			"faces": {
+				"north": {"uv": [11.75, 6.25, 12.75, 6.75], "texture": "#weapon_podium"},
+				"east": {"uv": [16, 15.5, 16, 16], "texture": "#weapon_podium"},
+				"south": {"uv": [11.75, 6.25, 12.75, 6.75], "texture": "#weapon_podium"},
+				"west": {"uv": [16, 15.5, 16, 16], "texture": "#weapon_podium"},
+				"up": {"uv": [15, 16, 16, 16], "texture": "#weapon_podium"},
+				"down": {"uv": [15, 16, 16, 16], "texture": "#weapon_podium"}
+			}
+		},
+		{
+			"from": [11, 8, 16],
+			"to": [15, 10, 16],
+			"rotation": {"angle": 0, "axis": "y", "origin": [12, 8, 16]},
+			"faces": {
+				"north": {"uv": [11.75, 6.25, 12.75, 6.75], "texture": "#weapon_podium"},
+				"east": {"uv": [16, 15.5, 16, 16], "texture": "#weapon_podium"},
+				"south": {"uv": [11.75, 6.25, 12.75, 6.75], "texture": "#weapon_podium"},
+				"west": {"uv": [16, 15.5, 16, 16], "texture": "#weapon_podium"},
+				"up": {"uv": [15, 16, 16, 16], "texture": "#weapon_podium"},
+				"down": {"uv": [15, 16, 16, 16], "texture": "#weapon_podium"}
+			}
+		}
+	],
+	"display": {},
+	"groups": [
+		0,
+		1,
+		{
+			"name": "Head",
+			"origin": [8, 8, 8],
+			"scope": 0,
+			"color": 0,
+			"children": [
+				2,
+				3,
+				4,
+				{
+					"name": "group",
+					"origin": [8, 8, 8],
+					"scope": 0,
+					"color": 0,
+					"children": [5, 6, 7, 8]
+				},
+				{
+					"name": "decoration",
+					"origin": [8, 8, 8],
+					"scope": 0,
+					"color": 0,
+					"children": [9, 10, 11, 12]
+				}
+			]
+		}
+	]
+}

@@ -75,11 +75,7 @@ public class NameTool {
 
     public static final String BLOOD = "blood";
 
-    public static final String MAGIC = "magic";
-
     public static final String SHARP = "sharp";
-
-    public static final String HOLY = "holy";
 
     public static final String POISON = "poison";
 

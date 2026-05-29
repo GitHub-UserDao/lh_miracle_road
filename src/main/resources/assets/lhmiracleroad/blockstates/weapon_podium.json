@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "lhmiracleroad:block/weapon_podium",
+      "y": 270
+    },
+    "facing=north": {
+      "model": "lhmiracleroad:block/weapon_podium",
+      "y": 180
+    },
+    "facing=south": {
+      "model": "lhmiracleroad:block/weapon_podium"
+    },
+    "facing=west": {
+      "model": "lhmiracleroad:block/weapon_podium",
+      "y": 90
+    }
+  }
+}

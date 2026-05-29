@@ -26,10 +26,6 @@ public class ItemRenderType extends RenderType {
 
     private static final RenderType BLOOD_GLINT;
 
-    private static final RenderType HOLY_GLINT;
-
-    private static final RenderType MAGIC_GLINT;
-
     private static final RenderType POISON_GLINT;
 
     private static final RenderType ICE_GLINT;
@@ -53,13 +49,6 @@ public class ItemRenderType extends RenderType {
         return BLOOD_GLINT;
     }
 
-    public static RenderType getHolyGlint() {
-        return HOLY_GLINT;
-    }
-
-    public static RenderType getMagicGlint() {
-        return MAGIC_GLINT;
-    }
 
     public static RenderType getPoisonGlint() {
         return POISON_GLINT;
@@ -114,8 +103,6 @@ public class ItemRenderType extends RenderType {
         LIGHTNING_GLINT = createPixelRenderType("lightning_glint","textures/glints/lightning_glint.png",64.0f,32.0F);
         DARK_GLINT = createPixelRenderType("dark_glint","textures/glints/dark_glint.png",16.0f,48.0F);
         BLOOD_GLINT = createPixelRenderType("blood_glint","textures/glints/blood_glint.png",16.0f,64.0F);
-        HOLY_GLINT = createPixelRenderType("holy_glint","textures/glints/holy_glint.png",16.0f,64.0F);
-        MAGIC_GLINT = createPixelRenderType("magic_glint","textures/glints/magic_glint.png",16.0f,64.0F);
         POISON_GLINT = createPixelRenderType("poison_glint","textures/glints/poison_glint.png",16.0f,64.0F);
         ICE_GLINT = createPixelRenderType("ice_glint","textures/glints/ice_glint.png",16.0f,32.0F);
         SHARP_GLINT  = createPixelRenderType("ice_glint","textures/glints/sharp_glint.png",16.0f,32.0F);
@@ -127,8 +114,6 @@ public class ItemRenderType extends RenderType {
             case NameTool.LIGHTNING -> getLightningGlint();
             case NameTool.DARK -> getDarkGlint();
             case NameTool.BLOOD -> getBloodGlint();
-            case NameTool.MAGIC -> getMagicGlint();
-            case NameTool.HOLY -> getHolyGlint();
             case NameTool.POISON -> getPoisonGlint();
             case NameTool.ICE -> getIceGlint();
             case NameTool.SHARP -> getSharpGlint();

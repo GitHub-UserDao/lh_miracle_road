@@ -16,7 +16,7 @@ public class SoulHudOverlay implements IGuiOverlay {
     public static long lastSoulGainTime = 0;
     public static int lastSoulEndAmount = 0;
     public static int lastSoulStartAmount = 0;
-    public static final long HUD_DISPLAY_DURATION = 5000; // 显示5秒
+    public static final long HUD_DISPLAY_DURATION = 4000; // 显示4秒
     public static Queue<Integer> integerSequence;
 
     public static void obtainSoul(int soulStart,int soulEnd) {
@@ -88,9 +88,9 @@ public class SoulHudOverlay implements IGuiOverlay {
         guiGraphics.pose().popPose();
 
         //显示添加了多少的魂
-        if (elapsed > 3000) return;
+        if (elapsed > HUD_DISPLAY_DURATION * .5) return;
         alpha = 1.0f;
-        remain = 3000 - elapsed;
+        remain = (long) (HUD_DISPLAY_DURATION * .5 - elapsed);
         if (remain < fadeDuration) {
             alpha = remain / (float) fadeDuration;
         }
@@ -100,13 +100,13 @@ public class SoulHudOverlay implements IGuiOverlay {
         guiGraphics.setColor(1.0f, 1.0f, 1.0f, alpha);
 
         // 渲染底图
-        guiGraphics.blit(
-                new ResourceLocation(LHMiracleRoad.MODID, "textures/gui/soul_add.png"),
-                iconX, iconY,
-                0, 0,
-                pngWidth, pngHeight,
-                pngWidth, pngHeight
-        );
+//        guiGraphics.blit(
+//                new ResourceLocation(LHMiracleRoad.MODID, "textures/gui/soul_add.png"),
+//                iconX, iconY,
+//                0, 0,
+//                pngWidth, pngHeight,
+//                pngWidth, pngHeight
+//        );
 
         // 计算居中坐标
         soulStr = lastSoulStartAmount <= lastSoulEndAmount ? "+ " + (lastSoulEndAmount - lastSoulStartAmount) : "- " + (lastSoulStartAmount - lastSoulEndAmount);

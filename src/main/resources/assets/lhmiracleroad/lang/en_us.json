@@ -251,8 +251,6 @@
   "item.lhmiracleroad.lightning_gem": "闪电宝石",
   "item.lhmiracleroad.dark_gem": "暗宝石",
   "item.lhmiracleroad.blood_gem": "血宝石",
-  "item.lhmiracleroad.magic_gem": "魔力宝石",
-  "item.lhmiracleroad.holy_gem": "神圣宝石",
   "item.lhmiracleroad.ice_gem": "冰霜宝石",
   "item.lhmiracleroad.poison_gem": "毒宝石",
   "item.lhmiracleroad.sharp_gem": "锋利宝石",
@@ -273,5 +271,7 @@
   "lhmiracleroad.gui.attribute.text.details.aqua_spell_power": "Aqua Spell Power %s",
   "lhmiracleroad.gui.attribute.text.details.technomancy_spell_power": "Mechanical Spell Power %s",
   "lhmiracleroad.gui.attribute.text.details.abyssal_spell_power": "Abyssal Spell Power %s",
-  "lhmiracleroad.gui.attribute.text.details.evocation_spell_power": "Evocation Spell Power %s"
+  "lhmiracleroad.gui.attribute.text.details.evocation_spell_power": "Evocation Spell Power %s",
+
+  "ui.lhmiracleroad.weapon_podium": "Podium Platform,"
 }

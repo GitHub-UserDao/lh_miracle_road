@@ -6,14 +6,23 @@ import dev.lhkongyu.lhmiracleroad.attributes.LHMiracleRoadAttributes;
 import dev.lhkongyu.lhmiracleroad.attributes.ShowAttributesTypes;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.event.InteractionEvent;
+import dev.lhkongyu.lhmiracleroad.event.client.HudEvents;
+import dev.lhkongyu.lhmiracleroad.packet.ClientPromptMessage;
+import dev.lhkongyu.lhmiracleroad.packet.PlayerChannel;
 import dev.lhkongyu.lhmiracleroad.registry.ItemsRegistry;
+import dev.lhkongyu.lhmiracleroad.registry.TagsRegistry;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.ElytraItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ShieldItem;
 import net.minecraftforge.event.ItemAttributeModifierEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,21 +30,48 @@ import java.util.UUID;
 
 public class StrengthenGem {
 
+    public static ItemStack strengthen(ItemStack baseItemStack, ItemStack gemItemStack){
+        if (LHMiracleRoadTool.itemIsWeaponsAll(baseItemStack) || baseItemStack.getItem() instanceof ArmorItem || baseItemStack.getItem() instanceof ElytraItem) {
+
+            CompoundTag tag = baseItemStack.getOrCreateTag().getCompound("lh_gem");
+            int strengthenLV = tag.getInt("strengthen_lv");
+            if (strengthenLV > 9) return ItemStack.EMPTY;
+            int have = gemItemStack.getCount();
+            Integer needed = StrengthenGem.getStrengthenGemCount(gemItemStack, strengthenLV);
+            if (needed == null || have < needed) return ItemStack.EMPTY;
+
+            ItemStack out = baseItemStack.copy();
+            CompoundTag compoundTag = tag.copy();
+
+            int vanillaMaxDurability = baseItemStack.getMaxDamage();
+            int customMaxDurability = compoundTag.contains("max_durability")
+                    ? compoundTag.getInt("max_durability")
+                    : vanillaMaxDurability;
+
+            int maxDurability = (int) (customMaxDurability * StrengthenGem.getStrengthenGemDurabilityRatio(strengthenLV + 1));
+            compoundTag.putDouble("max_durability", maxDurability);
+            compoundTag.putInt("strengthen_lv", strengthenLV + 1);
+            out.getOrCreateTag().put("lh_gem", compoundTag);
+            return out;
+        }
+        return ItemStack.EMPTY;
+    }
+
     public static Integer getStrengthenGemCount(ItemStack right,double strengthenLV){
         if (strengthenLV < 3 && right.getDescriptionId().equals(ItemsRegistry.METEORIC_IRON_FRAGMENT.get().getDescriptionId())){
             if (strengthenLV == 0) return 1;
             else if (strengthenLV == 1) return 3;
-            else if (strengthenLV == 2) return 9;
+            else if (strengthenLV == 2) return 6;
             return null;
         }else if (strengthenLV < 6 && right.getDescriptionId().equals(ItemsRegistry.METEORIC_IRON_BIG_FRAGMENT.get().getDescriptionId())){
-            if (strengthenLV == 3) return 3;
-            else if (strengthenLV == 4) return 6;
-            else if (strengthenLV == 5) return 9;
+            if (strengthenLV == 3) return 1;
+            else if (strengthenLV == 4) return 3;
+            else if (strengthenLV == 5) return 5;
             return null;
         }else if (strengthenLV < 10 && right.getDescriptionId().equals(ItemsRegistry.METEORIC_IRON_BLOCK.get().getDescriptionId())){
-            if (strengthenLV == 6) return 3;
-            else if (strengthenLV == 7) return 6;
-            else if (strengthenLV == 8) return 9;
+            if (strengthenLV == 6) return 1;
+            else if (strengthenLV == 7) return 2;
+            else if (strengthenLV == 8) return 3;
             return null;
         }else if (strengthenLV == 9 && right.getDescriptionId().equals(ItemsRegistry.METEORITE_DISK.get().getDescriptionId())){
             return 1;
@@ -113,7 +149,6 @@ public class StrengthenGem {
             if (strengthenLV > 0 || gemTag.contains("type")){
                 double bonusAttack = getAttack(strengthenLV);
                 if (gemTag.contains("type")) {
-                    bonusAttack = bonusAttack - (bonusAttack * AttributeGem.setAttributeType(gemTag));
                     bonusAttack += AttributeGem.setAttackType(gemTag);
                 }
 
@@ -139,7 +174,6 @@ public class StrengthenGem {
             if (strengthenLV > 0 || gemTag.contains("type")){
                 double ranged = getRanged(strengthenLV);
                 if (gemTag.contains("type")) {
-                    ranged = ranged - (ranged * AttributeGem.setAttributeType(gemTag));
                     ranged += AttributeGem.setAttackType(gemTag) * 0.1;
                 }
 

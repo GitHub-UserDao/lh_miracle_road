@@ -93,11 +93,11 @@
   "attribute.name.lhmiracleroad.lightning_attribute_damage": "雷电属性伤害",
   "attribute.name.lhmiracleroad.dark_attribute_damage": "黑暗属性伤害",
   "attribute.name.lhmiracleroad.holy_attribute_damage": "神圣属性伤害",
-  "attribute.name.lhmiracleroad.attack_convert_magic": "攻击转换魔力",
-  "attribute.name.lhmiracleroad.attack_convert_flame": "攻击转换火焰",
-  "attribute.name.lhmiracleroad.attack_convert_lightning": "攻击转换雷电",
-  "attribute.name.lhmiracleroad.attack_convert_dark": "攻击转换黑暗",
-  "attribute.name.lhmiracleroad.attack_convert_holy": "攻击转换神圣",
+  "attribute.name.lhmiracleroad.attack_convert_magic": "额外魔力伤害",
+  "attribute.name.lhmiracleroad.attack_convert_flame": "额外火焰伤害",
+  "attribute.name.lhmiracleroad.attack_convert_lightning": "额外雷电伤害",
+  "attribute.name.lhmiracleroad.attack_convert_dark": "额外黑暗伤害",
+  "attribute.name.lhmiracleroad.attack_convert_holy": "额外神圣伤害",
 
   "lhmiracleroad.gui.attribute.text.heavy": "沉重 / 负重 %s / %s",
   "lhmiracleroad.gui.attribute.text.details.heavy.light": "轻",
@@ -251,8 +251,6 @@
   "item.lhmiracleroad.lightning_gem": "闪电宝石",
   "item.lhmiracleroad.dark_gem": "暗宝石",
   "item.lhmiracleroad.blood_gem": "血宝石",
-  "item.lhmiracleroad.magic_gem": "魔力宝石",
-  "item.lhmiracleroad.holy_gem": "神圣宝石",
   "item.lhmiracleroad.ice_gem": "冰霜宝石",
   "item.lhmiracleroad.poison_gem": "毒宝石",
   "item.lhmiracleroad.sharp_gem": "锋利宝石",
@@ -276,5 +274,7 @@
   "lhmiracleroad.gui.attribute.text.details.aqua_spell_power": "潮汐法术强度 %s",
   "lhmiracleroad.gui.attribute.text.details.technomancy_spell_power": "械术法术强度 %s",
   "lhmiracleroad.gui.attribute.text.details.abyssal_spell_power": "深渊法术强度 %s",
-  "lhmiracleroad.gui.attribute.text.details.evocation_spell_power": "唤魔法术强度 %s"
+  "lhmiracleroad.gui.attribute.text.details.evocation_spell_power": "唤魔法术强度 %s",
+
+  "ui.lhmiracleroad.weapon_podium": "强化台"
 }

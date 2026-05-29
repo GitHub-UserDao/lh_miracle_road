@@ -3,12 +3,16 @@ package dev.lhkongyu.lhmiracleroad;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.logging.LogUtils;
 import dev.lhkongyu.lhmiracleroad.attributes.LHMiracleRoadAttributes;
+import dev.lhkongyu.lhmiracleroad.client.screen.weaponPodium.WeaponPodiumScreen;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.data.reloader.*;
 import dev.lhkongyu.lhmiracleroad.generator.RegistryDataGenerator;
 import dev.lhkongyu.lhmiracleroad.registry.*;
 import dev.lhkongyu.lhmiracleroad.packet.PlayerChannel;
 import dev.lhkongyu.lhmiracleroad.client.shaders.LHInternalShaders;
+import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
@@ -24,6 +28,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 
@@ -44,14 +49,20 @@ public class LHMiracleRoad
         MinecraftForge.EVENT_BUS.addListener(this::reloadListnerEvent);
         PlayerChannel.register();
         LHMiracleRoadAttributes.register();
+
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.addListener(LHMiracleRoadAttributes::registerPlayerAttribute);
         ItemsRegistry.register(bus);
+        BlockRegistry.register(bus);
+        MenuRegistry.register(bus);
+        EnchantmentRegistry.register(bus);
         TabsRegistry.register(bus);
         EffectRegistry.register(bus);
         EntityRegistry.register(bus);
         ParticleRegistry.register(bus);
+
         bus.addListener(this::registerShaders);
+        bus.addListener(this::clientSetup);
     }
 
     private void reloadListnerEvent(final AddReloadListenerEvent event) {
@@ -80,5 +91,10 @@ public class LHMiracleRoad
         ExistingFileHelper helper = event.getExistingFileHelper();
 
         RegistryDataGenerator.addProviders(event.includeServer(), generator, output, provider, helper);
+    }
+
+    @SuppressWarnings("removal")
+    private void clientSetup(final FMLClientSetupEvent e) {
+        MenuScreens.register(MenuRegistry.WEAPON_PODIUM_MENU.get(), WeaponPodiumScreen::new);
     }
 }

@@ -9,9 +9,11 @@ import dev.lhkongyu.lhmiracleroad.capability.PlayerCurioProvider;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
+import dev.lhkongyu.lhmiracleroad.enchantments.ShockwaveEnchantment;
 import dev.lhkongyu.lhmiracleroad.entity.player.PlayerSoulEntity;
 import dev.lhkongyu.lhmiracleroad.items.curio.talisman.ConsecratedCombatPlume;
 import dev.lhkongyu.lhmiracleroad.items.curio.talisman.HuntingBowTalisman;
+import dev.lhkongyu.lhmiracleroad.registry.ItemsRegistry;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import dev.lhkongyu.lhmiracleroad.tool.PlayerAttributeTool;
 import net.minecraft.core.particles.ParticleTypes;
@@ -29,6 +31,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -195,10 +198,9 @@ public class PlayerForgeEvent {
         if (event.isCanceled()) return;
         Entity directEntity = event.getSource().getEntity();
         if (directEntity instanceof  Player player){
+            ItemStack weapon = player.getMainHandItem();
             //魔法伤害加成
-          if (event.getSource().is(DamageTypes.INDIRECT_MAGIC) || event.getSource().is(DamageTypes.MAGIC)
-                    || event.getSource().is(DamageTypes.IN_FIRE) || event.getSource().is(DamageTypes.ON_FIRE)
-                    || event.getSource().is(DamageTypes.LAVA) || event.getSource().is(DamageTypes.FREEZE) || LHMiracleRoadTool.isMagicDamage(event.getSource())){
+          if (LHMiracleRoadTool.isMagicDamageTypes(event.getSource())){
                 AttributeInstance magicInstance = player.getAttribute(LHMiracleRoadAttributes.MAGIC_DAMAGE_ADDITION);
                 if (magicInstance != null) {
                     var attribute = ((AttributeInstanceAccess) magicInstance);
@@ -226,10 +228,26 @@ public class PlayerForgeEvent {
                 event.setAmount(damage);
             }
 
+
             //爆伤加成
             double criticalHitRate = player.getAttribute(LHMiracleRoadAttributes.CRITICAL_HIT_RATE).getValue();
             double criticalHitDamage = player.getAttribute(LHMiracleRoadAttributes.CRITICAL_HIT_DAMAGE).getValue();
-            if (LHMiracleRoadTool.percentageProbability(criticalHitRate)) {
+
+            // 判断是否为原版暴击
+            boolean critical =
+                    player.fallDistance > 0.0F
+                            && !player.onGround()
+                            && !player.isInWater()
+                            && !player.hasEffect(net.minecraft.world.effect.MobEffects.BLINDNESS)
+                            && !player.isPassenger();
+
+            if (critical && !LHMiracleRoadTool.isMagicDamageTypes(event.getSource())){
+                if (weapon.is(ItemsRegistry.HAMMER_IRON.get()) || weapon.is(ItemsRegistry.HAMMER_NETHERITE.get()) || weapon.is(ItemsRegistry.HAMMER_ANCIENT.get())) {
+                    criticalHitDamage += 0.5;
+                }
+                float damage = (float) (event.getAmount() * (criticalHitDamage / 1.5f));
+                event.setAmount(damage);
+            }else if (LHMiracleRoadTool.percentageProbability(criticalHitRate)) {
                 float damage = (float) (event.getAmount() * criticalHitDamage);
                 event.setAmount(damage);
                 LivingEntity entity = event.getEntity();

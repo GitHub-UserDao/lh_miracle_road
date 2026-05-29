@@ -11,8 +11,9 @@ import dev.lhkongyu.lhmiracleroad.items.curio.bracelet.HeavyBracelet;
 import dev.lhkongyu.lhmiracleroad.items.curio.bracelet.LuckyBracelet;
 import dev.lhkongyu.lhmiracleroad.items.curio.ring.*;
 import dev.lhkongyu.lhmiracleroad.items.curio.talisman.*;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Rarity;
+import dev.lhkongyu.lhmiracleroad.items.sword.HeavyHammerItem;
+import dev.lhkongyu.lhmiracleroad.block.tiers.ModTiers;
+import net.minecraft.world.item.*;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -78,23 +79,23 @@ public class ItemsRegistry {
 
     public static final RegistryObject<Item> ANCIENT_SPELLCRAFT_RING = ITEMS.register("ancient_spellcraft_ring", AncientSpellCraftRing::addAttributeModifier);
 
-    public static final RegistryObject<Item> WHISPER_RING = ITEMS.register("whisper_ring", WhisperRing::addAttributeModifier);
+//    public static final RegistryObject<Item> WHISPER_RING = ITEMS.register("whisper_ring", WhisperRing::addAttributeModifier);
 
-    public static final RegistryObject<Item> FIRE_RESISTANCE_RING = ITEMS.register("fire_resistance_ring", () -> new RingItem(new Item.Properties().rarity(Rarity.RARE),null));
+//    public static final RegistryObject<Item> FIRE_RESISTANCE_RING = ITEMS.register("fire_resistance_ring", () -> new RingItem(new Item.Properties().rarity(Rarity.RARE),null));
+//
+//    public static final RegistryObject<Item> POISON_INVADING_RING = ITEMS.register("poison_invading_ring", () -> new RingItem(new Item.Properties().rarity(Rarity.RARE),null));
+//
+//    public static final RegistryObject<Item> WATER_AVOIDANCE_RING = ITEMS.register("water_avoidance_ring", () -> new RingItem(new Item.Properties().rarity(Rarity.RARE),null));
 
-    public static final RegistryObject<Item> POISON_INVADING_RING = ITEMS.register("poison_invading_ring", () -> new RingItem(new Item.Properties().rarity(Rarity.RARE),null));
-
-    public static final RegistryObject<Item> WATER_AVOIDANCE_RING = ITEMS.register("water_avoidance_ring", () -> new RingItem(new Item.Properties().rarity(Rarity.RARE),null));
-
-    public static final RegistryObject<Item> FROST_RING = ITEMS.register("frost_ring", () -> new RingItem(new Item.Properties().rarity(Rarity.RARE),null));
+//    public static final RegistryObject<Item> FROST_RING = ITEMS.register("frost_ring", () -> new RingItem(new Item.Properties().rarity(Rarity.RARE),null));
 
     public static final RegistryObject<Item> LIFE_RING = ITEMS.register("life_ring", LifeRing::addAttributeModifier);
 
-    public static final RegistryObject<Item> RECOVERY_RING = ITEMS.register("recovery_ring", RecoveryRing::addAttributeModifier);
+//    public static final RegistryObject<Item> RECOVERY_RING = ITEMS.register("recovery_ring", RecoveryRing::addAttributeModifier);
 
-    public static final RegistryObject<Item> RING_STRENGTH = ITEMS.register("ring_strength", RingStrength::addAttributeModifier);
+//    public static final RegistryObject<Item> RING_STRENGTH = ITEMS.register("ring_strength", RingStrength::addAttributeModifier);
 
-    public static final RegistryObject<Item> SHIELDING_RING = ITEMS.register("shielding_ring", () -> new ShieldingRing(new Item.Properties().rarity(Rarity.COMMON),null));
+//    public static final RegistryObject<Item> SHIELDING_RING = ITEMS.register("shielding_ring", () -> new ShieldingRing(new Item.Properties().rarity(Rarity.COMMON),null));
 
     //手镯
     public static final RegistryObject<Item> HUNTERS_MARK = ITEMS.register("hunter_mark", () -> new BraceletItem(new Item.Properties().rarity(Rarity.EPIC),null));
@@ -149,9 +150,9 @@ public class ItemsRegistry {
 
     public static final RegistryObject<Item> BLOOD_GEM = ITEMS.register("blood_gem", () -> new Item(new Item.Properties().rarity(Rarity.EPIC)));
 
-    public static final RegistryObject<Item> MAGIC_GEM = ITEMS.register("magic_gem", () -> new Item(new Item.Properties().rarity(Rarity.EPIC)));
+//    public static final RegistryObject<Item> MAGIC_GEM = ITEMS.register("magic_gem", () -> new Item(new Item.Properties().rarity(Rarity.EPIC)));
 
-    public static final RegistryObject<Item> HOLY_GEM = ITEMS.register("holy_gem", () -> new Item(new Item.Properties().rarity(Rarity.EPIC)));
+//    public static final RegistryObject<Item> HOLY_GEM = ITEMS.register("holy_gem", () -> new Item(new Item.Properties().rarity(Rarity.EPIC)));
 
     public static final RegistryObject<Item> ICE_GEM = ITEMS.register("ice_gem", () -> new Item(new Item.Properties().rarity(Rarity.EPIC)));
 
@@ -169,6 +170,10 @@ public class ItemsRegistry {
 
     public static final RegistryObject<Item> METEORIC_IRON_FRAGMENT = ITEMS.register("meteoric_iron_fragment", () -> new Item(new Item.Properties().rarity(Rarity.COMMON)));
 
+//weapon
+    public static final RegistryObject<Item> HAMMER_IRON = ITEMS.register("hammer_iron", () -> new HeavyHammerItem(ModTiers.HAMMER_IRON, 8, -3.4F, new Item.Properties()));
+    public static final RegistryObject<Item> HAMMER_NETHERITE = ITEMS.register("hammer_netherite", () -> new HeavyHammerItem(ModTiers.HAMMER_NETHERITE, 9, -3.3F, new Item.Properties()));
+    public static final RegistryObject<Item> HAMMER_ANCIENT = ITEMS.register("hammer_ancient", () -> new HeavyHammerItem(ModTiers.HAMMER_ANCIENT, 12, -3.2F, new Item.Properties()));
 
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);

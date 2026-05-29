@@ -1,6 +1,7 @@
 package dev.lhkongyu.lhmiracleroad.event;
 
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
+import dev.lhkongyu.lhmiracleroad.attributes.AttributeInstanceAccess;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerCurioProvider;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.entity.player.PlayerSoulEntity;
@@ -10,8 +11,10 @@ import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -62,13 +65,11 @@ public class LivingEvent {
     public static void onLivingHurt(LivingHurtEvent event) {
         LivingEntity entity = event.getEntity();
 //        entity.invulnerableTime = 0;
-        if (event.getSource().getEntity() instanceof ServerPlayer player){
-            float amount = event.getAmount();
-            if (event.getSource().is(DamageTypes.PLAYER_ATTACK) || event.getSource().is(DamageTypeTags.IS_PROJECTILE)){
-                amount = AttributeGem.getAttributeDamage(amount,player,entity);
+        if (event.getSource().getEntity() instanceof LivingEntity source){
+            if (event.getSource().is(DamageTypes.MOB_ATTACK) || event.getSource().is(DamageTypes.PLAYER_ATTACK) || event.getSource().is(DamageTypeTags.IS_PROJECTILE)){
+                AttributeGem.getAttributeDamage(source,entity);
             }
 //            if (!LHMiracleRoadTool.isMagicDamage(event.getSource())) amount = AttributeGem.getAttributeDamage(amount,player,entity);
-            event.setAmount(amount);
         }
 
     }

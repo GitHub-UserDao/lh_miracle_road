@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "DXD",
+    " G ",
+    " X "
+  ],
+  "key": {
+    "D": {
+      "item": "minecraft:iron_block"
+    },
+    "X": {
+      "item": "minecraft:iron_ingot"
+    },
+    "G": {
+      "item": "minecraft:stick"
+    }
+  },
+  "result": {
+    "item": "lhmiracleroad:hammer_iron",
+    "count": 1
+  }
+}

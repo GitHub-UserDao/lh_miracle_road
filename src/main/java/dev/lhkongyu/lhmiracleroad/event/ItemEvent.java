@@ -5,6 +5,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
+import dev.lhkongyu.lhmiracleroad.attributes.AttributeInstanceAccess;
+import dev.lhkongyu.lhmiracleroad.attributes.LHMiracleRoadAttributes;
 import dev.lhkongyu.lhmiracleroad.capability.ItemStackPunishmentAttribute;
 import dev.lhkongyu.lhmiracleroad.capability.ItemStackPunishmentAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
@@ -21,10 +23,13 @@ import dev.lhkongyu.lhmiracleroad.tool.ResourceLocationTool;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
@@ -85,7 +90,116 @@ public class ItemEvent {
                }
            }
         });
+
+        updateShowName(event,stack);
     }
+
+    private static void updateShowName(ItemTooltipEvent event,ItemStack stack){
+        CompoundTag tag = stack.getTagElement("lh_gem");
+        if (tag == null) return;
+        int strengthenLV = tag.getInt("strengthen_lv");
+        if (strengthenLV <= 0) return;
+        List<Component> tooltip = event.getToolTip();
+        Component nameComponent = tooltip.get(0);
+        String name = nameComponent.getString();
+        ChatFormatting color =
+                strengthenLV >= 10 ? ChatFormatting.GOLD :
+                        strengthenLV >= 7 ? ChatFormatting.LIGHT_PURPLE :
+                        strengthenLV >= 4 ? ChatFormatting.AQUA :
+                        ChatFormatting.GREEN;
+        MutableComponent newName = Component.literal(Component.translatable(name).getString() + " +" + strengthenLV)
+                .withStyle(color);
+
+        tooltip.set(0, newName);
+    }
+
+//    /**
+//     * 删除原版转换属性Tooltip
+//     */
+//    private static void showConvertTooltip(ItemStack stack,Player player,ItemTooltipEvent event,List<Component> tooltip){
+//        CompoundTag gemTag = stack.getTagElement("lh_gem");
+//        if (gemTag == null) return;
+//
+//        Multimap<Attribute, AttributeModifier> modifiers =
+//                stack.getAttributeModifiers(EquipmentSlot.MAINHAND);
+//
+//        double convert = 0;
+//        double convertDamage = 0;
+//        String value;
+//
+//        AttributeInstance attack = player.getAttribute(Attributes.ATTACK_DAMAGE);
+//        var attackAccess = ((AttributeInstanceAccess) attack);
+//
+//        if (attackAccess == null)  return;
+//        double attackAmount = (float) attackAccess.computeIncreasedValueForInitial(attack.getBaseValue() > 0 ? 0 : 1);
+//        attackAmount -= attack.getBaseValue() > 0 ? 0 : 1;
+//
+//        for (Map.Entry<Attribute, AttributeModifier> entry : modifiers.entries()) {
+//
+//            Attribute attribute = entry.getKey();
+//            AttributeModifier modifier = entry.getValue();
+//
+//            if (LHMiracleRoadTool.isMagicAttributes(attribute)) {
+//                convert += modifier.getAmount();
+//                double convertValue = modifier.getAmount();
+//                // 没有转换属性
+//                if (convert <= 0)
+//                    continue;
+//
+//                // 删除原版Tooltip
+//                removeVanillaConvertTooltip(event.getToolTip(),attribute.getDescriptionId());
+//
+//                // 显示的 魔法转换值
+//                convertDamage = attackAmount * convertValue;
+//                value =
+//                        String.format("%.2f", convertDamage);
+////                tooltip.add(Component.empty());
+//                tooltip.add(
+//                        Component.literal("+" + value + Component.translatable(attribute.getDescriptionId()))
+//                                .withStyle(ChatFormatting.BLUE)
+//                );
+//
+//            }
+//        }
+//
+//        if (convertDamage > 0) {
+//            // 显示的 攻击力
+//            convertDamage = attackAmount * convert;
+//            value =
+//                    String.format("%.2f", Math.min(convertDamage, attackAmount));
+//            tooltip.add(
+//                    Component.literal("-" + value + " 攻击力")
+//                            .withStyle(ChatFormatting.RED)
+//            );
+//        }
+//    }
+//
+//    /**
+//     * 删除原版转换属性Tooltip
+//     */
+//    private static void removeVanillaConvertTooltip(
+//            List<Component> tooltip,
+//            String id
+//    ) {
+//
+//        tooltip.removeIf(component -> {
+//
+//            if (!(component.getContents() instanceof TranslatableContents contents))
+//                return false;
+//            Object[] args = contents.getArgs();
+//            if (args.length > 1) {
+//                Object attributeObj = args[1];
+//                if (attributeObj instanceof Component attributeComponent) {
+//                    if (attributeComponent.getContents() instanceof TranslatableContents attributeContents) {
+//                        // 获取真正的 translation key
+//                        String attributeKey = attributeContents.getKey();
+//                        return attributeKey.equals(id);
+//                    }
+//                }
+//            }
+//            return false;
+//        });
+//    }
 
     /**
      * 物品能力注册事件

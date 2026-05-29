@@ -24,6 +24,7 @@ import dev.lhkongyu.lhmiracleroad.packet.ClientSoulMessage;
 import dev.lhkongyu.lhmiracleroad.packet.PlayerChannel;
 import dev.lhkongyu.lhmiracleroad.client.particle.SoulParticleOption;
 import dev.lhkongyu.lhmiracleroad.registry.ItemsRegistry;
+import dev.lhkongyu.lhmiracleroad.registry.TagsRegistry;
 import dev.lhkongyu.lhmiracleroad.tool.mathcalculator.MathCalculatorUtil;
 import net.minecraft.client.gui.Font;
 import net.minecraft.core.registries.Registries;
@@ -41,6 +42,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -59,6 +61,8 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class LHMiracleRoadTool {
+
+    public static final RandomSource random = RandomSource.createThreadSafe();
 
     public static final Map<UUID, PlayerSoulEntity> SOUL_ENTITY_MAP = new HashMap<>();
 
@@ -770,7 +774,7 @@ public class LHMiracleRoadTool {
 
     public static Queue<Integer> getIntegerSequence(int start,int end){
         Queue<Integer> queue = new LinkedList<>();
-        int steps = 150;
+        int steps = 125;
         int intervals = steps - 1; // 间隔数
 
         int difference = end - start;
@@ -788,40 +792,40 @@ public class LHMiracleRoadTool {
     }
 
     public static String getGemType(ItemStack itemStack){
-        if (itemStack.getDescriptionId().equals(ItemsRegistry.FLAME_GEM.get().getDescriptionId())){
+        if (itemStack.is(ItemsRegistry.FLAME_GEM.get())){
             return NameTool.FLAME;
-        }else if (itemStack.getDescriptionId().equals(ItemsRegistry.LIGHTNING_GEM.get().getDescriptionId())){
+        }else if (itemStack.is(ItemsRegistry.LIGHTNING_GEM.get())){
             return NameTool.LIGHTNING;
-        }else if (itemStack.getDescriptionId().equals(ItemsRegistry.DARK_GEM.get().getDescriptionId())){
+        }else if (itemStack.is(ItemsRegistry.DARK_GEM.get())){
             return NameTool.DARK;
-        }else if (itemStack.getDescriptionId().equals(ItemsRegistry.BLOOD_GEM.get().getDescriptionId())){
+        }else if (itemStack.is(ItemsRegistry.BLOOD_GEM.get())){
             return NameTool.BLOOD;
-        }else if (itemStack.getDescriptionId().equals(ItemsRegistry.MAGIC_GEM.get().getDescriptionId())){
-            return NameTool.MAGIC;
-        }else if (itemStack.getDescriptionId().equals(ItemsRegistry.SHARP_GEM.get().getDescriptionId())){
+        }else if (itemStack.is(ItemsRegistry.SHARP_GEM.get())){
             return NameTool.SHARP;
-        }else if (itemStack.getDescriptionId().equals(ItemsRegistry.HOLY_GEM.get().getDescriptionId())){
-            return NameTool.HOLY;
-        }else if (itemStack.getDescriptionId().equals(ItemsRegistry.ICE_GEM.get().getDescriptionId())){
+        }else if (itemStack.is(ItemsRegistry.ICE_GEM.get())){
             return NameTool.ICE;
-        }else if (itemStack.getDescriptionId().equals(ItemsRegistry.POISON_GEM.get().getDescriptionId())){
+        }else if (itemStack.is(ItemsRegistry.POISON_GEM.get())){
             return NameTool.POISON;
         }else return null;
     }
 
-    public static boolean itemIsWeaponsAll(ItemStack left){
-        return itemIsWeapons(left) || itemIsRangedWeapons(left);
+    public static boolean itemIsWeaponsAndEquipmentAll(ItemStack stack){
+        return itemIsWeaponsAll(stack) || stack.getItem() instanceof ArmorItem || stack.getItem() instanceof ElytraItem || stack.getItem() instanceof TieredItem || stack.getItem() instanceof ShieldItem;
     }
 
-    public static boolean itemIsWeapons(ItemStack left){
-        return left.is(InteractionEvent.WEAPONS)
-                || left.getItem() instanceof SwordItem
-                || left.getItem() instanceof AxeItem
-                || left.getItem() instanceof TridentItem;
+    public static boolean itemIsWeaponsAll(ItemStack stack){
+        return itemIsWeapons(stack) || itemIsRangedWeapons(stack);
     }
 
-    public static boolean itemIsRangedWeapons(ItemStack left){
-        return left.is(InteractionEvent.RANGED_WEAPONS) || left.getItem() instanceof ProjectileWeaponItem;
+    public static boolean itemIsWeapons(ItemStack stack){
+        return stack.is(TagsRegistry.WEAPONS)
+                || stack.getItem() instanceof SwordItem
+                || stack.getItem() instanceof AxeItem
+                || stack.getItem() instanceof TridentItem;
+    }
+
+    public static boolean itemIsRangedWeapons(ItemStack stack){
+        return stack.is(TagsRegistry.RANGED_WEAPONS) || stack.getItem() instanceof ProjectileWeaponItem;
     }
 
 //    /**
@@ -849,6 +853,12 @@ public class LHMiracleRoadTool {
                 .orElse(entity.level().damageSources().generic());
     }
 
+    public static boolean isMagicDamageTypes(DamageSource damageSource){
+        return damageSource.is(DamageTypes.INDIRECT_MAGIC) || damageSource.is(DamageTypes.MAGIC)
+                || damageSource.is(DamageTypes.IN_FIRE) || damageSource.is(DamageTypes.ON_FIRE)
+                || damageSource.is(DamageTypes.LAVA) || damageSource.is(DamageTypes.FREEZE) || LHMiracleRoadTool.isMagicDamage(damageSource);
+    }
+
     public static boolean isMagicDamage(DamageSource damageSource){
         if (damageSource.is(SpellDamageTypes.FLAME_MAGIC)){
             return true;
@@ -860,4 +870,5 @@ public class LHMiracleRoadTool {
             return true;
         }else return damageSource.is(SpellDamageTypes.MAGIC);
     }
+
 }

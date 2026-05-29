@@ -63,10 +63,10 @@ public class LootEvent {
             commonLootTable(event);
 
             //避水戒指
-            event.getTable().addPool(LootPool.lootPool()
-                    .when(LootItemRandomChanceCondition.randomChance(0.025f))
-                    .add(LootItem.lootTableItem(ItemsRegistry.WATER_AVOIDANCE_RING.get()))
-                    .build());
+//            event.getTable().addPool(LootPool.lootPool()
+//                    .when(LootItemRandomChanceCondition.randomChance(0.025f))
+//                    .add(LootItem.lootTableItem(ItemsRegistry.WATER_AVOIDANCE_RING.get()))
+//                    .build());
 
             commonCuriosLoot(event);
         }
@@ -75,10 +75,10 @@ public class LootEvent {
         if (event.getName().equals(BuiltInLootTables.SHIPWRECK_MAP) || event.getName().equals(BuiltInLootTables.SHIPWRECK_SUPPLY) || event.getName().equals(BuiltInLootTables.SHIPWRECK_TREASURE) || event.getName().equals(BuiltInLootTables.BURIED_TREASURE)){
             rareLootTable(event);
             //避水戒指
-            event.getTable().addPool(LootPool.lootPool()
-                    .when(LootItemRandomChanceCondition.randomChance(0.1f))
-                    .add(LootItem.lootTableItem(ItemsRegistry.WATER_AVOIDANCE_RING.get()))
-                    .build());
+//            event.getTable().addPool(LootPool.lootPool()
+//                    .when(LootItemRandomChanceCondition.randomChance(0.1f))
+//                    .add(LootItem.lootTableItem(ItemsRegistry.WATER_AVOIDANCE_RING.get()))
+//                    .build());
 
             commonCuriosLoot(event);
         }
@@ -146,10 +146,10 @@ public class LootEvent {
             commonLootTable(event);
 
             //冰霜戒指
-            event.getTable().addPool(LootPool.lootPool()
-                    .when(LootItemRandomChanceCondition.randomChance(0.334f))
-                    .add(LootItem.lootTableItem(ItemsRegistry.FROST_RING.get()))
-                    .build());
+//            event.getTable().addPool(LootPool.lootPool()
+//                    .when(LootItemRandomChanceCondition.randomChance(0.334f))
+//                    .add(LootItem.lootTableItem(ItemsRegistry.FROST_RING.get()))
+//                    .build());
         }
 
         //古城
@@ -200,21 +200,21 @@ public class LootEvent {
                 .add(LootItem.lootTableItem(ItemsRegistry.LIFE_RING.get()))
                 .build());
 
-        event.getTable().addPool(LootPool.lootPool()
-                .when(LootItemRandomChanceCondition.randomChance(0.03f))
-                .add(LootItem.lootTableItem(ItemsRegistry.RECOVERY_RING.get()))
-                .build());
+//        event.getTable().addPool(LootPool.lootPool()
+//                .when(LootItemRandomChanceCondition.randomChance(0.03f))
+//                .add(LootItem.lootTableItem(ItemsRegistry.RECOVERY_RING.get()))
+//                .build());
 
 
-        event.getTable().addPool(LootPool.lootPool()
-                .when(LootItemRandomChanceCondition.randomChance(0.03f))
-                .add(LootItem.lootTableItem(ItemsRegistry.RING_STRENGTH.get()))
-                .build());
+//        event.getTable().addPool(LootPool.lootPool()
+//                .when(LootItemRandomChanceCondition.randomChance(0.03f))
+//                .add(LootItem.lootTableItem(ItemsRegistry.RING_STRENGTH.get()))
+//                .build());
 
-        event.getTable().addPool(LootPool.lootPool()
-                .when(LootItemRandomChanceCondition.randomChance(0.03f))
-                .add(LootItem.lootTableItem(ItemsRegistry.SHIELDING_RING.get()))
-                .build());
+//        event.getTable().addPool(LootPool.lootPool()
+//                .when(LootItemRandomChanceCondition.randomChance(0.03f))
+//                .add(LootItem.lootTableItem(ItemsRegistry.SHIELDING_RING.get()))
+//                .build());
 
         event.getTable().addPool(LootPool.lootPool()
                 .when(LootItemRandomChanceCondition.randomChance(0.03f))
@@ -237,11 +237,11 @@ public class LootEvent {
                 .apply(CurioFunction.builder())
                 .build());
 
-        event.getTable().addPool(LootPool.lootPool()
-                .when(LootItemRandomChanceCondition.randomChance(0.015f))
-                .add(LootItem.lootTableItem(ItemsRegistry.WHISPER_RING.get()))
-                .apply(CurioFunction.builder())
-                .build());
+//        event.getTable().addPool(LootPool.lootPool()
+//                .when(LootItemRandomChanceCondition.randomChance(0.015f))
+//                .add(LootItem.lootTableItem(ItemsRegistry.WHISPER_RING.get()))
+//                .apply(CurioFunction.builder())
+//                .build());
 
         event.getTable().addPool(LootPool.lootPool()
                 .when(LootItemRandomChanceCondition.randomChance(0.01f))
@@ -451,24 +451,25 @@ public class LootEvent {
                     .when(LootItemRandomChanceCondition.randomChance(0.15f))
                     .add(LootItem.lootTableItem(ItemsRegistry.GREEDY_GOLD_SERPENT_RING.get()))
                     .build());
-            //配置烈焰人掉落
-        }else if (event.getName().equals(EntityType.BLAZE.getDefaultLootTable())){
-            event.getTable().addPool(LootPool.lootPool()
-                    .when(LootItemRandomChanceCondition.randomChance(0.03f))
-                    .add(LootItem.lootTableItem(ItemsRegistry.FIRE_RESISTANCE_RING.get()))
-                    .build());
-            //配置女巫掉落
-        }else if (event.getName().equals(EntityType.WITCH.getDefaultLootTable())){
-            event.getTable().addPool(LootPool.lootPool()
-                    .when(LootItemRandomChanceCondition.randomChance(0.03f))
-                    .add(LootItem.lootTableItem(ItemsRegistry.POISON_INVADING_RING.get()))
-                    .build());
             //配置凋灵掉落
-        }else if (event.getName().equals(EntityType.WITHER.getDefaultLootTable())){
+        } else if (event.getName().equals(EntityType.WITHER.getDefaultLootTable())){
             event.getTable().addPool(LootPool.lootPool()
                     .when(LootItemRandomChanceCondition.randomChance(0.5f))
                     .add(LootItem.lootTableItem(ItemsRegistry.DESIRE_RING.get()))
                     .build());
         }
+        //配置烈焰人掉落
+//        else if (event.getName().equals(EntityType.BLAZE.getDefaultLootTable())){
+//            event.getTable().addPool(LootPool.lootPool()
+//                    .when(LootItemRandomChanceCondition.randomChance(0.03f))
+//                    .add(LootItem.lootTableItem(ItemsRegistry.FIRE_RESISTANCE_RING.get()))
+//                    .build());
+//            //配置女巫掉落
+//        }else if (event.getName().equals(EntityType.WITCH.getDefaultLootTable())){
+//            event.getTable().addPool(LootPool.lootPool()
+//                    .when(LootItemRandomChanceCondition.randomChance(0.03f))
+//                    .add(LootItem.lootTableItem(ItemsRegistry.POISON_INVADING_RING.get()))
+//                    .build());
+//        }
     }
 }
