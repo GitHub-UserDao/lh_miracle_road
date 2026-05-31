@@ -1,6 +1,7 @@
 package dev.lhkongyu.lhmiracleroad.event;
 
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
+import dev.lhkongyu.lhmiracleroad.abnormal.capability.AbnormalProvider;
 import dev.lhkongyu.lhmiracleroad.capability.ItemStackPunishmentAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerCurioProvider;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
@@ -8,6 +9,7 @@ import dev.lhkongyu.lhmiracleroad.command.GetPlayerOccupationLevelCommand;
 import dev.lhkongyu.lhmiracleroad.tool.data.SynchronizationData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -42,6 +44,10 @@ public class RegisterEvent {
         if (event.getObject() instanceof  Player){
             event.addCapability(new ResourceLocation(LHMiracleRoad.MODID, "player_occupation_attribute"),new PlayerOccupationAttributeProvider());
             event.addCapability(new ResourceLocation(LHMiracleRoad.MODID, "player_curio_provider"),new PlayerCurioProvider());
+        }
+
+        if (event.getObject() instanceof LivingEntity) {
+            event.addCapability(new ResourceLocation(LHMiracleRoad.MODID, "abnormal"), new AbnormalProvider());
         }
     }
 

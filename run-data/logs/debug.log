@@ -399,7 +399,7 @@ java.lang.IllegalAccessException: class io.netty.util.internal.PlatformDependent
 [285月2026 19:34:16.975] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.ModLoadingContext/]: Attempted to register an empty config for type COMMON on mod forge
 [285月2026 19:34:16.987] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing dev.lhkongyu.lhmiracleroad.event.InteractionEvent to FORGE
 [285月2026 19:34:16.989] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing dev.lhkongyu.lhmiracleroad.event.ItemEvent to FORGE
-[285月2026 19:34:16.999] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing dev.lhkongyu.lhmiracleroad.event.LivingEvent to FORGE
+[285月2026 19:34:16.999] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing dev.lhkongyu.lhmiracleroad.event.EntityEvent to FORGE
 [285月2026 19:34:17.010] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing dev.lhkongyu.lhmiracleroad.event.LootEvent to FORGE
 [285月2026 19:34:17.015] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Attempting to inject @EventBusSubscriber classes into the eventbus for forge
 [285月2026 19:34:17.015] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing net.minecraftforge.common.ForgeSpawnEggItem$CommonHandler to MOD

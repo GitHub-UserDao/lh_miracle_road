@@ -2,6 +2,7 @@ package dev.lhkongyu.lhmiracleroad;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.logging.LogUtils;
+import dev.lhkongyu.lhmiracleroad.abnormal.sync.AbnormalNetwork;
 import dev.lhkongyu.lhmiracleroad.attributes.LHMiracleRoadAttributes;
 import dev.lhkongyu.lhmiracleroad.client.screen.weaponPodium.WeaponPodiumScreen;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
@@ -48,6 +49,7 @@ public class LHMiracleRoad
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, LHMiracleRoadConfig.COMMON_SPEC);
         MinecraftForge.EVENT_BUS.addListener(this::reloadListnerEvent);
         PlayerChannel.register();
+        AbnormalNetwork.register();
         LHMiracleRoadAttributes.register();
 
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();

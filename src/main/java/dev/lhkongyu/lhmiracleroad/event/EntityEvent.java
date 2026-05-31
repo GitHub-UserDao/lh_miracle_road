@@ -1,29 +1,30 @@
 package dev.lhkongyu.lhmiracleroad.event;
 
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
-import dev.lhkongyu.lhmiracleroad.attributes.AttributeInstanceAccess;
+import dev.lhkongyu.lhmiracleroad.abnormal.AbnormalData;
+import dev.lhkongyu.lhmiracleroad.abnormal.AbnormalType;
+import dev.lhkongyu.lhmiracleroad.abnormal.AbnormalTool;
+import dev.lhkongyu.lhmiracleroad.abnormal.capability.AbnormalProvider;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerCurioProvider;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.entity.player.PlayerSoulEntity;
 import dev.lhkongyu.lhmiracleroad.items.curio.talisman.HeartOfBloodLust;
 import dev.lhkongyu.lhmiracleroad.items.gem.AttributeGem;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
-import net.minecraft.server.level.ServerPlayer;
+import dev.lhkongyu.lhmiracleroad.tool.SyncTool;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageTypes;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = LHMiracleRoad.MODID,bus = Mod.EventBusSubscriber.Bus.FORGE)
-public class LivingEvent {
+public class EntityEvent {
 
     /**
      * 生物死亡时触发
@@ -63,12 +64,31 @@ public class LivingEvent {
 
     @SubscribeEvent
     public static void onLivingHurt(LivingHurtEvent event) {
-        LivingEntity entity = event.getEntity();
+        LivingEntity target = event.getEntity();
 //        entity.invulnerableTime = 0;
         if (event.getSource().getEntity() instanceof LivingEntity source){
             if (event.getSource().is(DamageTypes.MOB_ATTACK) || event.getSource().is(DamageTypes.PLAYER_ATTACK) || event.getSource().is(DamageTypeTags.IS_PROJECTILE)){
-                AttributeGem.getAttributeDamage(source,entity);
+                AttributeGem.getAttributeDamage(source,target);
             }
+
+            float bleed = 20f;
+            int maxBuildup = AbnormalTool.getBleedMaxBuildup(target.getMaxHealth());
+
+            target.getCapability(AbnormalProvider.CAPABILITY).ifPresent(cap -> {
+                cap.addBuildUp(source,target, AbnormalType.BURN, bleed,maxBuildup);
+                SyncTool.abnormalSync(target);
+            });
+
+            target.getCapability(AbnormalProvider.CAPABILITY).ifPresent(cap -> {
+                        AbnormalData frost = cap.get(AbnormalType.FROST);
+                        if (frost.active) {
+                            event.setAmount(event.getAmount() * 1.1f);
+                        }
+                    });
+
+
+
+
 //            if (!LHMiracleRoadTool.isMagicDamage(event.getSource())) amount = AttributeGem.getAttributeDamage(amount,player,entity);
         }
 
@@ -86,4 +106,14 @@ public class LivingEvent {
 //        int levelExperience = event.getDroppedExperience();
 //        LHMiracleRoadTool.getSoulParticle((ServerLevel) player.level(), (ServerPlayer) player,levelExperience,150,2,10,target);
 //    }
+
+    @SubscribeEvent
+    public static void onTick(LivingEvent.LivingTickEvent event) {
+        LivingEntity entity = event.getEntity();
+
+        entity.getCapability(AbnormalProvider.CAPABILITY).ifPresent(cap -> {
+            cap.tick(entity);
+        });
+    }
+
 }
