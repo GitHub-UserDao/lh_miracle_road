@@ -7,10 +7,10 @@
   "refmap": "lhmiracleroad.refmap.json",
   "mixins": [
     "AttributeInstanceMixin",
+    "ItemRendererMixin",
     "ItemStackMixin",
     "LivingEntityMixin",
     "PlayerMixin",
-    "ItemRendererMixin",
     "RenderBuffersMixin"
   ],
   "client": [

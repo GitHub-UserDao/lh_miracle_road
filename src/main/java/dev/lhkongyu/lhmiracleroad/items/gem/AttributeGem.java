@@ -3,31 +3,42 @@ package dev.lhkongyu.lhmiracleroad.items.gem;
 import com.google.common.collect.Multimap;
 import dev.lhkongyu.lhmiracleroad.attributes.AttributeInstanceAccess;
 import dev.lhkongyu.lhmiracleroad.attributes.LHMiracleRoadAttributes;
-import dev.lhkongyu.lhmiracleroad.generator.SpellDamageTypeTagGenerator;
+import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
+import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
+import dev.lhkongyu.lhmiracleroad.client.particle.common.PhotonParticleOption;
+import dev.lhkongyu.lhmiracleroad.client.particle.soul.SoulParticleOption;
+import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.generator.SpellDamageTypes;
 import dev.lhkongyu.lhmiracleroad.registry.ItemsRegistry;
-import dev.lhkongyu.lhmiracleroad.registry.TagsRegistry;
+import dev.lhkongyu.lhmiracleroad.registry.ParticleRegistry;
+import dev.lhkongyu.lhmiracleroad.tool.GemTool;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import dev.lhkongyu.lhmiracleroad.tool.NameTool;
+import dev.lhkongyu.lhmiracleroad.tool.particle.ParticleTool;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.tags.DamageTypeTags;
-import net.minecraft.tags.TagKey;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobType;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.ItemAttributeModifierEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import org.joml.Vector3f;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 public class AttributeGem {
@@ -46,7 +57,7 @@ public class AttributeGem {
             return out;
         }
 
-        String type = LHMiracleRoadTool.getGemType(gemItemStack);
+        String type = GemTool.getGemType(gemItemStack);
         if (type == null) return ItemStack.EMPTY;
         if (tag.isEmpty()) tag = new CompoundTag();
 
@@ -61,6 +72,7 @@ public class AttributeGem {
         if (type.isEmpty()) return;
         UUID attributeUUID = UUID.fromString("4f45d87b-87c7-a2e3-8a92-7647175709c8");
         UUID attackUUID = UUID.fromString("c074f091-6cf0-4540-8e3f-ffb1571e0adf");
+        UUID abnormalUUID = UUID.fromString("4f57bcf7-9775-4176-984b-b59786d16b10");
 
         double convertValue = 1;
         Multimap<Attribute, AttributeModifier> modifiers = event.getModifiers();
@@ -75,32 +87,62 @@ public class AttributeGem {
 
         double attack = convertValue / 2;
         double bonusAttack =  2 + attack;
+        int abnormalValue = 36;
         switch (type){
             case NameTool.FLAME:
                 if (bonusAttack > 0) event.addModifier(LHMiracleRoadAttributes.FLAME_ATTRIBUTE_DAMAGE,
                         new AttributeModifier(attributeUUID, "lh_gem_" + NameTool.FLAME_ATTRIBUTE_DAMAGE, bonusAttack, AttributeModifier.Operation.ADDITION));
                 event.addModifier(Attributes.ATTACK_DAMAGE,
-                        new AttributeModifier(attackUUID, "lh_gem_attack", -attack, AttributeModifier.Operation.ADDITION));
+                        new AttributeModifier(attackUUID, "lh_gem_attack_" + NameTool.FLAME_ATTRIBUTE_DAMAGE, -attack, AttributeModifier.Operation.ADDITION));
                 break;
             case NameTool.LIGHTNING:
                 if (bonusAttack > 0) event.addModifier(LHMiracleRoadAttributes.LIGHTNING_ATTRIBUTE_DAMAGE,
                         new AttributeModifier(attributeUUID, "lh_gem_" + NameTool.LIGHTNING_ATTRIBUTE_DAMAGE, bonusAttack, AttributeModifier.Operation.ADDITION));
                 event.addModifier(Attributes.ATTACK_DAMAGE,
-                        new AttributeModifier(attackUUID, "lh_gem_attack", -attack, AttributeModifier.Operation.ADDITION));
+                        new AttributeModifier(attackUUID, "lh_gem_attack_" + NameTool.LIGHTNING_ATTRIBUTE_DAMAGE, -attack, AttributeModifier.Operation.ADDITION));
                 break;
             case NameTool.DARK:
                 if (bonusAttack > 0) event.addModifier(LHMiracleRoadAttributes.DARK_ATTRIBUTE_DAMAGE,
                         new AttributeModifier(attributeUUID,  "lh_gem_" + NameTool.DARK_ATTRIBUTE_DAMAGE, bonusAttack, AttributeModifier.Operation.ADDITION));
                 event.addModifier(Attributes.ATTACK_DAMAGE,
-                        new AttributeModifier(attackUUID, "lh_gem_attack", -attack, AttributeModifier.Operation.ADDITION));
+                        new AttributeModifier(attackUUID, "lh_gem_attack_" + NameTool.DARK_ATTRIBUTE_DAMAGE, -attack, AttributeModifier.Operation.ADDITION));
                 break;
-            case NameTool.BLOOD, NameTool.SHARP, NameTool.POISON:
+            case NameTool.BLOOD:
+                event.addModifier(LHMiracleRoadAttributes.ABNORMAL_BLEED_BUILDUP,
+                        new AttributeModifier(abnormalUUID, "lh_gem_abnormal_" + NameTool.ABNORMAL_BLEED_BUILDUP, abnormalValue, AttributeModifier.Operation.ADDITION));
+                break;
+            case NameTool.POISON:
+                event.addModifier(LHMiracleRoadAttributes.ABNORMAL_POISON_BUILDUP,
+                        new AttributeModifier(abnormalUUID, "lh_gem_abnormal_" + NameTool.ABNORMAL_POISON_BUILDUP, abnormalValue, AttributeModifier.Operation.ADDITION));
                 break;
             case NameTool.ICE:
                 if (bonusAttack > 0) event.addModifier(LHMiracleRoadAttributes.MAGIC_ATTRIBUTE_DAMAGE,
                         new AttributeModifier(attributeUUID,  "lh_gem_" + NameTool.ICE, bonusAttack, AttributeModifier.Operation.ADDITION));
                 event.addModifier(Attributes.ATTACK_DAMAGE,
-                        new AttributeModifier(attackUUID, "lh_gem_attack", -attack, AttributeModifier.Operation.ADDITION));
+                        new AttributeModifier(attackUUID, "lh_gem_attack_" + NameTool.ICE, -attack, AttributeModifier.Operation.ADDITION));
+
+                event.addModifier(LHMiracleRoadAttributes.ABNORMAL_FROST_BUILDUP,
+                        new AttributeModifier(abnormalUUID, "lh_gem_abnormal_" + NameTool.ABNORMAL_FROST_BUILDUP, abnormalValue, AttributeModifier.Operation.ADDITION));
+                break;
+            case NameTool.HOLY:
+                if (bonusAttack > 0) event.addModifier(LHMiracleRoadAttributes.HOLY_ATTRIBUTE_DAMAGE,
+                        new AttributeModifier(attributeUUID,  "lh_gem_" + NameTool.HOLY_ATTRIBUTE_DAMAGE, bonusAttack, AttributeModifier.Operation.ADDITION));
+                event.addModifier(Attributes.ATTACK_DAMAGE,
+                        new AttributeModifier(attackUUID, "lh_gem_attack_" + NameTool.HOLY_ATTRIBUTE_DAMAGE, -attack, AttributeModifier.Operation.ADDITION));
+                break;
+            case NameTool.SOUL:
+                if (bonusAttack > 0) event.addModifier(LHMiracleRoadAttributes.SOUL_ATTRIBUTE_DAMAGE,
+                        new AttributeModifier(attributeUUID,  "lh_gem_" + NameTool.SOUL_ATTRIBUTE_DAMAGE, bonusAttack, AttributeModifier.Operation.ADDITION));
+                event.addModifier(Attributes.ATTACK_DAMAGE,
+                        new AttributeModifier(attackUUID, "lh_gem_attack_" + NameTool.SOUL_ATTRIBUTE_DAMAGE, -attack, AttributeModifier.Operation.ADDITION));
+                break;
+            case NameTool.HEAVY:
+                event.addModifier(Attributes.ATTACK_DAMAGE,
+                        new AttributeModifier(attackUUID, "lh_gem_attack_" + NameTool.HEAVY, 0.2, AttributeModifier.Operation.MULTIPLY_BASE));
+                break;
+            case NameTool.SHARP:
+                event.addModifier(Attributes.ATTACK_SPEED,
+                        new AttributeModifier(attackUUID, "lh_gem_attack_" + NameTool.HEAVY, 0.15, AttributeModifier.Operation.MULTIPLY_BASE));
                 break;
         }
     }
@@ -108,21 +150,23 @@ public class AttributeGem {
     public static double setAttackType(CompoundTag gemTag){
         String type = gemTag.getString("type");
         return switch (type) {
-            case NameTool.SHARP -> 2;
+            case NameTool.SHARP -> 3;
+            case NameTool.HEAVY -> 2;
             case NameTool.POISON, NameTool.BLOOD -> 1;
             default -> 0;
         };
     }
 
-    public static void getAttributeDamage( LivingEntity source, LivingEntity hurtEvent){
-        getAttributeDamage(source,hurtEvent,LHMiracleRoadAttributes.FLAME_ATTRIBUTE_DAMAGE,LHMiracleRoadAttributes.ATTACK_CONVERT_FLAME, SpellDamageTypes.FLAME_MAGIC);
-        getAttributeDamage(source,hurtEvent,LHMiracleRoadAttributes.LIGHTNING_ATTRIBUTE_DAMAGE,LHMiracleRoadAttributes.ATTACK_CONVERT_LIGHTNING, SpellDamageTypes.LIGHTNING_MAGIC);
-        getAttributeDamage(source,hurtEvent,LHMiracleRoadAttributes.DARK_ATTRIBUTE_DAMAGE,LHMiracleRoadAttributes.ATTACK_CONVERT_DARK, SpellDamageTypes.DARK_MAGIC);
-        getAttributeDamage(source,hurtEvent,LHMiracleRoadAttributes.HOLY_ATTRIBUTE_DAMAGE,LHMiracleRoadAttributes.ATTACK_CONVERT_HOLY, SpellDamageTypes.HOLY_MAGIC);
-        getAttributeDamage(source,hurtEvent,LHMiracleRoadAttributes.MAGIC_ATTRIBUTE_DAMAGE,LHMiracleRoadAttributes.ATTACK_CONVERT_MAGIC, SpellDamageTypes.MAGIC);
+    public static void getAttributeDamage(LivingEntity source, LivingEntity target){
+        getAttributeDamage(source,target,LHMiracleRoadAttributes.FLAME_ATTRIBUTE_DAMAGE, SpellDamageTypes.FLAME_MAGIC);
+        getAttributeDamage(source,target,LHMiracleRoadAttributes.LIGHTNING_ATTRIBUTE_DAMAGE, SpellDamageTypes.LIGHTNING_MAGIC);
+        getAttributeDamage(source,target,LHMiracleRoadAttributes.DARK_ATTRIBUTE_DAMAGE, SpellDamageTypes.DARK_MAGIC);
+        getAttributeDamage(source,target,LHMiracleRoadAttributes.HOLY_ATTRIBUTE_DAMAGE, SpellDamageTypes.HOLY_MAGIC);
+        getAttributeDamage(source,target,LHMiracleRoadAttributes.MAGIC_ATTRIBUTE_DAMAGE, SpellDamageTypes.MAGIC);
+        getAttributeDamage(source,target,LHMiracleRoadAttributes.SOUL_ATTRIBUTE_DAMAGE, SpellDamageTypes.SOUL_MAGIC);
     }
 
-    private static void getAttributeDamage( LivingEntity source, LivingEntity hurtEvent, Attribute attributeDamage, Attribute attackConvert, ResourceKey<DamageType> resourceKey){
+    private static void getAttributeDamage(LivingEntity source, LivingEntity target, Attribute attributeDamage,  ResourceKey<DamageType> resourceKey){
         AttributeInstance attributeInstance = source.getAttribute(attributeDamage);
 
         float attributeInstanceDamage = .0f;
@@ -133,9 +177,131 @@ public class AttributeGem {
 
         if (attributeInstanceDamage > 0) {
 //            hurtEvent.invulnerableTime = 0;
-            DamageSource src = LHMiracleRoadTool.getDamageSource(source, resourceKey);
-            hurtEvent.hurt(src, attributeInstanceDamage);
+            LHMiracleRoadTool.magicHurt(source,target,resourceKey,attributeInstanceDamage);
         }
+    }
+
+    public static void attackParticleSpecialEffects(LivingEntity source, LivingEntity target){
+        ItemStack baseItemStack = source.getItemInHand(InteractionHand.MAIN_HAND);
+        CompoundTag tag = baseItemStack.getOrCreateTag().getCompound("lh_gem");
+        if (tag.contains("type")) {
+            String type = tag.getString("type");
+
+            float width = target.getBbWidth();
+            float height = target.getBbHeight();
+            Vec3 position = target.position().add(0.0F, (height / 2.0F), 0.0F);
+            int particleCount = (int) Math.max(8.0F * width * height,5);
+            switch (type){
+                case NameTool.FLAME:
+                    ParticleTool.spawnServerParticles(source.level(),
+                            (SimpleParticleType)ParticleRegistry.FIRE_BOTTOM_PARTICLE.get(),
+                            true,
+                            position.x, position.y, position.z,
+                            particleCount,
+                            width / 4.0F, height / 5.0F, width / 4.0F,
+                            0.1);
+                break;
+                case NameTool.LIGHTNING:
+                    ParticleTool.spawnServerParticles(source.level(),
+                            (SimpleParticleType)ParticleRegistry.LIGHTNING.get(),
+                            true,
+                            position.x, position.y, position.z,
+                            particleCount,
+                            width / 5.0F, height / 5.0F, width / 5.0F,
+                            0.05);
+                    break;
+                case NameTool.DARK:
+                    ParticleTool.spawnServerParticles(source.level(),
+                            (SimpleParticleType)ParticleRegistry.DARK.get(),
+                            true,
+                            position.x, position.y, position.z,
+                            particleCount,
+                            width / 5.0F, height / 5.0F, width / 5.0F,
+                            0.035);
+                    break;
+                case NameTool.BLOOD:
+                    ParticleTool.spawnServerParticles(source.level(),
+                            (SimpleParticleType) ParticleRegistry.BLEED.get(),
+                            true,
+                            position.x, position.y, position.z,
+                            5,
+                            width / 3.0F, height / 8.0F, width / 3.0F,
+                            0.1);
+                    break;
+                case NameTool.HOLY:
+                    Vector3f color = ParticleTool.RGBChangeVector3f(251,242,54);
+                    ParticleTool.spawnServerParticles(target.level(),
+                            new PhotonParticleOption(color,1.25f,0),
+                            true,
+                            position.x, position.y, position.z,
+                            particleCount,
+                            width / 5.0F, height / 5.0F, width / 5.0F,
+                            0.075);
+                    break;
+                case NameTool.POISON:
+                    ParticleTool.spawnServerParticles(source.level(),
+                            (SimpleParticleType)ParticleRegistry.POISON.get(),
+                            true,
+                            position.x, position.y, position.z,
+                            particleCount,
+                            width / 5.0F, height / 5.0F, width / 5.0F,
+                            0.03);
+                    break;
+                case NameTool.ICE:
+                    ParticleTool.spawnServerParticles(source.level(),
+                            (SimpleParticleType)ParticleRegistry.SNOW_FLAKE.get(),
+                            true,
+                            position.x, position.y, position.z,
+                            Math.max(particleCount / 2,5),
+                            width / 5.0F, height / 5.0F, width / 5.0F,
+                            0.035);
+                    break;
+                case NameTool.SOUL:
+                    ParticleTool.spawnServerParticles(target.level(),
+                            new SoulParticleOption(source.getId()),
+                            true,
+                            position.x, position.y, position.z,
+                            particleCount / 2,
+                            0.1, 0.1, 0.1,
+                            .1f);
+                    break;
+            }
+        }
+    }
+
+    /**
+     * 高级属性附加伤害效果
+     */
+    public static float attributeAdditionalDamage(float amount,DamageSource damageSource,LivingEntity target,LivingEntity source){
+        if (damageSource.is(SpellDamageTypes.DARK_MAGIC)){
+            amount += target.getHealth() * 0.05f;
+        }else if (damageSource.is(SpellDamageTypes.HOLY_MAGIC)){
+            if (target.getMobType() == MobType.UNDEAD) amount += amount * 0.5f;
+        }else if (damageSource.is(SpellDamageTypes.SOUL_MAGIC)){
+            if (source instanceof Player player){
+                Optional<PlayerOccupationAttribute> optional =
+                        player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).resolve();
+                if (optional.isEmpty()) return amount;
+                PlayerOccupationAttribute playerOccupationAttribute = optional.get();
+                int soulCount = playerOccupationAttribute.getOccupationExperience();
+                amount = amount + (amount * (soulCount * 0.0000002f));
+            }else {
+                int hp = (int) LHMiracleRoadTool.getAttributeValue(target.getAttribute(Attributes.MAX_HEALTH));
+                int atk = (int) LHMiracleRoadTool.getAttributeValue(target.getAttribute(Attributes.ATTACK_DAMAGE));
+                int arm = (int) LHMiracleRoadTool.getAttributeValue(target.getAttribute(Attributes.ARMOR));
+                int atou = (int) LHMiracleRoadTool.getAttributeValue(target.getAttribute(Attributes.ARMOR_TOUGHNESS));
+                int buff = (int) target.getActiveEffects().stream().map(MobEffectInstance::getEffect).filter(MobEffect::isBeneficial).count();
+                int entityDroppedXp = target.getExperienceReward();
+                entityDroppedXp = Math.max(entityDroppedXp,15);
+                int expValue = LHMiracleRoadTool.evaluateFormula(LHMiracleRoadConfig.COMMON.EXPERIENCE_ACQUISITION_FORMULA.get(),entityDroppedXp,hp,atk,arm,atou,buff);
+                amount += amount * Math.min(expValue * 0.000005f,100);
+            }
+        }else if (damageSource.is(SpellDamageTypes.LIGHTNING_MAGIC)){
+            int arm = (int) LHMiracleRoadTool.getAttributeValue(target.getAttribute(Attributes.ARMOR));
+            amount += amount * Math.min((arm * 0.025f),100);
+        }
+
+        return amount;
     }
 
 }

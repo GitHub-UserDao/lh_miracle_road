@@ -3,6 +3,7 @@ package dev.lhkongyu.lhmiracleroad.items;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import dev.lhkongyu.lhmiracleroad.tool.PlayerAttributeTool;
+import dev.lhkongyu.lhmiracleroad.tool.SyncTool;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -69,7 +70,7 @@ public class WaterBottleItem extends Item {
                 if (!player.getAbilities().instabuild) {
                     itemStack.shrink(1);
                 }
-                LHMiracleRoadTool.synchronizationClient(playerOccupationAttribute, player);
+                SyncTool.synchronizationClient(playerOccupationAttribute, player);
             }else player.sendSystemMessage(Component.translatable("lhmiracleroad.instructions.prompt",player.getName()).withStyle(ChatFormatting.RED),false);
         });
     }

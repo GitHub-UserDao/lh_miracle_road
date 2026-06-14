@@ -159,6 +159,36 @@
     "show_value_type": "base"
   },
   {
+    "attribute": "soul_attribute_damage",
+    "attribute_text": "soul_attribute_damage",
+    "show_value_type": "base"
+  },
+  {
+    "attribute": "abnormal_bleed_buildup",
+    "attribute_text": "abnormal_bleed_buildup",
+    "show_value_type": "base"
+  },
+  {
+    "attribute": "abnormal_frost_buildup",
+    "attribute_text": "abnormal_frost_buildup",
+    "show_value_type": "base"
+  },
+  {
+    "attribute": "abnormal_poison_buildup",
+    "attribute_text": "abnormal_poison_buildup",
+    "show_value_type": "base"
+  },
+  {
+    "attribute": "abnormal_damage",
+    "attribute_text": "abnormal_damage",
+    "show_value_type": "extra_percentage"
+  },
+  {
+    "attribute": "abnormal_buildup",
+    "attribute_text": "abnormal_buildup",
+    "show_value_type": "extra_percentage"
+  },
+  {
     "condition": "irons_spellbooks",
     "attribute": "irons_spellbooks:blood_spell_power",
     "attribute_text": "blood_spell_power",

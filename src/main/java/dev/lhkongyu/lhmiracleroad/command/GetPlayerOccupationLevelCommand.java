@@ -11,6 +11,7 @@ import dev.lhkongyu.lhmiracleroad.registry.ItemsRegistry;
 import dev.lhkongyu.lhmiracleroad.tool.FileTool;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import dev.lhkongyu.lhmiracleroad.tool.PlayerAttributeTool;
+import dev.lhkongyu.lhmiracleroad.tool.SyncTool;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -117,7 +118,7 @@ public class GetPlayerOccupationLevelCommand {
                                                           player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).ifPresent(playerOccupationAttribute-> {
                                                               playerOccupationAttribute.setAttributeMaxLevel(amount);
                                                               context.getSource().sendSuccess(() -> Component.translatable("lhmiracleroad.instructions.attribute_max_level.set",player.getScoreboardName(),amount),false);
-                                                              LHMiracleRoadTool.synchronizationClient(playerOccupationAttribute, player);
+                                                              SyncTool.synchronizationClient(playerOccupationAttribute, player);
                                                           });
                                                       }
                                                       return 0;

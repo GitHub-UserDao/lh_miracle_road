@@ -1,25 +1,35 @@
 package dev.lhkongyu.lhmiracleroad.event;
 
+import com.mojang.datafixers.kinds.IdF;
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
 import dev.lhkongyu.lhmiracleroad.abnormal.AbnormalData;
 import dev.lhkongyu.lhmiracleroad.abnormal.AbnormalType;
 import dev.lhkongyu.lhmiracleroad.abnormal.AbnormalTool;
 import dev.lhkongyu.lhmiracleroad.abnormal.capability.AbnormalProvider;
+import dev.lhkongyu.lhmiracleroad.attributes.LHMiracleRoadAttributes;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerCurioProvider;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.entity.player.PlayerSoulEntity;
+import dev.lhkongyu.lhmiracleroad.generator.SpellDamageTypes;
 import dev.lhkongyu.lhmiracleroad.items.curio.talisman.HeartOfBloodLust;
 import dev.lhkongyu.lhmiracleroad.items.gem.AttributeGem;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
+import dev.lhkongyu.lhmiracleroad.tool.NameTool;
 import dev.lhkongyu.lhmiracleroad.tool.SyncTool;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -67,31 +77,34 @@ public class EntityEvent {
         LivingEntity target = event.getEntity();
 //        entity.invulnerableTime = 0;
         if (event.getSource().getEntity() instanceof LivingEntity source){
-            if (event.getSource().is(DamageTypes.MOB_ATTACK) || event.getSource().is(DamageTypes.PLAYER_ATTACK) || event.getSource().is(DamageTypeTags.IS_PROJECTILE)){
-                AttributeGem.getAttributeDamage(source,target);
+            if (event.getSource().is(DamageTypes.MOB_ATTACK) || event.getSource().is(DamageTypes.PLAYER_ATTACK) || event.getSource().is(DamageTypeTags.IS_PROJECTILE)) {
+                AttributeGem.getAttributeDamage(source, target);
+                AbnormalTool.attackAbnormalBuildup(target,source);
+
+                AttributeGem.attackParticleSpecialEffects(source,target);
             }
 
-            float bleed = 20f;
-            int maxBuildup = AbnormalTool.getBleedMaxBuildup(target.getMaxHealth());
-
-            target.getCapability(AbnormalProvider.CAPABILITY).ifPresent(cap -> {
-                cap.addBuildUp(source,target, AbnormalType.BURN, bleed,maxBuildup);
-                SyncTool.abnormalSync(target);
-            });
-
-            target.getCapability(AbnormalProvider.CAPABILITY).ifPresent(cap -> {
-                        AbnormalData frost = cap.get(AbnormalType.FROST);
-                        if (frost.active) {
-                            event.setAmount(event.getAmount() * 1.1f);
-                        }
-                    });
-
-
-
-
-//            if (!LHMiracleRoadTool.isMagicDamage(event.getSource())) amount = AttributeGem.getAttributeDamage(amount,player,entity);
+            if (event.getSource().is(SpellDamageTypes.FLAME_MAGIC) && !(event.getSource().getEntity() instanceof Player)){
+                AbnormalTool.attackAbnormalBurnBuildup(target,source,event.getAmount());
+            }
         }
 
+        target.getCapability(AbnormalProvider.CAPABILITY).ifPresent(cap -> {
+            AbnormalData frost = cap.get(AbnormalType.FROST);
+            if (frost.active) {
+                if (event.getSource().is(SpellDamageTypes.FLAME_MAGIC) ||
+                        event.getSource().is(DamageTypes.IN_FIRE) ||
+                        event.getSource().is(DamageTypes.ON_FIRE)){
+
+                    event.setAmount(event.getAmount() * 1.5f);
+                    frost.active = false;
+                    frost.buildup = 0;
+                    frost.lastAttackTime = 0;
+                    frost.lastAttacker = null;
+                    SyncTool.abnormalSync(target);
+                }else event.setAmount(event.getAmount() * 1.1f);
+            }
+        });
     }
 
 //    /**
@@ -114,6 +127,42 @@ public class EntityEvent {
         entity.getCapability(AbnormalProvider.CAPABILITY).ifPresent(cap -> {
             cap.tick(entity);
         });
+
+        if (entity.level().isClientSide())  return;
+
+        if (entity.tickCount % 100 != 0) return;
+
+        ItemStack stack = entity.getMainHandItem();
+
+        if (stack.isEmpty())  return;
+
+        CompoundTag tag = stack.getTagElement("lh_gem");
+
+        if (tag == null) return;
+
+        String type = tag.getString("type");
+
+        if (!NameTool.HOLY.equals(type)) return;
+
+        // 回复1颗爱心(2点生命)
+        if (entity.getHealth() < entity.getMaxHealth()) {
+            entity.heal(2.0F);
+        }
     }
 
+    @SubscribeEvent
+    public static void onKnockback(LivingKnockBackEvent event) {
+
+        LivingEntity target = event.getEntity();
+
+        DamageSource source = target.getLastDamageSource();
+
+        if (source == null) {
+            return;
+        }
+
+        if (LHMiracleRoadTool.isMagicDamage(source) || AbnormalTool.isAbnormalDamageTypes(source)) {
+            event.setCanceled(true);
+        }
+    }
 }

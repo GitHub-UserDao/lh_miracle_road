@@ -8,6 +8,8 @@ import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.items.curio.ring.RadianceRing;
 import dev.lhkongyu.lhmiracleroad.items.curio.ring.WhisperRing;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
+import dev.lhkongyu.lhmiracleroad.tool.SyncTool;
+import dev.lhkongyu.lhmiracleroad.tool.particle.ParticleTool;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
@@ -113,8 +115,8 @@ public abstract class LivingEntityMixin {
 				}
 				int killerSoulStart = playerOccupationAttribute.getOccupationExperience();
 				playerOccupationAttribute.addOccupationExperience(expValue);
-				LHMiracleRoadTool.getSoulParticle((ServerLevel) killer.level(), killer,expValue,200,2,1000,target);
-				LHMiracleRoadTool.synchronizationSoul(playerOccupationAttribute.getOccupationExperience(),killer,killerSoulStart);
+				ParticleTool.getSoulParticle((ServerLevel) killer.level(), killer,expValue,200,2,1000,target);
+				SyncTool.synchronizationSoul(playerOccupationAttribute.getOccupationExperience(),killer,killerSoulStart);
 
 				if(LHMiracleRoadConfig.COMMON.IS_EXP_SHARING.get()) {
 					double range = 64.0;
@@ -132,9 +134,9 @@ public abstract class LivingEntityMixin {
 							p.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).ifPresent(attr -> {
 								int pSoulStart = attr.getOccupationExperience();
 								attr.addOccupationExperience(sharedExp);
-								LHMiracleRoadTool.synchronizationSoul(attr.getOccupationExperience(),p,pSoulStart);
+								SyncTool.synchronizationSoul(attr.getOccupationExperience(),p,pSoulStart);
 							});
-							LHMiracleRoadTool.getSoulParticle((ServerLevel) p.level(), p, expValue, (int) (30 * LHMiracleRoadConfig.COMMON.EXP_SHARING_PERCENTAGE.get()), 2, 1000, target);
+							ParticleTool.getSoulParticle((ServerLevel) p.level(), p, expValue, (int) (30 * LHMiracleRoadConfig.COMMON.EXP_SHARING_PERCENTAGE.get()), 2, 1000, target);
 						}
 					}
 				}

@@ -4,6 +4,11 @@
     "lhmiracleroad:flame_magic",
     "lhmiracleroad:dark_magic",
     "lhmiracleroad:lightning_magic",
-    "lhmiracleroad:holy_magic"
+    "lhmiracleroad:holy_magic",
+    "lhmiracleroad:soul_magic",
+    "lhmiracleroad:abnormal_bleed",
+    "lhmiracleroad:abnormal_frost",
+    "lhmiracleroad:abnormal_poison",
+    "lhmiracleroad:abnormal_burn"
   ]
 }

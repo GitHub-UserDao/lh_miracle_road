@@ -156,6 +156,12 @@ public class ItemsRegistry {
 
     public static final RegistryObject<Item> ICE_GEM = ITEMS.register("ice_gem", () -> new Item(new Item.Properties().rarity(Rarity.EPIC)));
 
+    public static final RegistryObject<Item> HOLY_GEM = ITEMS.register("holy_gem", () -> new Item(new Item.Properties().rarity(Rarity.EPIC)));
+
+    public static final RegistryObject<Item> SOUL_GEM = ITEMS.register("soul_gem", () -> new Item(new Item.Properties().rarity(Rarity.EPIC)));
+
+    public static final RegistryObject<Item> HEAVY_GEM = ITEMS.register("heavy_gem", () -> new Item(new Item.Properties().rarity(Rarity.EPIC)));
+
     public static final RegistryObject<Item> POISON_GEM = ITEMS.register("poison_gem", () -> new Item(new Item.Properties().rarity(Rarity.EPIC)));
 
     public static final RegistryObject<Item> SHARP_GEM = ITEMS.register("sharp_gem", () -> new Item(new Item.Properties().rarity(Rarity.EPIC)));

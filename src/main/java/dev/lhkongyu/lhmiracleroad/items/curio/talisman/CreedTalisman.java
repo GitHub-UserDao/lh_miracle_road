@@ -14,6 +14,7 @@ import dev.lhkongyu.lhmiracleroad.items.curio.CreedTalismanItem;
 import dev.lhkongyu.lhmiracleroad.items.curio.TalismanItem;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import dev.lhkongyu.lhmiracleroad.tool.PlayerAttributeTool;
+import dev.lhkongyu.lhmiracleroad.tool.SyncTool;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -54,7 +55,7 @@ public class CreedTalisman {
             //给对应属性类型进行 属性增长/减少
             PlayerAttributeTool.setAttributeNotRecoverHP(serverPlayer, jsonObject, level, playerOccupationAttribute, key);
 
-            LHMiracleRoadTool.synchronizationClient(playerOccupationAttribute,serverPlayer);
+            SyncTool.synchronizationClient(playerOccupationAttribute,serverPlayer);
             //更新玩家奖惩状态
             LHMiracleRoadTool.playerPunishmentStateUpdate(serverPlayer, playerOccupationAttribute);
         }

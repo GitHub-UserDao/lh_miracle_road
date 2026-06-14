@@ -1,4 +1,4 @@
-package dev.lhkongyu.lhmiracleroad.client.particle;
+package dev.lhkongyu.lhmiracleroad.client.particle.soul;
 
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;

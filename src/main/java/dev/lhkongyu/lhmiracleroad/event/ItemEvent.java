@@ -16,10 +16,7 @@ import dev.lhkongyu.lhmiracleroad.data.ClientData;
 import dev.lhkongyu.lhmiracleroad.data.reloader.EquipmentReloadListener;
 import dev.lhkongyu.lhmiracleroad.items.gem.AttributeGem;
 import dev.lhkongyu.lhmiracleroad.items.gem.StrengthenGem;
-import dev.lhkongyu.lhmiracleroad.tool.NameTool;
-import dev.lhkongyu.lhmiracleroad.tool.ItemPunishmentTool;
-import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
-import dev.lhkongyu.lhmiracleroad.tool.ResourceLocationTool;
+import dev.lhkongyu.lhmiracleroad.tool.*;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -98,7 +95,9 @@ public class ItemEvent {
         CompoundTag tag = stack.getTagElement("lh_gem");
         if (tag == null) return;
         int strengthenLV = tag.getInt("strengthen_lv");
-        if (strengthenLV <= 0) return;
+        String gemType = tag.getString("type");
+        if (strengthenLV <= 0 && gemType.isEmpty()) return;
+
         List<Component> tooltip = event.getToolTip();
         Component nameComponent = tooltip.get(0);
         String name = nameComponent.getString();
@@ -107,7 +106,7 @@ public class ItemEvent {
                         strengthenLV >= 7 ? ChatFormatting.LIGHT_PURPLE :
                         strengthenLV >= 4 ? ChatFormatting.AQUA :
                         ChatFormatting.GREEN;
-        MutableComponent newName = Component.literal(Component.translatable(name).getString() + " +" + strengthenLV)
+        MutableComponent newName = Component.literal(Component.translatable(name).getString() + GemTool.getGemName(gemType,strengthenLV))
                 .withStyle(color);
 
         tooltip.set(0, newName);

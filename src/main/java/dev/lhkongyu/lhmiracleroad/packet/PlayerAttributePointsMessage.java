@@ -4,6 +4,7 @@ import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import dev.lhkongyu.lhmiracleroad.tool.PlayerAttributeTool;
+import dev.lhkongyu.lhmiracleroad.tool.SyncTool;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
@@ -33,8 +34,8 @@ public record PlayerAttributePointsMessage(String attributeTypeName) {
 
             //设置一下在gui渲染的属性
 //            playerOccupationAttribute.setShowAttribute(LHMiracleRoadTool.setShowAttribute(player));
-            LHMiracleRoadTool.synchronizationClient(playerOccupationAttribute, player);
-            LHMiracleRoadTool.synchronizationShowAttribute(player);
+            SyncTool.synchronizationClient(playerOccupationAttribute, player);
+            SyncTool.synchronizationShowAttribute(player);
         });
         context.setPacketHandled(true);
     }

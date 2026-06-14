@@ -197,5 +197,18 @@
         "describe": "critical_hit_rate"
       }
     ]
+  },
+  {
+    "id": "reaction",
+    "describes": [
+      {
+        "attribute": "abnormal_damage",
+        "describe": "abnormal_damage"
+      },
+      {
+        "attribute": "abnormal_buildup",
+        "describe": "abnormal_buildup"
+      }
+    ]
   }
 ]

@@ -26,5 +26,7 @@ public class RenderBuffersMixin {
         this.fixedBuffers.put(ItemRenderType.getPoisonGlint(), new BufferBuilder(ItemRenderType.getPoisonGlint().bufferSize()));
         this.fixedBuffers.put(ItemRenderType.getIceGlint(), new BufferBuilder(ItemRenderType.getIceGlint().bufferSize()));
         this.fixedBuffers.put(ItemRenderType.getSharpGlint(), new BufferBuilder(ItemRenderType.getSharpGlint().bufferSize()));
+        this.fixedBuffers.put(ItemRenderType.getSoulGlint(), new BufferBuilder(ItemRenderType.getSoulGlint().bufferSize()));
+        this.fixedBuffers.put(ItemRenderType.getHolyGlint(), new BufferBuilder(ItemRenderType.getHolyGlint().bufferSize()));
     }
 }

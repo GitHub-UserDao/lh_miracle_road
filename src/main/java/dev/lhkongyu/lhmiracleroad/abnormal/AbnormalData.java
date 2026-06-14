@@ -10,7 +10,7 @@ public class AbnormalData {
 
     public boolean active;
 
-    public int activeTicks;
-
     public UUID lastAttacker;
+
+    public long lastAttackTime;
 }

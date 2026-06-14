@@ -10,6 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 
+import java.util.LinkedList;
 import java.util.Queue;
 
 public class SoulHudOverlay implements IGuiOverlay {
@@ -22,7 +23,7 @@ public class SoulHudOverlay implements IGuiOverlay {
     public static void obtainSoul(int soulStart,int soulEnd) {
         lastSoulGainTime = System.currentTimeMillis();
         lastSoulEndAmount = soulEnd;
-        integerSequence = LHMiracleRoadTool.getIntegerSequence(soulStart,soulEnd);
+        integerSequence = getIntegerSequence(soulStart,soulEnd);
         lastSoulStartAmount = soulStart;
     }
 
@@ -125,4 +126,24 @@ public class SoulHudOverlay implements IGuiOverlay {
         guiGraphics.setColor(1.0f, 1.0f, 1.0f, 1.0f);
         guiGraphics.pose().popPose();
     }
+
+    public static Queue<Integer> getIntegerSequence(int start,int end){
+        Queue<Integer> queue = new LinkedList<>();
+        int steps = 125;
+        int intervals = steps - 1; // 间隔数
+
+        int difference = end - start;
+
+        int step = difference / intervals;
+
+        for (int i = 1; i < steps - 1; i++) {
+            int value = start + i * step;
+            queue.add(value);
+            if (value == end) return queue;
+        }
+        queue.add(end);
+
+        return queue;
+    }
+
 }

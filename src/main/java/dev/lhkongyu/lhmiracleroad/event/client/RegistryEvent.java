@@ -1,8 +1,16 @@
 package dev.lhkongyu.lhmiracleroad.event.client;
 
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
+import dev.lhkongyu.lhmiracleroad.client.particle.bleed.BleedGroundParticle;
+import dev.lhkongyu.lhmiracleroad.client.particle.bleed.BleedParticle;
+import dev.lhkongyu.lhmiracleroad.client.particle.common.PhotonParticle;
+import dev.lhkongyu.lhmiracleroad.client.particle.dark.DarkParticle;
+import dev.lhkongyu.lhmiracleroad.client.particle.fire.FireBottomParticle;
+import dev.lhkongyu.lhmiracleroad.client.particle.ice.SnowFlakeParticle;
+import dev.lhkongyu.lhmiracleroad.client.particle.lightning.LightningParticle;
+import dev.lhkongyu.lhmiracleroad.client.particle.poison.PoisonParticle;
 import dev.lhkongyu.lhmiracleroad.entity.renderer.PlayerSoulRenderer;
-import dev.lhkongyu.lhmiracleroad.client.particle.SoulParticle;
+import dev.lhkongyu.lhmiracleroad.client.particle.soul.SoulParticle;
 import dev.lhkongyu.lhmiracleroad.registry.EntityRegistry;
 import dev.lhkongyu.lhmiracleroad.registry.ParticleRegistry;
 import dev.lhkongyu.lhmiracleroad.client.screen.overlay.SoulHudOverlay;
@@ -23,6 +31,14 @@ public class RegistryEvent {
     @SubscribeEvent
     public static void registerParticles(RegisterParticleProvidersEvent event) {
         event.registerSpriteSet(ParticleRegistry.SOUL_PARTICLE.get(), SoulParticle.Provider::new);
+        event.registerSpriteSet(ParticleRegistry.FIRE_BOTTOM_PARTICLE.get(), FireBottomParticle.Provider::new);
+        event.registerSpriteSet(ParticleRegistry.BLEED.get(), BleedParticle.Provider::new);
+        event.registerSpriteSet(ParticleRegistry.BLEED_GROUND.get(), BleedGroundParticle.Provider::new);
+        event.registerSpriteSet(ParticleRegistry.PHOTON.get(), PhotonParticle.Provider::new);
+        event.registerSpriteSet(ParticleRegistry.LIGHTNING.get(), LightningParticle.Provider::new);
+        event.registerSpriteSet(ParticleRegistry.POISON.get(), PoisonParticle.Provider::new);
+        event.registerSpriteSet(ParticleRegistry.DARK.get(), DarkParticle.Provider::new);
+        event.registerSpriteSet(ParticleRegistry.SNOW_FLAKE.get(), SnowFlakeParticle.Provider::new);
     }
 
     /**

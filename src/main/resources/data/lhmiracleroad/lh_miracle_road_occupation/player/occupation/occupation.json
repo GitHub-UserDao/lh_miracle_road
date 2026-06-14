@@ -5,7 +5,7 @@
     "init_attribute": [
       {
         "id": "hp",
-        "level": 13
+        "level": 12
       },
       {
         "id": "focus",
@@ -13,7 +13,7 @@
       },
       {
         "id": "power",
-        "level": 15
+        "level": 14
       },
       {
         "id": "sturdy",
@@ -38,6 +38,10 @@
       {
         "id": "luck",
         "level": 10
+      },
+      {
+        "id": "reaction",
+        "level": 14
       }
     ]
   },
@@ -80,6 +84,10 @@
       {
         "id": "luck",
         "level": 9
+      },
+      {
+        "id": "reaction",
+        "level": 10
       }
     ]
   },
@@ -122,6 +130,10 @@
       {
         "id": "luck",
         "level": 11
+      },
+      {
+        "id": "reaction",
+        "level": 9
       }
     ]
   },
@@ -163,6 +175,10 @@
       },
       {
         "id": "luck",
+        "level": 10
+      },
+      {
+        "id": "reaction",
         "level": 10
       }
     ]
@@ -206,6 +222,10 @@
       {
         "id": "luck",
         "level": 9
+      },
+      {
+        "id": "reaction",
+        "level": 12
       }
     ]
   },
@@ -248,6 +268,10 @@
       {
         "id": "luck",
         "level": 12
+      },
+      {
+        "id": "reaction",
+        "level": 11
       }
     ]
   }

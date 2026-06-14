@@ -184,64 +184,108 @@ public class LHMiracleRoadAttributes {
 			Double.MAX_VALUE
 	);
 
+	public static final String SOUL_ATTRIBUTE_DAMAGE_ID = "attribute.name."+LHMiracleRoad.MODID+"."+ NameTool.SOUL_ATTRIBUTE_DAMAGE;
+
+	public static final Attribute SOUL_ATTRIBUTE_DAMAGE = create(
+			SOUL_ATTRIBUTE_DAMAGE_ID,
+			0.0,
+			0.0,
+			Double.MAX_VALUE
+	);
 
 	/**
-	 * 攻击转换属性
+	 * 异常伤害
 	 */
-	public static final String ATTACK_CONVERT_MAGIC_ID = "attribute.name."+LHMiracleRoad.MODID+"."+ NameTool.ATTACK_CONVERT_MAGIC;
+	public static final String ABNORMAL_DAMAGE_ID = "attribute.name."+LHMiracleRoad.MODID+"."+ NameTool.ABNORMAL_DAMAGE;
 
-	public static final Attribute ATTACK_CONVERT_MAGIC = create(
-			ATTACK_CONVERT_MAGIC_ID,
+	public static final Attribute ABNORMAL_DAMAGE = create(
+			ABNORMAL_DAMAGE_ID,
+			1,
+			0.0,
+			Double.MAX_VALUE
+	).setSyncable(true);
+
+	public static final String ABNORMAL_BLEED_DAMAGE_ID = "attribute.name."+LHMiracleRoad.MODID+"."+ NameTool.ABNORMAL_BLEED_DAMAGE;
+
+	public static final Attribute ABNORMAL_BLEED_DAMAGE = create(
+			ABNORMAL_BLEED_DAMAGE_ID,
+			1,
+			0.0,
+			Double.MAX_VALUE
+	).setSyncable(true);
+
+	public static final String ABNORMAL_FROST_DAMAGE_ID = "attribute.name."+LHMiracleRoad.MODID+"."+ NameTool.ABNORMAL_FROST_DAMAGE;
+
+	public static final Attribute ABNORMAL_FROST_DAMAGE = create(
+			ABNORMAL_FROST_DAMAGE_ID,
+			1,
+			0.0,
+			Double.MAX_VALUE
+	).setSyncable(true);
+
+	public static final String ABNORMAL_POISON_DAMAGE_ID = "attribute.name."+LHMiracleRoad.MODID+"."+ NameTool.ABNORMAL_POISON_DAMAGE;
+
+	public static final Attribute ABNORMAL_POISON_DAMAGE = create(
+			ABNORMAL_POISON_DAMAGE_ID,
+			1,
+			0.0,
+			Double.MAX_VALUE
+	).setSyncable(true);
+
+	public static final String ABNORMAL_BURN_DAMAGE_ID = "attribute.name."+LHMiracleRoad.MODID+"."+ NameTool.ABNORMAL_BURN_DAMAGE;
+
+	public static final Attribute ABNORMAL_BURN_DAMAGE = create(
+			ABNORMAL_BURN_DAMAGE_ID,
+			1,
+			0.0,
+			Double.MAX_VALUE
+	).setSyncable(true);
+
+	/**
+	 * 异常累计值
+	 */
+	public static final String ABNORMAL_BLEED_BUILDUP_ID = "attribute.name."+LHMiracleRoad.MODID+"."+ NameTool.ABNORMAL_BLEED_BUILDUP;
+	public static final Attribute ABNORMAL_BLEED_BUILDUP = create(
+			ABNORMAL_BLEED_BUILDUP_ID,
 			0.0,
 			0.0,
 			Double.MAX_VALUE
 	);
 
-	public static final String ATTACK_CONVERT_FLAME_ID = "attribute.name."+LHMiracleRoad.MODID+"."+ NameTool.ATTACK_CONVERT_FLAME;
-
-	public static final Attribute ATTACK_CONVERT_FLAME = create(
-			ATTACK_CONVERT_FLAME_ID,
+	public static final String ABNORMAL_FROST_BUILDUP_ID = "attribute.name."+LHMiracleRoad.MODID+"."+ NameTool.ABNORMAL_FROST_BUILDUP;
+	public static final Attribute ABNORMAL_FROST_BUILDUP = create(
+			ABNORMAL_FROST_BUILDUP_ID,
 			0.0,
 			0.0,
 			Double.MAX_VALUE
 	);
 
-	public static final String ATTACK_CONVERT_LIGHTNING_ID = "attribute.name."+LHMiracleRoad.MODID+"."+ NameTool.ATTACK_CONVERT_LIGHTNING;
-
-	public static final Attribute ATTACK_CONVERT_LIGHTNING = create(
-			ATTACK_CONVERT_LIGHTNING_ID,
+	public static final String ABNORMAL_POISON_BUILDUP_ID = "attribute.name."+LHMiracleRoad.MODID+"."+ NameTool.ABNORMAL_POISON_BUILDUP;
+	public static final Attribute ABNORMAL_POISON_BUILDUP = create(
+			ABNORMAL_POISON_BUILDUP_ID,
 			0.0,
 			0.0,
 			Double.MAX_VALUE
 	);
 
-	public static final String ATTACK_CONVERT_DARK_ID = "attribute.name."+LHMiracleRoad.MODID+"."+ NameTool.ATTACK_CONVERT_DARK;
-
-	public static final Attribute ATTACK_CONVERT_DARK = create(
-			ATTACK_CONVERT_DARK_ID,
+	public static final String ABNORMAL_BURN_BUILDUP_ID = "attribute.name."+LHMiracleRoad.MODID+"."+ NameTool.ABNORMAL_BURN_BUILDUP;
+	public static final Attribute ABNORMAL_BURN_BUILDUP = create(
+			ABNORMAL_BURN_BUILDUP_ID,
 			0.0,
 			0.0,
 			Double.MAX_VALUE
 	);
 
-	public static final String ATTACK_CONVERT_HOLY_ID = "attribute.name."+LHMiracleRoad.MODID+"."+ NameTool.ATTACK_CONVERT_HOLY;
-
-	public static final Attribute ATTACK_CONVERT_HOLY = create(
-			ATTACK_CONVERT_HOLY_ID,
-			0.0,
+	public static final String ABNORMAL_BUILDUP_ID = "attribute.name."+LHMiracleRoad.MODID+"."+ NameTool.ABNORMAL_BUILDUP;
+	public static final Attribute ABNORMAL_BUILDUP = create(
+			ABNORMAL_BUILDUP_ID,
+			1,
 			0.0,
 			Double.MAX_VALUE
 	);
-
-
 
 	private static Attribute create(String id, double base, double min, double max) {
-		return new RangedAttribute(
-				id,
-				base,
-				min,
-				max
-		);
+		return new RangedAttribute(id, base, min, max);
 	}
 
 	public static void register() {
@@ -266,13 +310,22 @@ public class LHMiracleRoadAttributes {
 		ForgeRegistries.ATTRIBUTES.register(NameTool.LIGHTNING_ATTRIBUTE_DAMAGE, LIGHTNING_ATTRIBUTE_DAMAGE);
 		ForgeRegistries.ATTRIBUTES.register(NameTool.DARK_ATTRIBUTE_DAMAGE, DARK_ATTRIBUTE_DAMAGE);
 		ForgeRegistries.ATTRIBUTES.register(NameTool.HOLY_ATTRIBUTE_DAMAGE, HOLY_ATTRIBUTE_DAMAGE);
+		ForgeRegistries.ATTRIBUTES.register(NameTool.SOUL_ATTRIBUTE_DAMAGE, SOUL_ATTRIBUTE_DAMAGE);
 
-		//攻击转换属性
-		ForgeRegistries.ATTRIBUTES.register(NameTool.ATTACK_CONVERT_MAGIC, ATTACK_CONVERT_MAGIC);
-		ForgeRegistries.ATTRIBUTES.register(NameTool.ATTACK_CONVERT_FLAME, ATTACK_CONVERT_FLAME);
-		ForgeRegistries.ATTRIBUTES.register(NameTool.ATTACK_CONVERT_LIGHTNING, ATTACK_CONVERT_LIGHTNING);
-		ForgeRegistries.ATTRIBUTES.register(NameTool.ATTACK_CONVERT_DARK, ATTACK_CONVERT_DARK);
-		ForgeRegistries.ATTRIBUTES.register(NameTool.ATTACK_CONVERT_HOLY, ATTACK_CONVERT_HOLY);
+		//异常伤害加成
+		ForgeRegistries.ATTRIBUTES.register(NameTool.ABNORMAL_DAMAGE, ABNORMAL_DAMAGE);
+		ForgeRegistries.ATTRIBUTES.register(NameTool.ABNORMAL_BLEED_DAMAGE, ABNORMAL_BLEED_DAMAGE);
+		ForgeRegistries.ATTRIBUTES.register(NameTool.ABNORMAL_FROST_DAMAGE, ABNORMAL_FROST_DAMAGE);
+		ForgeRegistries.ATTRIBUTES.register(NameTool.ABNORMAL_POISON_DAMAGE, ABNORMAL_POISON_DAMAGE);
+		ForgeRegistries.ATTRIBUTES.register(NameTool.ABNORMAL_BURN_DAMAGE, ABNORMAL_BURN_DAMAGE);
+
+		//异常值
+		ForgeRegistries.ATTRIBUTES.register(NameTool.ABNORMAL_BLEED_BUILDUP, ABNORMAL_BLEED_BUILDUP);
+		ForgeRegistries.ATTRIBUTES.register(NameTool.ABNORMAL_FROST_BUILDUP, ABNORMAL_FROST_BUILDUP);
+		ForgeRegistries.ATTRIBUTES.register(NameTool.ABNORMAL_POISON_BUILDUP, ABNORMAL_POISON_BUILDUP);
+		ForgeRegistries.ATTRIBUTES.register(NameTool.ABNORMAL_BURN_BUILDUP, ABNORMAL_BURN_BUILDUP);
+		ForgeRegistries.ATTRIBUTES.register(NameTool.ABNORMAL_BUILDUP, ABNORMAL_BUILDUP);
+
 	}
 
 	public static void registerPlayerAttribute(EntityAttributeModificationEvent event){
@@ -291,18 +344,14 @@ public class LHMiracleRoadAttributes {
 		event.add(EntityType.PLAYER, MINING_SPEED);
 		event.add(EntityType.PLAYER, MAGIC_DAMAGE_ADDITION);
 
-		//属性伤害加成
-		event.add(EntityType.PLAYER, MAGIC_ATTRIBUTE_DAMAGE);
-		event.add(EntityType.PLAYER, FLAME_ATTRIBUTE_DAMAGE);
-		event.add(EntityType.PLAYER, LIGHTNING_ATTRIBUTE_DAMAGE);
-		event.add(EntityType.PLAYER, DARK_ATTRIBUTE_DAMAGE);
-		event.add(EntityType.PLAYER, HOLY_ATTRIBUTE_DAMAGE);
+		//异常伤害加成
+		event.add(EntityType.PLAYER, ABNORMAL_DAMAGE);
+		event.add(EntityType.PLAYER, ABNORMAL_BLEED_DAMAGE);
+		event.add(EntityType.PLAYER, ABNORMAL_FROST_DAMAGE);
+		event.add(EntityType.PLAYER, ABNORMAL_POISON_DAMAGE);
+		event.add(EntityType.PLAYER, ABNORMAL_BURN_DAMAGE);
 
-		//攻击转换属性
-		event.add(EntityType.PLAYER, ATTACK_CONVERT_MAGIC);
-		event.add(EntityType.PLAYER, ATTACK_CONVERT_FLAME);
-		event.add(EntityType.PLAYER, ATTACK_CONVERT_LIGHTNING);
-		event.add(EntityType.PLAYER, ATTACK_CONVERT_DARK);
-		event.add(EntityType.PLAYER, ATTACK_CONVERT_HOLY);
+		//异常累计值
+		event.add(EntityType.PLAYER, ABNORMAL_BUILDUP);
 	}
 }

@@ -3,9 +3,10 @@ package dev.lhkongyu.lhmiracleroad.entity.player;
 import com.mojang.authlib.GameProfile;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
-import dev.lhkongyu.lhmiracleroad.client.particle.SoulParticleOption;
+import dev.lhkongyu.lhmiracleroad.client.particle.soul.SoulParticleOption;
 import dev.lhkongyu.lhmiracleroad.registry.EntityRegistry;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
+import dev.lhkongyu.lhmiracleroad.tool.particle.ParticleTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -168,7 +169,7 @@ public class PlayerSoulEntity extends Entity {
                 soulCount = (int) (soulCount * .3);
             }
 
-            LHMiracleRoadTool.getSoulParticle((ServerLevel) level, (ServerPlayer) player,soulCount,150,200,this);
+            ParticleTool.getSoulParticle((ServerLevel) level, (ServerPlayer) player,soulCount,150,200,this);
             playerOccupationAttribute.setOccupationExperience(playerOccupationAttribute.getOccupationExperience() + soulCount);
             clean();
         });

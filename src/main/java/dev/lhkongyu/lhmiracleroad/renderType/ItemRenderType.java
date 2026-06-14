@@ -32,6 +32,11 @@ public class ItemRenderType extends RenderType {
 
     private static final RenderType SHARP_GLINT;
 
+    private static final RenderType SOUL_GLINT;
+
+    private static final RenderType HOLY_GLINT;
+
+
 
     public static RenderType getFlameGlint() {
         return FLAME_GLINT;
@@ -62,11 +67,19 @@ public class ItemRenderType extends RenderType {
         return SHARP_GLINT;
     }
 
+    public static RenderType getSoulGlint() {
+        return SOUL_GLINT;
+    }
+
+    public static RenderType getHolyGlint() {
+        return HOLY_GLINT;
+    }
+
     public static ResourceLocation getTexture(String png){
         return LHMiracleRoadTool.resourceLocationId(png);
     }
 
-    public static RenderType createPixelRenderType(String id,String png,float speed,float scale){
+    public static RenderType createPixelGlintRenderType(String id,String png,float speed,float scale){
         return create("lh_"+id,
                 DefaultVertexFormat.POSITION_TEX,
                 VertexFormat.Mode.QUADS,
@@ -80,6 +93,24 @@ public class ItemRenderType extends RenderType {
                         .setCullState(NO_CULL)
                         .setDepthTestState(EQUAL_DEPTH_TEST)
                         .setTransparencyState(GLINT_TRANSPARENCY)
+                        .setTexturingState(new customizeTexturing(speed,scale))
+                        .createCompositeState(false));
+    }
+
+    public static RenderType createPixelRenderType(String id,String png,float speed,float scale){
+        return create("lh_"+id,
+                DefaultVertexFormat.POSITION_TEX,
+                VertexFormat.Mode.QUADS,
+                256,
+                false,
+                false,
+                CompositeState.builder()
+                        .setShaderState(RENDERTYPE_ENTITY_GLINT_DIRECT_SHADER)
+                        .setTextureState(new TextureStateShard(getTexture(png), false, false))
+                        .setWriteMaskState(COLOR_DEPTH_WRITE)
+                        .setCullState(NO_CULL)
+                        .setDepthTestState(EQUAL_DEPTH_TEST)
+                        .setTransparencyState(NO_TRANSPARENCY)
                         .setTexturingState(new customizeTexturing(speed,scale))
                         .createCompositeState(false));
     }
@@ -99,13 +130,15 @@ public class ItemRenderType extends RenderType {
     }
 
     static {
-        FLAME_GLINT = createPixelRenderType("fire_glint","textures/glints/fire_glint.png",16.0f,64.0F);
-        LIGHTNING_GLINT = createPixelRenderType("lightning_glint","textures/glints/lightning_glint.png",64.0f,32.0F);
-        DARK_GLINT = createPixelRenderType("dark_glint","textures/glints/dark_glint.png",16.0f,48.0F);
-        BLOOD_GLINT = createPixelRenderType("blood_glint","textures/glints/blood_glint.png",16.0f,64.0F);
-        POISON_GLINT = createPixelRenderType("poison_glint","textures/glints/poison_glint.png",16.0f,64.0F);
+        FLAME_GLINT = createPixelRenderType("fire_glint","textures/glints/fire_glint.png",16.0f,32.0F);
+        LIGHTNING_GLINT = createPixelGlintRenderType("lightning_glint","textures/glints/lightning_glint.png",32.0f,32.0F);
+        DARK_GLINT = createPixelRenderType("dark_glint","textures/glints/dark_glint.png",16.0f,32.0F);
+        BLOOD_GLINT = createPixelRenderType("blood_glint","textures/glints/blood_glint.png",16.0f,32.0F);
+        POISON_GLINT = createPixelRenderType("poison_glint","textures/glints/poison_glint.png",16.0f,32.0F);
         ICE_GLINT = createPixelRenderType("ice_glint","textures/glints/ice_glint.png",16.0f,32.0F);
         SHARP_GLINT  = createPixelRenderType("ice_glint","textures/glints/sharp_glint.png",16.0f,32.0F);
+        SOUL_GLINT  = createPixelRenderType("ice_glint","textures/glints/soul_glint.png",16.0f,32.0F);
+        HOLY_GLINT  = createPixelGlintRenderType("ice_glint","textures/glints/holy_glint.png",16.0f,32.0F);
     }
 
     public static RenderType getGlint(String type){
@@ -116,7 +149,9 @@ public class ItemRenderType extends RenderType {
             case NameTool.BLOOD -> getBloodGlint();
             case NameTool.POISON -> getPoisonGlint();
             case NameTool.ICE -> getIceGlint();
-            case NameTool.SHARP -> getSharpGlint();
+            case NameTool.SHARP, NameTool.HEAVY -> getSharpGlint();
+            case NameTool.SOUL -> getSoulGlint();
+            case NameTool.HOLY -> getHolyGlint();
             default -> RenderType.entityGlintDirect();
         };
     }

@@ -1,4 +1,4 @@
-package dev.lhkongyu.lhmiracleroad.client.particle;
+package dev.lhkongyu.lhmiracleroad.client.particle.soul;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;

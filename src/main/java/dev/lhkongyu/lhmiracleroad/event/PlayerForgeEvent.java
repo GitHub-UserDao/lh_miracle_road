@@ -3,26 +3,27 @@ package dev.lhkongyu.lhmiracleroad.event;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonObject;
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
+import dev.lhkongyu.lhmiracleroad.abnormal.AbnormalTool;
 import dev.lhkongyu.lhmiracleroad.attributes.AttributeInstanceAccess;
 import dev.lhkongyu.lhmiracleroad.attributes.LHMiracleRoadAttributes;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerCurioProvider;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
-import dev.lhkongyu.lhmiracleroad.enchantments.ShockwaveEnchantment;
 import dev.lhkongyu.lhmiracleroad.entity.player.PlayerSoulEntity;
+import dev.lhkongyu.lhmiracleroad.generator.SpellDamageTypes;
 import dev.lhkongyu.lhmiracleroad.items.curio.talisman.ConsecratedCombatPlume;
 import dev.lhkongyu.lhmiracleroad.items.curio.talisman.HuntingBowTalisman;
 import dev.lhkongyu.lhmiracleroad.registry.ItemsRegistry;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import dev.lhkongyu.lhmiracleroad.tool.PlayerAttributeTool;
+import dev.lhkongyu.lhmiracleroad.tool.SyncTool;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -77,7 +78,7 @@ public class PlayerForgeEvent {
             playerOccupationAttribute.setMaxLevel(optional.getMaxLevel());
             playerOccupationAttribute.setPoints(optional.getPoints());
 
-            LHMiracleRoadTool.synchronizationClient(playerOccupationAttribute, (ServerPlayer) player);
+            SyncTool.synchronizationClient(playerOccupationAttribute, (ServerPlayer) player);
         });
     }
 
@@ -106,7 +107,7 @@ public class PlayerForgeEvent {
         Player player = event.getEntity();
         Optional<PlayerOccupationAttribute> playerOccupationAttribute = event.getEntity().getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).resolve();
         if (playerOccupationAttribute.isEmpty()) return;
-        LHMiracleRoadTool.synchronizationClient(playerOccupationAttribute.get(), (ServerPlayer) player);
+        SyncTool.synchronizationClient(playerOccupationAttribute.get(), (ServerPlayer) player);
     }
 
     /**
@@ -121,12 +122,12 @@ public class PlayerForgeEvent {
             PlayerOccupationAttribute playerOccupationAttribute = playerOccupationAttributeOptional.get();
             loggedInSyncAttribute(playerOccupationAttribute, (ServerPlayer) player);
             playerOccupationAttribute.setCurioAttributeLevel(Maps.newHashMap());
-            LHMiracleRoadTool.synchronizationClient(playerOccupationAttribute, (ServerPlayer) player);
-            LHMiracleRoadTool.synchronizationShowAttribute((ServerPlayer) player);
+            SyncTool.synchronizationClient(playerOccupationAttribute, (ServerPlayer) player);
+            SyncTool.synchronizationShowAttribute((ServerPlayer) player);
             //更新玩家奖惩状态
             LHMiracleRoadTool.playerPunishmentStateUpdate((ServerPlayer) player, playerOccupationAttribute);
         }else {
-            LHMiracleRoadTool.synchronizationSoul(0, (ServerPlayer) player,0);
+            SyncTool.synchronizationSoul(0, (ServerPlayer) player,0);
         }
     }
 
@@ -159,7 +160,7 @@ public class PlayerForgeEvent {
                     player.setHealth((float) player.getAttribute(attribute).getValue());
                 }
             }
-            LHMiracleRoadTool.synchronizationClient(playerOccupationAttribute, (ServerPlayer) player);
+            SyncTool.synchronizationClient(playerOccupationAttribute, (ServerPlayer) player);
         }
     }
 
@@ -221,12 +222,16 @@ public class PlayerForgeEvent {
                     ConsecratedCombatPlume.damageCount(player, event);
                 }
             });
+
             //伤害加成
             AttributeInstance attributeInstance = player.getAttribute(LHMiracleRoadAttributes.DAMAGE_ADDITION);
             if (attributeInstance != null) {
                 float damage = (float) (event.getAmount() * attributeInstance.getValue());
                 event.setAmount(damage);
             }
+
+            //异常伤害加成
+            AbnormalTool.setAbnormalDamage(event,player);
 
 
             //爆伤加成
@@ -241,13 +246,13 @@ public class PlayerForgeEvent {
                             && !player.hasEffect(net.minecraft.world.effect.MobEffects.BLINDNESS)
                             && !player.isPassenger();
 
-            if (critical && !LHMiracleRoadTool.isMagicDamageTypes(event.getSource())){
+            if (critical && !LHMiracleRoadTool.isMagicDamageTypes(event.getSource()) && !AbnormalTool.isAbnormalDamageTypes(event.getSource())){
                 if (weapon.is(ItemsRegistry.HAMMER_IRON.get()) || weapon.is(ItemsRegistry.HAMMER_NETHERITE.get()) || weapon.is(ItemsRegistry.HAMMER_ANCIENT.get())) {
                     criticalHitDamage += 0.5;
                 }
                 float damage = (float) (event.getAmount() * (criticalHitDamage / 1.5f));
                 event.setAmount(damage);
-            }else if (LHMiracleRoadTool.percentageProbability(criticalHitRate)) {
+            }else if (LHMiracleRoadTool.percentageProbability(criticalHitRate) && !AbnormalTool.isAbnormalDamageTypes(event.getSource())) {
                 float damage = (float) (event.getAmount() * criticalHitDamage);
                 event.setAmount(damage);
                 LivingEntity entity = event.getEntity();
@@ -255,6 +260,10 @@ public class PlayerForgeEvent {
                 ServerLevel serverLevel = (ServerLevel) player.level();
                 serverLevel.sendParticles((ServerPlayer) player, ParticleTypes.CRIT, true, entity.getX(), entity.getY() + entity.getBbHeight() * 0.5, entity.getZ(), particleCount, entity.getBbWidth() / 2, entity.getBbHeight() / 2, entity.getBbWidth() / 2,0.2);
                 serverLevel.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.PLAYER_ATTACK_CRIT, SoundSource.PLAYERS, 1.5F, 1.0F);
+            }
+
+            if (event.getSource().is(SpellDamageTypes.FLAME_MAGIC)){
+                AbnormalTool.attackAbnormalBurnBuildup(event.getEntity(), player,event.getAmount());
             }
         }
 

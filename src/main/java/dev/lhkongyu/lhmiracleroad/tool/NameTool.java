@@ -54,16 +54,27 @@ public class NameTool {
 
     public static final String HOLY_ATTRIBUTE_DAMAGE = "holy_attribute_damage";
 
-    public static final String ATTACK_CONVERT_MAGIC = "attack_convert_magic";
+    public static final String SOUL_ATTRIBUTE_DAMAGE = "soul_attribute_damage";
 
-    public static final String ATTACK_CONVERT_FLAME = "attack_convert_flame";
+    public static final String ABNORMAL_DAMAGE = "abnormal_damage";
 
-    public static final String ATTACK_CONVERT_LIGHTNING = "attack_convert_lightning";
+    public static final String ABNORMAL_BLEED_DAMAGE = "abnormal_bleed_damage";
 
-    public static final String ATTACK_CONVERT_DARK = "attack_convert_dark";
+    public static final String ABNORMAL_FROST_DAMAGE = "abnormal_frost_damage";
 
-    public static final String ATTACK_CONVERT_HOLY = "attack_convert_holy";
+    public static final String ABNORMAL_POISON_DAMAGE = "abnormal_poison_damage";
 
+    public static final String ABNORMAL_BURN_DAMAGE = "abnormal_burn_damage";
+
+    public static final String ABNORMAL_BLEED_BUILDUP = "abnormal_bleed_buildup";
+
+    public static final String ABNORMAL_FROST_BUILDUP = "abnormal_frost_buildup";
+
+    public static final String ABNORMAL_POISON_BUILDUP = "abnormal_poison_buildup";
+
+    public static final String ABNORMAL_BURN_BUILDUP = "abnormal_burn_buildup";
+
+    public static final String ABNORMAL_BUILDUP = "abnormal_buildup";
 
 
     //宝石 type 名称
@@ -80,4 +91,8 @@ public class NameTool {
     public static final String POISON = "poison";
 
     public static final String ICE = "ice";
+
+    public static final String SOUL = "soul";
+
+    public static final String HOLY = "holy";
 }
