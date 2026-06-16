@@ -2,6 +2,8 @@ package dev.lhkongyu.lhmiracleroad.registry;
 
 import com.mojang.serialization.Codec;
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
+import dev.lhkongyu.lhmiracleroad.client.particle.common.BlastParticleOption;
+import dev.lhkongyu.lhmiracleroad.client.particle.common.ElementParticleOption;
 import dev.lhkongyu.lhmiracleroad.client.particle.common.PhotonParticleOption;
 import dev.lhkongyu.lhmiracleroad.client.particle.soul.SoulParticleOption;
 import net.minecraft.core.particles.ParticleType;
@@ -24,6 +26,8 @@ public class ParticleRegistry {
     public static final RegistryObject<ParticleType<SimpleParticleType>> POISON;
     public static final RegistryObject<ParticleType<SimpleParticleType>> DARK;
     public static final RegistryObject<ParticleType<SimpleParticleType>> SNOW_FLAKE;
+    public static final RegistryObject<ParticleType<BlastParticleOption>> BLAST_WAVE;
+    public static final RegistryObject<ParticleType<ElementParticleOption>> ELEMENT;
 
     public static void register(IEventBus eventBus) {
         PARTICLE_TYPES.register(eventBus);
@@ -48,5 +52,17 @@ public class ParticleRegistry {
         POISON = PARTICLE_TYPES.register("poison", () -> new SimpleParticleType(false));
         DARK = PARTICLE_TYPES.register("dark", () -> new SimpleParticleType(false));
         SNOW_FLAKE = PARTICLE_TYPES.register("snow", () -> new SimpleParticleType(false));
+
+        BLAST_WAVE = PARTICLE_TYPES.register("blast_wave", () -> new ParticleType<BlastParticleOption>(true, BlastParticleOption.DESERIALIZER) {
+            public Codec<BlastParticleOption> codec() {
+                return BlastParticleOption.CODEC;
+            }
+        });
+
+        ELEMENT = PARTICLE_TYPES.register("element", () -> new ParticleType<ElementParticleOption>(true, ElementParticleOption.DESERIALIZER) {
+            public Codec<ElementParticleOption> codec() {
+                return ElementParticleOption.CODEC;
+            }
+        });
     }
 }

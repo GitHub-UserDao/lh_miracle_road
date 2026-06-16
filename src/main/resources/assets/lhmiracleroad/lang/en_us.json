@@ -247,7 +247,6 @@
 
   "tooltip.lhmiracleroad.talisman.nbt.null": "The talisman has not been endowed with mysterious power.",
   "entity.lhmiracleroad.soul": "%s The soul of",
-  "tooltip.lhmiracleroad.gem.deficiency": "需要 %s 个 %s",
 
   "item.lhmiracleroad.campsite": "营地",
   "item.lhmiracleroad.common_trophy": "寻常战利品袋",
@@ -298,5 +297,17 @@
   "lhmiracleroad.gui.attribute.text.details.evocation_spell_power": "Evocation Spell Power %s",
 
   "ui.lhmiracleroad.weapon_podium": "Podium Platform",
-  "block.lhmiracleroad.weapon_podium": "Podium Platform"
+  "block.lhmiracleroad.weapon_podium": "Podium Platform",
+  "tooltip.lhmiracleroad.weapon_podium.hammer_level_low": "需要更高级的重锤",
+  "tooltip.lhmiracleroad.weapon_podium.max_level": "强化等级达到最大",
+  "tooltip.lhmiracleroad.weapon_podium.strengthen_lv_deficiency": "强化石不符合",
+  "tooltip.lhmiracleroad.weapon_podium.gem_not_enough": "强化石数量不足",
+  "tooltip.lhmiracleroad.weapon_podium.not_strengthen": "该装备无法强化",
+  "tooltip.lhmiracleroad.weapon_podium.not_metamorphosis": "该物品无法质变",
+  "tooltip.lhmiracleroad.weapon_podium.repeat_metamorphosis": "无法重复质变",
+  "tooltip.lhmiracleroad.weapon_podium.soul_not_sufficient": "灵魂不足",
+
+  "tooltip.hint.lhmiracleroad.weapon_podium.weapon": "放入武器、装备、工具",
+  "tooltip.hint.lhmiracleroad.weapon_podium.gem": "放入宝石",
+  "tooltip.hint.lhmiracleroad.weapon_podium.hammer": "放入重锤"
 }

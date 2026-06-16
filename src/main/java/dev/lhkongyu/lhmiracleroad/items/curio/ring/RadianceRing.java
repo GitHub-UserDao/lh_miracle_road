@@ -21,7 +21,7 @@ public class RadianceRing {
         if (isEquipRadianceRing){
             livingEntity.setTicksFrozen(0);
             livingEntity.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 300, 0, false, false, true));
-            livingEntity.addEffect(new MobEffectInstance(MobEffects.WATER_BREATHING, 300, 0, false, false, true));
+            livingEntity.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 300, 0, false, false, true));
         }
     }
 

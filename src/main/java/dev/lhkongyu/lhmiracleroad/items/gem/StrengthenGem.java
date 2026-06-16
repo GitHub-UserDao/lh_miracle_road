@@ -31,30 +31,22 @@ import java.util.UUID;
 public class StrengthenGem {
 
     public static ItemStack strengthen(ItemStack baseItemStack, ItemStack gemItemStack){
-        if (LHMiracleRoadTool.itemIsWeaponsAll(baseItemStack) || baseItemStack.getItem() instanceof ArmorItem || baseItemStack.getItem() instanceof ElytraItem) {
+        CompoundTag tag = baseItemStack.getOrCreateTag().getCompound("lh_gem");
+        int strengthenLV = tag.getInt("strengthen_lv");
 
-            CompoundTag tag = baseItemStack.getOrCreateTag().getCompound("lh_gem");
-            int strengthenLV = tag.getInt("strengthen_lv");
-            if (strengthenLV > 9) return ItemStack.EMPTY;
-            int have = gemItemStack.getCount();
-            Integer needed = StrengthenGem.getStrengthenGemCount(gemItemStack, strengthenLV);
-            if (needed == null || have < needed) return ItemStack.EMPTY;
+        ItemStack out = baseItemStack.copy();
+        CompoundTag compoundTag = tag.copy();
 
-            ItemStack out = baseItemStack.copy();
-            CompoundTag compoundTag = tag.copy();
+        int vanillaMaxDurability = baseItemStack.getMaxDamage();
+        int customMaxDurability = compoundTag.contains("max_durability")
+                ? compoundTag.getInt("max_durability")
+                : vanillaMaxDurability;
 
-            int vanillaMaxDurability = baseItemStack.getMaxDamage();
-            int customMaxDurability = compoundTag.contains("max_durability")
-                    ? compoundTag.getInt("max_durability")
-                    : vanillaMaxDurability;
-
-            int maxDurability = (int) (customMaxDurability * StrengthenGem.getStrengthenGemDurabilityRatio(strengthenLV + 1));
-            compoundTag.putDouble("max_durability", maxDurability);
-            compoundTag.putInt("strengthen_lv", strengthenLV + 1);
-            out.getOrCreateTag().put("lh_gem", compoundTag);
-            return out;
-        }
-        return ItemStack.EMPTY;
+        int maxDurability = (int) (customMaxDurability * StrengthenGem.getStrengthenGemDurabilityRatio(strengthenLV + 1));
+        compoundTag.putDouble("max_durability", maxDurability);
+        compoundTag.putInt("strengthen_lv", strengthenLV + 1);
+        out.getOrCreateTag().put("lh_gem", compoundTag);
+        return out;
     }
 
     public static Integer getStrengthenGemCount(ItemStack right,double strengthenLV){
@@ -77,39 +69,6 @@ public class StrengthenGem {
             return 1;
         }
         return null;
-    }
-
-    public static String getStrengthenGemTooltip(double strengthenLV){
-        int needed = 1;
-        if (strengthenLV == 1) needed = 3;
-        else if (strengthenLV == 2) needed = 9;
-        else if (strengthenLV == 3) needed = 3;
-        else if (strengthenLV == 4) needed = 6;
-        else if (strengthenLV == 5) needed = 9;
-        else if (strengthenLV == 6) needed = 3;
-        else if (strengthenLV == 7) needed = 6;
-        else if (strengthenLV == 8) needed = 9;
-
-        String itemName = getItemName(strengthenLV);
-
-        return  Component.translatable("tooltip.lhmiracleroad.gem.deficiency",needed,itemName).getString();
-
-    }
-
-    @NotNull
-    private static String getItemName(double strengthenLV) {
-        String itemName = "";
-
-        if (strengthenLV < 3){
-            itemName = Component.translatable("item.lhmiracleroad.meteoric_iron_fragment").getString();
-        }else if (strengthenLV < 6){
-            itemName = Component.translatable("item.lhmiracleroad.meteoric_iron_big_fragment").getString();
-        }else if (strengthenLV < 9){;
-            itemName = Component.translatable("item.lhmiracleroad.meteoric_iron_block").getString();
-        }else if (strengthenLV == 9){
-            itemName = Component.translatable("item.lhmiracleroad.meteorite_disk").getString();
-        }
-        return itemName;
     }
 
     public static double getStrengthenGemDurabilityRatio(int strengthenLV){

@@ -38,7 +38,7 @@ public class PlayerSoulEntity extends Entity {
 
     private int soulCount;
 
-    private static final EntityDataAccessor<Integer> DURATION = SynchedEntityData.defineId(Entity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> DURATION = SynchedEntityData.defineId(PlayerSoulEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Optional<UUID>> SOUL_UUID = SynchedEntityData.defineId(PlayerSoulEntity.class, EntityDataSerializers.OPTIONAL_UUID);
     private static final EntityDataAccessor<String> SOUL_NAME = SynchedEntityData.defineId(PlayerSoulEntity.class, EntityDataSerializers.STRING);
 

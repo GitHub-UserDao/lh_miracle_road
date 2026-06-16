@@ -36,11 +36,7 @@ public class RingItem extends LHMiracleRoadCurioItem{
 
         Item item = stack.getItem();
         switch (item.getDescriptionId()) {
-            case "item.lhmiracleroad.fire_resistance_ring" -> FireResistanceRing.setEffect(slotContext.entity());
-            case "item.lhmiracleroad.poison_invading_ring" -> PoisonInvadingRing.removeEffect(slotContext.entity());
-            case "item.lhmiracleroad.water_avoidance_ring" -> WaterAvoidanceRing.setEffect(slotContext.entity());
             case "item.lhmiracleroad.radiance_ring" -> RadianceRing.setEquipRadianceRing(slotContext.entity());
-            case "item.lhmiracleroad.frost_ring" -> FrostRing.ignoreFrost(slotContext.entity());
         }
     }
 
@@ -48,9 +44,6 @@ public class RingItem extends LHMiracleRoadCurioItem{
     public void onEquip(SlotContext slotContext, ItemStack prevStack, ItemStack stack) {
         Item item = stack.getItem();
         switch (item.getDescriptionId()) {
-            case "item.lhmiracleroad.fire_resistance_ring" -> FireResistanceRing.addEffect(slotContext.entity());
-            case "item.lhmiracleroad.water_avoidance_ring" -> WaterAvoidanceRing.addEffect(slotContext.entity());
-//            case "item.lhmiracleroad.life_ring" -> LifeRing.hpSynchronous((Player) slotContext.entity());
             case "item.lhmiracleroad.radiance_ring" -> RadianceRing.resettingEffect(slotContext.entity());
             case "item.lhmiracleroad.whisper_ring" -> WhisperRing.equipWhisperRing(slotContext.entity(),true);
         }
@@ -60,7 +53,6 @@ public class RingItem extends LHMiracleRoadCurioItem{
     public void onUnequip(SlotContext slotContext, ItemStack newStack, ItemStack stack) {
         Item item = stack.getItem();
         switch (item.getDescriptionId()) {
-//            case "item.lhmiracleroad.life_ring" -> LifeRing.hpSynchronous((Player) slotContext.entity());
             case "item.lhmiracleroad.radiance_ring" -> RadianceRing.equipRadianceRing(slotContext.entity(),false);
             case "item.lhmiracleroad.whisper_ring" -> WhisperRing.equipWhisperRing(slotContext.entity(),false);
         }

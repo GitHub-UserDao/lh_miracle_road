@@ -1,6 +1,7 @@
 package dev.lhkongyu.lhmiracleroad.registry;
 
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
+import dev.lhkongyu.lhmiracleroad.entity.magic.LightningBoltEntity;
 import dev.lhkongyu.lhmiracleroad.entity.player.PlayerSoulEntity;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
@@ -19,6 +20,13 @@ public class EntityRegistry {
                     .sized(1f, 2f)
                     .clientTrackingRange(64)
                     .build(new ResourceLocation(LHMiracleRoad.MODID, "player_soul").toString()));
+
+    public static final RegistryObject<EntityType<LightningBoltEntity>> LIGHTNING_BOLT =
+            ENTITIES.register("lightning_bolt", () -> EntityType.Builder.<LightningBoltEntity>of(LightningBoltEntity::new, MobCategory.MISC)
+                    .sized(1.0f, 18.0f)
+                    .clientTrackingRange(128)
+                    .build(new ResourceLocation(LHMiracleRoad.MODID, "lightning_bolt").toString()));
+
 
     public static void register(IEventBus eventBus) {
         ENTITIES.register(eventBus);

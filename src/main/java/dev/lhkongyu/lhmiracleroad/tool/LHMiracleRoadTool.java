@@ -27,6 +27,7 @@ import dev.lhkongyu.lhmiracleroad.registry.ItemsRegistry;
 import dev.lhkongyu.lhmiracleroad.registry.TagsRegistry;
 import dev.lhkongyu.lhmiracleroad.tool.mathcalculator.MathCalculatorUtil;
 import net.minecraft.client.gui.Font;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -52,6 +53,9 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.*;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.fml.ModList;
 import org.joml.Math;
 import org.joml.Vector3f;
@@ -711,27 +715,16 @@ public class LHMiracleRoadTool {
         return 0;
     }
 
-    public static void magicHurt(LivingEntity source,LivingEntity target,ResourceKey<DamageType> resourceKey,float damage){
-        DamageSource src;
-//        Optional<Holder.Reference<DamageType>> option =
-//                source.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolder(resourceKey);
-//        if (option.isPresent()) {
-//            HashSet<TagKey<DamageType>> tagSet = new HashSet<TagKey<DamageType>>();
-//            tagSet.add(DamageTypeTags.NO_IMPACT);
-//            option.get().tags().forEach(tagSet::add);
-//            option.get().bindTags(tagSet);
-//
-//            src = option.map(damageTypeReference -> new DamageSource(damageTypeReference, source))
-//                    .orElseGet(() -> LHMiracleRoadTool.getDamageSource(source, resourceKey));
-//        }else {
-//            src = LHMiracleRoadTool.getDamageSource(source, resourceKey);
-//        }
-
-        src = LHMiracleRoadTool.getDamageSource(source, resourceKey);
+    public static void attackMagicHurt(LivingEntity source,LivingEntity target,ResourceKey<DamageType> resourceKey,float damage){
+        DamageSource src = LHMiracleRoadTool.getDamageSource(source, resourceKey);
         damage = AttributeGem.attributeAdditionalDamage(damage,src,target,source);
         target.hurt(src, damage);
     }
 
+    public static void magicHurt(LivingEntity source,LivingEntity target,ResourceKey<DamageType> resourceKey,float damage){
+        DamageSource src = LHMiracleRoadTool.getDamageSource(source, resourceKey);
+        target.hurt(src, damage);
+    }
 
     public static boolean itemIsWeaponsAndEquipmentAll(ItemStack stack){
         return itemIsWeaponsAll(stack) || stack.getItem() instanceof ArmorItem || stack.getItem() instanceof ElytraItem || stack.getItem() instanceof TieredItem || stack.getItem() instanceof ShieldItem;

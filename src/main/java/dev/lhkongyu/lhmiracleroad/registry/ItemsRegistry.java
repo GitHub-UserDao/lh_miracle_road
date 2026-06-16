@@ -73,29 +73,11 @@ public class ItemsRegistry {
 
     public static final RegistryObject<Item> DESIRE_RING = ITEMS.register("desire_ring", DesireRing::addAttributeModifier);
 
-//    public static final RegistryObject<Item> VIGILANCE_RING_DISTANT = ITEMS.register("vigilance_ring_distant", () -> new RingItem(new Item.Properties().rarity(Rarity.EPIC),null));
-//
-//    public static final RegistryObject<Item> VIGILANCE_RING_NEAR = ITEMS.register("vigilance_ring_near", () -> new RingItem(new Item.Properties().rarity(Rarity.EPIC),null));
-
     public static final RegistryObject<Item> ANCIENT_SPELLCRAFT_RING = ITEMS.register("ancient_spellcraft_ring", AncientSpellCraftRing::addAttributeModifier);
 
 //    public static final RegistryObject<Item> WHISPER_RING = ITEMS.register("whisper_ring", WhisperRing::addAttributeModifier);
 
-//    public static final RegistryObject<Item> FIRE_RESISTANCE_RING = ITEMS.register("fire_resistance_ring", () -> new RingItem(new Item.Properties().rarity(Rarity.RARE),null));
-//
-//    public static final RegistryObject<Item> POISON_INVADING_RING = ITEMS.register("poison_invading_ring", () -> new RingItem(new Item.Properties().rarity(Rarity.RARE),null));
-//
-//    public static final RegistryObject<Item> WATER_AVOIDANCE_RING = ITEMS.register("water_avoidance_ring", () -> new RingItem(new Item.Properties().rarity(Rarity.RARE),null));
-
-//    public static final RegistryObject<Item> FROST_RING = ITEMS.register("frost_ring", () -> new RingItem(new Item.Properties().rarity(Rarity.RARE),null));
-
     public static final RegistryObject<Item> LIFE_RING = ITEMS.register("life_ring", LifeRing::addAttributeModifier);
-
-//    public static final RegistryObject<Item> RECOVERY_RING = ITEMS.register("recovery_ring", RecoveryRing::addAttributeModifier);
-
-//    public static final RegistryObject<Item> RING_STRENGTH = ITEMS.register("ring_strength", RingStrength::addAttributeModifier);
-
-//    public static final RegistryObject<Item> SHIELDING_RING = ITEMS.register("shielding_ring", () -> new ShieldingRing(new Item.Properties().rarity(Rarity.COMMON),null));
 
     //手镯
     public static final RegistryObject<Item> HUNTERS_MARK = ITEMS.register("hunter_mark", () -> new BraceletItem(new Item.Properties().rarity(Rarity.EPIC),null));

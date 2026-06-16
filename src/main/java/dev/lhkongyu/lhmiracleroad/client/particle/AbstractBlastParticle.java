@@ -2,6 +2,7 @@ package dev.lhkongyu.lhmiracleroad.client.particle;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
+import dev.lhkongyu.lhmiracleroad.client.particle.common.BlastParticleOption;
 import net.minecraft.Util;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -9,7 +10,6 @@ import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -21,8 +21,9 @@ public abstract class AbstractBlastParticle
     public static final Vector3f TRANSFORM_VECTOR = new Vector3f(-1.0f, -1.0f, 0.0f);
     protected final float targetSize;
     protected final int isPlane;
+    private static final float DEGREES_90 = Mth.PI / 2f;
 
-    public AbstractBlastParticle(ClientLevel level, double x, double y, double z, SpriteSet spriteSet, double xd, double yd, double zd, CommonParticleOption options) {
+    public AbstractBlastParticle(ClientLevel level, double x, double y, double z, SpriteSet spriteSet, double xd, double yd, double zd, BlastParticleOption options) {
         super(level, x, y, z, spriteSet, xd, yd, zd);
         this.targetSize = options.getScale();
         this.isPlane = options.getIsPlane();
@@ -39,7 +40,7 @@ public abstract class AbstractBlastParticle
     }
 
     @Override
-    public ParticleRenderType getRenderType() {
+    public ParticleRenderType renderType() {
         return ParticleRenderType.PARTICLE_SHEET_OPAQUE;
     }
 
@@ -66,13 +67,14 @@ public abstract class AbstractBlastParticle
     @Override
     public void render(VertexConsumer buffer, Camera camera, float partialTicks) {
         if (this.isPlane >= 0) {
-            this.renderRotatedParticle(buffer, camera, partialTicks, p_234005_ -> {
-                p_234005_.mul(Axis.XP.rotation(0.0f));
-                p_234005_.mul(Axis.ZP.rotation(-1.5707964f));
+//            this.alpha = 1.0F - Mth.clamp((this.age + partialTicks) / (float) this.lifetime, 0, 1F);
+            this.renderRotatedParticle(buffer, camera, partialTicks, (quaternionf) -> {
+                quaternionf.mul(Axis.YP.rotation(0));
+                quaternionf.mul(Axis.XP.rotation(-DEGREES_90));
             });
-            this.renderRotatedParticle(buffer, camera, partialTicks, p_234000_ -> {
-                p_234000_.mul(Axis.XP.rotation((float)(-Math.PI)));
-                p_234000_.mul(Axis.ZP.rotation(1.5707964f));
+            this.renderRotatedParticle(buffer, camera, partialTicks, (quaternionf) -> {
+                quaternionf.mul(Axis.YP.rotation(-(float) Math.PI));
+                quaternionf.mul(Axis.XP.rotation(DEGREES_90));
             });
         } else {
             super.render(buffer, camera, partialTicks);

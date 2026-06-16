@@ -265,6 +265,19 @@ public class PlayerForgeEvent {
             if (event.getSource().is(SpellDamageTypes.FLAME_MAGIC)){
                 AbnormalTool.attackAbnormalBurnBuildup(event.getEntity(), player,event.getAmount());
             }
+
+            if (event.getSource().is(SpellDamageTypes.SOUL_MAGIC)) {
+                Optional<PlayerOccupationAttribute> optional =
+                        player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).resolve();
+                if (optional.isPresent()) {
+                    PlayerOccupationAttribute playerOccupationAttribute = optional.get();
+                    //获取基础灵魂伤害的 50倍灵魂数量
+                    int pSoulStart = playerOccupationAttribute.getOccupationExperience();
+                    playerOccupationAttribute.addOccupationExperience((int) (event.getAmount() * 50));
+                    SyncTool.synchronizationSoul(playerOccupationAttribute.getOccupationExperience(), (ServerPlayer) player, pSoulStart);
+
+                }
+            }
         }
 
         //玩家受到伤害最后计算

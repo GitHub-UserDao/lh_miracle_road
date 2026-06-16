@@ -3,12 +3,15 @@ package dev.lhkongyu.lhmiracleroad.event.client;
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
 import dev.lhkongyu.lhmiracleroad.client.particle.bleed.BleedGroundParticle;
 import dev.lhkongyu.lhmiracleroad.client.particle.bleed.BleedParticle;
+import dev.lhkongyu.lhmiracleroad.client.particle.common.BlastWaveParticle;
+import dev.lhkongyu.lhmiracleroad.client.particle.common.ElementParticle;
 import dev.lhkongyu.lhmiracleroad.client.particle.common.PhotonParticle;
 import dev.lhkongyu.lhmiracleroad.client.particle.dark.DarkParticle;
 import dev.lhkongyu.lhmiracleroad.client.particle.fire.FireBottomParticle;
 import dev.lhkongyu.lhmiracleroad.client.particle.ice.SnowFlakeParticle;
 import dev.lhkongyu.lhmiracleroad.client.particle.lightning.LightningParticle;
 import dev.lhkongyu.lhmiracleroad.client.particle.poison.PoisonParticle;
+import dev.lhkongyu.lhmiracleroad.entity.renderer.LightningBoltRenderer;
 import dev.lhkongyu.lhmiracleroad.entity.renderer.PlayerSoulRenderer;
 import dev.lhkongyu.lhmiracleroad.client.particle.soul.SoulParticle;
 import dev.lhkongyu.lhmiracleroad.registry.EntityRegistry;
@@ -39,6 +42,8 @@ public class RegistryEvent {
         event.registerSpriteSet(ParticleRegistry.POISON.get(), PoisonParticle.Provider::new);
         event.registerSpriteSet(ParticleRegistry.DARK.get(), DarkParticle.Provider::new);
         event.registerSpriteSet(ParticleRegistry.SNOW_FLAKE.get(), SnowFlakeParticle.Provider::new);
+        event.registerSpriteSet(ParticleRegistry.BLAST_WAVE.get(), BlastWaveParticle.Provider::new);
+        event.registerSpriteSet(ParticleRegistry.ELEMENT.get(), ElementParticle.Provider::new);
     }
 
     /**
@@ -48,6 +53,8 @@ public class RegistryEvent {
     @SubscribeEvent
     public static void rendererRegister(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(EntityRegistry.PLAYER_SOUL.get(), (context) -> new PlayerSoulRenderer(context, 1f));
+
+        event.registerEntityRenderer(EntityRegistry.LIGHTNING_BOLT.get(), LightningBoltRenderer::new);
     }
 
     /**

@@ -1,11 +1,13 @@
 package dev.lhkongyu.lhmiracleroad.client.screen.weaponPodium;
 
+import com.mojang.datafixers.kinds.IdF;
 import dev.lhkongyu.lhmiracleroad.items.gem.AttributeGem;
 import dev.lhkongyu.lhmiracleroad.items.gem.StrengthenGem;
 import dev.lhkongyu.lhmiracleroad.registry.BlockRegistry;
 import dev.lhkongyu.lhmiracleroad.registry.ItemsRegistry;
 import dev.lhkongyu.lhmiracleroad.registry.MenuRegistry;
 import dev.lhkongyu.lhmiracleroad.registry.TagsRegistry;
+import dev.lhkongyu.lhmiracleroad.tool.GemTool;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -37,6 +39,18 @@ public class WeaponPodiumMenu extends ItemCombinerMenu {
         this(pContainerId, inventory, ContainerLevelAccess.NULL);
     }
 
+    private WeaponPodiumError error = WeaponPodiumError.NONE;
+
+    private int soutCount = 0;
+
+    public WeaponPodiumError getError() {
+        return error;
+    }
+
+    public int getSoutCount() {
+        return soutCount;
+    }
+
     @Override
     protected boolean mayPickup(Player pPlayer, boolean pHasStack) {
         return true;
@@ -60,6 +74,10 @@ public class WeaponPodiumMenu extends ItemCombinerMenu {
 
         ItemStack hammer = inputSlots.getItem(2);
         hammer.hurtAndBreak(200, player, p -> p.broadcastBreakEvent(player.getUsedItemHand()));
+
+        if (soutCount > 0){
+            GemTool.deductSoul(player,soutCount);
+        }
 
         this.access.execute((level, pos) -> {
             level.playSound(null, pos, SoundEvents.ANVIL_USE, SoundSource.BLOCKS, .8f, 1.1f);
@@ -87,23 +105,84 @@ public class WeaponPodiumMenu extends ItemCombinerMenu {
         ItemStack baseItemStack = inputSlots.getItem(0);
         ItemStack gemItemStack = inputSlots.getItem(1);
         ItemStack hammerItemStack = inputSlots.getItem(2);
+        error = WeaponPodiumError.NONE;
+        soutCount = 0;
+        if (baseItemStack.isEmpty() || gemItemStack.isEmpty() || hammerItemStack.isEmpty()){
+            resultSlots.setItem(0, ItemStack.EMPTY);
+            return;
+        }
 
-        if (hammerItemStack.is(ItemsRegistry.HAMMER_IRON.get())){
-            if (gemItemStack.is(TagsRegistry.STRENGTHEN_GEM)){
-                result = StrengthenGem.strengthen(baseItemStack,gemItemStack);
+        //判断重锤等级是否符合要求
+        if (gemItemStack.is(TagsRegistry.GEM) && hammerItemStack.is(ItemsRegistry.HAMMER_IRON.get())) {
+            error = WeaponPodiumError.HAMMER_LEVEL_LOW;
+            resultSlots.setItem(0, ItemStack.EMPTY);
+            return;
+        }
+
+        //根据宝石进行强化
+        if (gemItemStack.is(TagsRegistry.STRENGTHEN_GEM)){
+            CompoundTag tag = baseItemStack.getOrCreateTag().getCompound("lh_gem");
+            int strengthenLV = tag.getInt("strengthen_lv");
+
+            //判断强化等级是否超过最大等级
+            if (strengthenLV > 9) {
+                error = WeaponPodiumError.MAX_LEVEL;
+                resultSlots.setItem(0, ItemStack.EMPTY);
+                return;
             }
-        }else if (hammerItemStack.is(ItemsRegistry.HAMMER_NETHERITE.get())){
-            if (gemItemStack.is(TagsRegistry.STRENGTHEN_GEM)){
-                result = StrengthenGem.strengthen(baseItemStack,gemItemStack);
-            }else if (gemItemStack.is(TagsRegistry.GEM)) {
-                result = AttributeGem.attributeStrengthen(baseItemStack,gemItemStack);
+
+            //判断强化宝石数量是否达标,并且判断是否需要更高级的强化宝石
+            Integer needed = StrengthenGem.getStrengthenGemCount(gemItemStack, strengthenLV);
+            int have = gemItemStack.getCount();
+            if (needed == null){
+                error = WeaponPodiumError.STRENGTHEN_LV_DEFICIENCY;
+                resultSlots.setItem(0, ItemStack.EMPTY);
+                return;
+            }else if (have < needed) {
+                error = WeaponPodiumError.GEM_NOT_ENOUGH;
+                resultSlots.setItem(0, ItemStack.EMPTY);
+                return;
             }
-        }else if (hammerItemStack.is(ItemsRegistry.HAMMER_ANCIENT.get())){
-            if (gemItemStack.is(TagsRegistry.STRENGTHEN_GEM)){
-                result = StrengthenGem.strengthen(baseItemStack,gemItemStack);
-            }else if (gemItemStack.is(TagsRegistry.GEM)) {
-                result = AttributeGem.attributeStrengthen(baseItemStack,gemItemStack);
+
+            //判断是否能进行强化
+            if (!(LHMiracleRoadTool.itemIsWeaponsAndEquipmentAll(baseItemStack))) {
+                error = WeaponPodiumError.NOT_STRENGTHEN;
+                resultSlots.setItem(0, ItemStack.EMPTY);
+                return;
             }
+
+            soutCount = GemTool.getStrengthenGemSoulCount(strengthenLV);
+            if (GemTool.isSoulSufficient(player,soutCount)){
+                error = WeaponPodiumError.SOUL_NOT_SUFFICIENT;
+                resultSlots.setItem(0, ItemStack.EMPTY);
+                return;
+            }
+
+            result = StrengthenGem.strengthen(baseItemStack,gemItemStack);
+        }else if (gemItemStack.is(TagsRegistry.GEM)) {
+            //判断是否属于武器
+            if (!LHMiracleRoadTool.itemIsWeaponsAll(baseItemStack)) {
+                error = WeaponPodiumError.NOT_METAMORPHOSIS;
+                resultSlots.setItem(0, ItemStack.EMPTY);
+                return;
+            }
+
+            //判断是否已质变如果已质变并且不为砥石（消除质变） 时将无法进行质变。
+            CompoundTag tag = baseItemStack.getOrCreateTag().getCompound("lh_gem");
+            if (tag.contains("type") && !gemItemStack.is(ItemsRegistry.WHETSTONE.get())){
+                error = WeaponPodiumError.REPEAT_METAMORPHOSIS;
+                resultSlots.setItem(0, ItemStack.EMPTY);
+                return;
+            }
+
+            soutCount = GemTool.getAttributeGemSoulCount(gemItemStack);
+            if (GemTool.isSoulSufficient(player,soutCount)){
+                error = WeaponPodiumError.SOUL_NOT_SUFFICIENT;
+                resultSlots.setItem(0, ItemStack.EMPTY);
+                return;
+            }
+
+            result = AttributeGem.attributeStrengthen(baseItemStack,gemItemStack);
         }
 
         resultSlots.setItem(0, result);
@@ -113,10 +192,10 @@ public class WeaponPodiumMenu extends ItemCombinerMenu {
     @Override
     protected ItemCombinerMenuSlotDefinition createInputSlotDefinitions() {
         return ItemCombinerMenuSlotDefinition.create()
-                .withSlot(0, 26, 47, LHMiracleRoadTool::itemIsWeaponsAndEquipmentAll)
-                .withSlot(1, 75, 47,  stack -> stack.is(TagsRegistry.GEM) || stack.is(TagsRegistry.STRENGTHEN_GEM))
+                .withSlot(0, 26, 40, LHMiracleRoadTool::itemIsWeaponsAndEquipmentAll)
+                .withSlot(1, 75, 40,  stack -> stack.is(TagsRegistry.GEM) || stack.is(TagsRegistry.STRENGTHEN_GEM))
                 .withSlot(2, 51, 20, stack -> stack.is(TagsRegistry.HAMMERS))
-                .withResultSlot(3, 133, 47).build();
+                .withResultSlot(3, 133, 40).build();
     }
 
     @Override
