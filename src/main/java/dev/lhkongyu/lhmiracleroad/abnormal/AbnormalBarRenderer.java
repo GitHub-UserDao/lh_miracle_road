@@ -5,6 +5,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
 import dev.lhkongyu.lhmiracleroad.abnormal.capability.AbnormalProvider;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
@@ -81,9 +83,7 @@ public class AbnormalBarRenderer {
     }
 
     private static void renderBar(PoseStack poseStack, BarData data, int y) {
-
         RenderSystem.setShaderTexture(0, TEXTURE);
-
         int x = -31;
 
         GuiGraphicsFake.blit(poseStack, x, y,

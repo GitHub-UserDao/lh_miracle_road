@@ -22,18 +22,18 @@ public abstract class ItemRendererMixin implements ResourceManagerReloadListener
     @Redirect(at = @At(value = "INVOKE",
             target = "Lnet/minecraft/client/renderer/entity/ItemRenderer;getFoilBufferDirect(Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/client/renderer/RenderType;ZZ)Lcom/mojang/blaze3d/vertex/VertexConsumer;"),
             method = "render")
-    public VertexConsumer foilBufferDirect(MultiBufferSource multiBuffer, RenderType p_115224_, boolean p_115225_, boolean p_115226_, ItemStack item, ItemDisplayContext context , boolean bool) {
+    public VertexConsumer lh_miracle_road$foilBufferDirect(MultiBufferSource multiBuffer, RenderType p_115224_, boolean p_115225_, boolean p_115226_, ItemStack item, ItemDisplayContext context , boolean bool) {
         LocalPlayer localplayer = Minecraft.getInstance().player;
 
         if (localplayer != null && item.getTag() != null) {
             CompoundTag compoundTag = item.getOrCreateTag().getCompound("lh_gem");
-            if (compoundTag.contains("type")) return lhmiracleroad$getFoilBufferDirect(item, multiBuffer, p_115224_, compoundTag.getString("type"));
+            if (compoundTag.contains("type")) return lh_miracle_road$getFoilBufferDirect(item, multiBuffer, p_115224_, compoundTag.getString("type"));
         }
         return ItemRenderer.getFoilBufferDirect(multiBuffer, p_115224_, true, item.hasFoil());
     }
 
     @Unique
-    private static VertexConsumer lhmiracleroad$getFoilBufferDirect(ItemStack item, MultiBufferSource multiBufferSource, RenderType base, String type) {
+    private static VertexConsumer lh_miracle_road$getFoilBufferDirect(ItemStack item, MultiBufferSource multiBufferSource, RenderType base, String type) {
 
         return VertexMultiConsumer.create(
                 multiBufferSource.getBuffer(ItemRenderType.getGlint(type)),

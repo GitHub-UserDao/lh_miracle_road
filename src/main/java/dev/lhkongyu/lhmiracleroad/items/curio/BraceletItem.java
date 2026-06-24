@@ -2,6 +2,7 @@ package dev.lhkongyu.lhmiracleroad.items.curio;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
+import dev.lhkongyu.lhmiracleroad.items.curio.bracelet.AbyssbindBracelet;
 import dev.lhkongyu.lhmiracleroad.items.curio.bracelet.HunterMark;
 import dev.lhkongyu.lhmiracleroad.items.curio.ring.*;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
@@ -25,6 +26,11 @@ import java.util.UUID;
 
 public class BraceletItem extends LHMiracleRoadCurioItem {
 
+    @Override
+    public String getCurioName() {
+        return "bracelet";
+    }
+
     public BraceletItem(Properties properties, Multimap<Attribute, AttributeModifier> defaultModifiers) {
         super(properties,defaultModifiers);
     }
@@ -43,6 +49,7 @@ public class BraceletItem extends LHMiracleRoadCurioItem {
         Item item = stack.getItem();
         switch (item.getDescriptionId()) {
             case "item.lhmiracleroad.hunter_mark" -> HunterMark.setHunterMark(slotContext.entity(),true);
+            case "item.lhmiracleroad.abyssbind_bracelet" -> AbyssbindBracelet.equipAbyssbindBracelet(slotContext.entity(),true);
         }
     }
 
@@ -51,6 +58,7 @@ public class BraceletItem extends LHMiracleRoadCurioItem {
         Item item = stack.getItem();
         switch (item.getDescriptionId()) {
             case "item.lhmiracleroad.hunter_mark" -> HunterMark.setHunterMark(slotContext.entity(),false);
+            case "item.lhmiracleroad.abyssbind_bracelet" -> AbyssbindBracelet.equipAbyssbindBracelet(slotContext.entity(),false);
         }
     }
 
@@ -78,6 +86,17 @@ public class BraceletItem extends LHMiracleRoadCurioItem {
             strings = LHMiracleRoadTool.baseTextWidthSplitText(font,detailsB,baseMaxWidth * 32,0,0);
             for (String string : strings){
                 lines.add(Component.literal(string).withStyle(ChatFormatting.DARK_PURPLE));
+            }
+        }else if (item.getDescriptionId().equals("item.lhmiracleroad.abyssbind_bracelet")){
+            MutableComponent detailsA = Component.translatable(item.getDescriptionId() + ".tooltip.details.1");
+            List<String> strings = LHMiracleRoadTool.baseTextWidthSplitText(font,detailsA,baseMaxWidth * 32,0,0);
+            for (String string : strings){
+                lines.add(Component.literal(string));
+            }
+            MutableComponent detailsB = Component.translatable(item.getDescriptionId() + ".tooltip.details.2");
+            strings = LHMiracleRoadTool.baseTextWidthSplitText(font,detailsB,baseMaxWidth * 32,0,0);
+            for (String string : strings){
+                lines.add(Component.literal(string).withStyle(ChatFormatting.RED));
             }
         }else {
             MutableComponent mutableComponent = Component.translatable(item.getDescriptionId() + ".tooltip.details");

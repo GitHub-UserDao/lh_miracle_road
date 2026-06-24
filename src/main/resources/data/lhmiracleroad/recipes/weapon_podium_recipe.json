@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "DAB",
+    "CAC",
+    "EEE"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:iron_block"
+    },
+    "B": {
+      "item": "minecraft:iron_ingot"
+    },
+    "C": {
+      "item": "minecraft:leather"
+    },
+    "D": {
+      "item": "minecraft:amethyst_shard"
+    },
+    "E": {
+      "item": "minecraft:polished_deepslate_slab"
+    }
+},
+  "result": {
+    "item": "lhmiracleroad:weapon_podium",
+    "count": 1
+  }
+}

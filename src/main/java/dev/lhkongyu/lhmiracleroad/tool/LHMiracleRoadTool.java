@@ -18,17 +18,10 @@ import dev.lhkongyu.lhmiracleroad.data.reloader.*;
 import dev.lhkongyu.lhmiracleroad.entity.player.PlayerSoulEntity;
 import dev.lhkongyu.lhmiracleroad.generator.SpellDamageTypes;
 import dev.lhkongyu.lhmiracleroad.items.gem.AttributeGem;
-import dev.lhkongyu.lhmiracleroad.packet.ClientDataMessage;
-import dev.lhkongyu.lhmiracleroad.packet.ClientOccupationMessage;
-import dev.lhkongyu.lhmiracleroad.packet.ClientSoulMessage;
-import dev.lhkongyu.lhmiracleroad.packet.PlayerChannel;
-import dev.lhkongyu.lhmiracleroad.client.particle.soul.SoulParticleOption;
-import dev.lhkongyu.lhmiracleroad.registry.ItemsRegistry;
 import dev.lhkongyu.lhmiracleroad.registry.TagsRegistry;
 import dev.lhkongyu.lhmiracleroad.tool.mathcalculator.MathCalculatorUtil;
 import net.minecraft.client.gui.Font;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
@@ -38,8 +31,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.tags.DamageTypeTags;
-import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
@@ -48,14 +39,12 @@ import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.*;
-import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.fml.ModList;
 import org.joml.Math;
 import org.joml.Vector3f;
@@ -460,6 +449,7 @@ public class LHMiracleRoadTool {
             case NameTool.ABNORMAL_POISON_BUILDUP -> LHMiracleRoadAttributes.ABNORMAL_POISON_BUILDUP;
             case NameTool.ABNORMAL_BURN_BUILDUP -> LHMiracleRoadAttributes.ABNORMAL_BURN_BUILDUP;
             case NameTool.ABNORMAL_BUILDUP -> LHMiracleRoadAttributes.ABNORMAL_BUILDUP;
+            case NameTool.ARMOR_PENETRATION -> LHMiracleRoadAttributes.ARMOR_PENETRATION;
             default -> AttributePointsRewardsReloadListener.recordAttribute.get(attributeName);
         };
     }
@@ -556,20 +546,23 @@ public class LHMiracleRoadTool {
             double modifierValue = 0.0;
             AttributeInstanceAccess attributeInstanceAccess = ((AttributeInstanceAccess) attributeInstance);
             switch (showValueType){
-                case BASE,BASE_PERCENTAGE:
+                case BASE:
+                    modifierValue = attributeInstanceAccess.lh_miracle_road$computeIncreasedValueForInitial(0);
+                    break;
+                case BASE_PERCENTAGE:
                     if (attributeInstance.getBaseValue() > 0){
-                        modifierValue = attributeInstanceAccess.computeIncreasedValueForInitial(0);
+                        modifierValue = attributeInstanceAccess.lh_miracle_road$computeIncreasedValueForInitial(0);
                         break;
                     }
                 case EXTRA_BASE,EXTRA_PERCENTAGE:
-                    modifierValue = attributeInstanceAccess.computeIncreasedValueForInitial(attributeInstance.getBaseValue() > 0 ? 0 : 1);
+                    modifierValue = attributeInstanceAccess.lh_miracle_road$computeIncreasedValueForInitial(attributeInstance.getBaseValue() > 0 ? 0 : 1);
                     if (attributeName.equals(NameTool.CRITICAL_HIT_RATE) && modifierValue == 100) {
-                        modifierValue = attributeInstanceAccess.computeIncreasedValueForInitial(0);
+                        modifierValue = attributeInstanceAccess.lh_miracle_road$computeIncreasedValueForInitial(0);
                         break;
                     }
                     modifierValue -= attributeInstance.getBaseValue() > 0 ? attributeInstance.getBaseValue() : 1;
                     break;
-            };
+            }
             showAttribute.addProperty(attributeName, modifierValue);
         }
         return showAttribute;
@@ -689,6 +682,24 @@ public class LHMiracleRoadTool {
         };
     }
 
+    /**
+     * 返回出生点
+     * @param player
+     */
+    public static void teleportToRespawn(ServerPlayer player) {
+        ServerLevel level = player.server.getLevel(player.getRespawnDimension());
+        if (level == null) level = player.server.overworld();
+        BlockPos pos = player.getRespawnPosition();
+        if (pos == null) pos = level.getSharedSpawnPos();
+        player.teleportTo(level,
+                pos.getX() + 0.5,
+                pos.getY() + 0.1,
+                pos.getZ() + 0.5,
+                player.getYRot(),
+                player.getXRot()
+        );
+    }
+
     public static boolean isShowPointsButton(int currentLevel,int maxLevel,int attributeMaxLevel){
         if (attributeMaxLevel < 1) return currentLevel < maxLevel;
         else return currentLevel < attributeMaxLevel;
@@ -726,8 +737,37 @@ public class LHMiracleRoadTool {
         target.hurt(src, damage);
     }
 
-    public static boolean itemIsWeaponsAndEquipmentAll(ItemStack stack){
-        return itemIsWeaponsAll(stack) || stack.getItem() instanceof ArmorItem || stack.getItem() instanceof ElytraItem || stack.getItem() instanceof TieredItem || stack.getItem() instanceof ShieldItem;
+    public static boolean isBelongTeammate(Entity target,Entity owner) {
+        if (owner == null || target == owner || owner.isAlliedTo(target)) {
+            return false;
+        }
+        if (!(target instanceof TamableAnimal tamable)) {
+            return true;
+        }
+        LivingEntity tamableOwner = tamable.getOwner();
+        return tamableOwner == null || !tamableOwner.equals(owner);
+    }
+
+    public static boolean itemIsWeaponsAndEquipmentAll(ItemStack stack) {
+        return itemIsWeaponsAll(stack)
+                || itemIsArmors(stack)
+                || itemIsTool(stack)
+                || itemIsShield(stack);
+    }
+
+    public static boolean itemIsShield(ItemStack stack){
+        return stack.getItem() instanceof ShieldItem;
+    }
+
+    public static boolean itemIsTool(ItemStack stack){
+        return stack.getItem() instanceof PickaxeItem
+                || stack.getItem() instanceof AxeItem
+                || stack.getItem() instanceof ShovelItem
+                || stack.getItem() instanceof HoeItem;
+    }
+
+    public static boolean itemIsArmors(ItemStack stack){
+        return stack.getItem() instanceof ArmorItem || stack.getItem() instanceof ElytraItem;
     }
 
     public static boolean itemIsWeaponsAll(ItemStack stack){
@@ -743,6 +783,10 @@ public class LHMiracleRoadTool {
 
     public static boolean itemIsRangedWeapons(ItemStack stack){
         return stack.is(TagsRegistry.RANGED_WEAPONS) || stack.getItem() instanceof ProjectileWeaponItem;
+    }
+
+    public static boolean itemIsMagicStaff(ItemStack stack){
+        return stack.is(TagsRegistry.MAGIC_STAFF);
     }
 
 //    /**
@@ -788,6 +832,12 @@ public class LHMiracleRoadTool {
         }else if (damageSource.is(SpellDamageTypes.SOUL_MAGIC)){
             return true;
         }else return damageSource.is(SpellDamageTypes.MAGIC);
+    }
+
+    public static boolean isMagic(DamageSource damageSource){
+        return damageSource.is(DamageTypes.INDIRECT_MAGIC) || damageSource.is(DamageTypes.MAGIC)
+                || damageSource.is(DamageTypes.IN_FIRE) || damageSource.is(DamageTypes.ON_FIRE)
+                || damageSource.is(DamageTypes.LAVA) || damageSource.is(DamageTypes.FREEZE) || damageSource.is(SpellDamageTypes.MAGIC);
     }
 
 }

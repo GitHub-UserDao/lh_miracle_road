@@ -3,34 +3,25 @@ package dev.lhkongyu.lhmiracleroad.items.gem;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import dev.lhkongyu.lhmiracleroad.attributes.LHMiracleRoadAttributes;
-import dev.lhkongyu.lhmiracleroad.attributes.ShowAttributesTypes;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
-import dev.lhkongyu.lhmiracleroad.event.InteractionEvent;
-import dev.lhkongyu.lhmiracleroad.event.client.HudEvents;
-import dev.lhkongyu.lhmiracleroad.packet.ClientPromptMessage;
-import dev.lhkongyu.lhmiracleroad.packet.PlayerChannel;
+import dev.lhkongyu.lhmiracleroad.config.strengthen.StrengthenConfig;
 import dev.lhkongyu.lhmiracleroad.registry.ItemsRegistry;
-import dev.lhkongyu.lhmiracleroad.registry.TagsRegistry;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.ElytraItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ShieldItem;
 import net.minecraftforge.event.ItemAttributeModifierEvent;
-import org.jetbrains.annotations.NotNull;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.UUID;
 
 public class StrengthenGem {
 
-    public static ItemStack strengthen(ItemStack baseItemStack, ItemStack gemItemStack){
+    public static ItemStack strengthen(ItemStack baseItemStack){
         CompoundTag tag = baseItemStack.getOrCreateTag().getCompound("lh_gem");
         int strengthenLV = tag.getInt("strengthen_lv");
 
@@ -42,7 +33,7 @@ public class StrengthenGem {
                 ? compoundTag.getInt("max_durability")
                 : vanillaMaxDurability;
 
-        int maxDurability = (int) (customMaxDurability * StrengthenGem.getStrengthenGemDurabilityRatio(strengthenLV + 1));
+        int maxDurability = (int) (customMaxDurability * StrengthenGem.getStrengthenGemDurabilityRatio(strengthenLV + 1,baseItemStack));
         compoundTag.putDouble("max_durability", maxDurability);
         compoundTag.putInt("strengthen_lv", strengthenLV + 1);
         out.getOrCreateTag().put("lh_gem", compoundTag);
@@ -71,8 +62,19 @@ public class StrengthenGem {
         return null;
     }
 
-    public static double getStrengthenGemDurabilityRatio(int strengthenLV){
-        return getDurability(strengthenLV);
+    public static double getStrengthenGemDurabilityRatio(int strengthenLV,ItemStack stack){
+        if (LHMiracleRoadTool.itemIsWeapons(stack))
+            return StrengthenConfig.getWeapon(strengthenLV).getDurability_magnification();
+        else if (LHMiracleRoadTool.itemIsRangedWeapons(stack))
+            return StrengthenConfig.getRangedWeapon(strengthenLV).getDurability_magnification();
+        else if (LHMiracleRoadTool.itemIsArmors(stack))
+            return StrengthenConfig.getArmor(strengthenLV).getDurability_magnification();
+        else if (LHMiracleRoadTool.itemIsTool(stack))
+            return StrengthenConfig.getTool(strengthenLV).getDurability_magnification();
+        else if (LHMiracleRoadTool.itemIsMagicStaff(stack))
+            return StrengthenConfig.getMagicStaff(strengthenLV).getDurability_magnification();
+
+        return 1;
     }
 
 
@@ -142,10 +144,56 @@ public class StrengthenGem {
         }
     }
 
+    /**
+     * 宝石强化 工具，添加强化后的属性
+     * @param strengthenLV
+     * @param event
+     */
+    public static void setToolsAttribute(int strengthenLV, ItemAttributeModifierEvent event,CompoundTag gemTag){
+        UUID miningSpeedUUID = UUID.fromString("2a48a663-f409-443f-9441-f7ff21e399a8");
+        if (event.getSlotType() == EquipmentSlot.MAINHAND) {
+            if (strengthenLV > 0 || gemTag.contains("type")){
+                double miningSpeed = getMiningSpeed(strengthenLV);
+
+                if (miningSpeed > 0) event.addModifier(LHMiracleRoadAttributes.MINING_SPEED,
+                        new AttributeModifier(miningSpeedUUID, "lh_gem_mining_speed", miningSpeed, AttributeModifier.Operation.MULTIPLY_TOTAL));
+            }
+        }
+    }
+
+    /**
+     * 宝石强化 法杖，添加强化后的属性
+     * @param strengthenLV
+     * @param event
+     */
+    public static void setMagicStaffAttribute(int strengthenLV, ItemAttributeModifierEvent event,CompoundTag gemTag){
+        UUID magicDamageUUID = UUID.fromString("2a11e4ed-5262-49e3-9dd9-584d2efe881f");
+        if (event.getSlotType() == EquipmentSlot.MAINHAND) {
+            if (strengthenLV > 0 || gemTag.contains("type")){
+                double magicDamage = getMagicDamage(strengthenLV);
+                if (magicDamage <= 0)return;
+                if (LHMiracleRoadTool.isModExist("irons_spellbooks")) {
+                    String attributeName = "irons_spellbooks:spell_power";
+                    ResourceLocation resourceLocation = ForgeRegistries.ATTRIBUTES.getKeys()
+                            .stream()
+                            .filter(p -> attributeName.equals(p.toString()))
+                            .findFirst()
+                            .orElse(null);
+
+                    Attribute instanceAttribute = ForgeRegistries.ATTRIBUTES.getValue(resourceLocation);
+                    if (instanceAttribute != null) {
+                        event.addModifier(instanceAttribute,
+                                new AttributeModifier(magicDamageUUID, "lh_gem_magic_staff", magicDamage, AttributeModifier.Operation.MULTIPLY_TOTAL));
+                    }
+                }
+            }
+        }
+    }
+
     public static double getAttack(int strengthenLV){
         double attack = 0;
         for (int i = strengthenLV; i > 0; i--) {
-            attack += LHMiracleRoadTool.isAsDouble(lvGetConfigGemstoneStrengthenJson(i).get("attack"));
+            attack += StrengthenConfig.getWeapon(i).getAttack();
         }
         return attack;
     }
@@ -153,7 +201,7 @@ public class StrengthenGem {
     public static double getAttackSpeed(int strengthenLV){
         double attack_speed = 0;
         for (int i = strengthenLV; i > 0; i--) {
-            attack_speed += LHMiracleRoadTool.isAsDouble(lvGetConfigGemstoneStrengthenJson(i).get("attack_speed"));
+            attack_speed += StrengthenConfig.getWeapon(i).getAttack_speed();
         }
         return attack_speed;
     }
@@ -161,7 +209,7 @@ public class StrengthenGem {
     public static double getRanged(int strengthenLV){
         double ranged = 0;
         for (int i = strengthenLV; i > 0; i--) {
-            ranged += LHMiracleRoadTool.isAsDouble(lvGetConfigGemstoneStrengthenJson(i).get("ranged"));
+            ranged += StrengthenConfig.getRangedWeapon(i).getRanged_attack();
         }
         return ranged;
     }
@@ -169,7 +217,7 @@ public class StrengthenGem {
     public static double getArmor(int strengthenLV){
         double armor = 0;
         for (int i = strengthenLV; i > 0; i--) {
-            armor += LHMiracleRoadTool.isAsDouble(lvGetConfigGemstoneStrengthenJson(i).get("armor"));
+            armor += StrengthenConfig.getArmor(i).getArmor();
         }
         return armor;
     }
@@ -177,36 +225,25 @@ public class StrengthenGem {
     public static double getArmorToughness(int strengthenLV){
         double armor_toughness = 0;
         for (int i = strengthenLV; i > 0; i--) {
-            armor_toughness += LHMiracleRoadTool.isAsDouble(lvGetConfigGemstoneStrengthenJson(i).get("armor_toughness"));
+            armor_toughness += StrengthenConfig.getArmor(i).getArmor_toughness();
         }
         return armor_toughness;
     }
 
-    public static double getDurability(int strengthenLV){
-        return LHMiracleRoadTool.isAsDouble(lvGetConfigGemstoneStrengthenJson(strengthenLV).get("durability"));
+    public static double getMiningSpeed(int strengthenLV){
+        double mining_speed = 0;
+        for (int i = strengthenLV; i > 0; i--) {
+            mining_speed += StrengthenConfig.getTool(i).getMining_speed();
+        }
+        return mining_speed;
     }
 
-
-
-    /**
-     * 通过lv获取 config配置里的 每级强化配置
-     * @param strengthenLV
-     * @return
-     */
-    private static JsonObject lvGetConfigGemstoneStrengthenJson(int strengthenLV){
-        return switch (strengthenLV){
-            case 1 -> JsonParser.parseString(LHMiracleRoadConfig.COMMON.GEMSTONE_STRENGTHEN_ONE.get()).getAsJsonObject();
-            case 2 -> JsonParser.parseString(LHMiracleRoadConfig.COMMON.GEMSTONE_STRENGTHEN_TWO.get()).getAsJsonObject();
-            case 3 -> JsonParser.parseString(LHMiracleRoadConfig.COMMON.GEMSTONE_STRENGTHEN_THREE.get()).getAsJsonObject();
-            case 4 -> JsonParser.parseString(LHMiracleRoadConfig.COMMON.GEMSTONE_STRENGTHEN_FOUR.get()).getAsJsonObject();
-            case 5 -> JsonParser.parseString(LHMiracleRoadConfig.COMMON.GEMSTONE_STRENGTHEN_FIVE.get()).getAsJsonObject();
-            case 6 -> JsonParser.parseString(LHMiracleRoadConfig.COMMON.GEMSTONE_STRENGTHEN_SIX.get()).getAsJsonObject();
-            case 7 -> JsonParser.parseString(LHMiracleRoadConfig.COMMON.GEMSTONE_STRENGTHEN_SEVEN.get()).getAsJsonObject();
-            case 8 -> JsonParser.parseString(LHMiracleRoadConfig.COMMON.GEMSTONE_STRENGTHEN_EIGHT.get()).getAsJsonObject();
-            case 9 -> JsonParser.parseString(LHMiracleRoadConfig.COMMON.GEMSTONE_STRENGTHEN_NINE.get()).getAsJsonObject();
-            case 10 -> JsonParser.parseString(LHMiracleRoadConfig.COMMON.GEMSTONE_STRENGTHEN_TEN.get()).getAsJsonObject();
-            default -> new JsonObject();
-        };
+    public static double getMagicDamage(int strengthenLV){
+        double magic_damage = 0;
+        for (int i = strengthenLV; i > 0; i--) {
+            magic_damage += StrengthenConfig.getMagicStaff(i).getMagic_damage();
+        }
+        return magic_damage;
     }
 
 }

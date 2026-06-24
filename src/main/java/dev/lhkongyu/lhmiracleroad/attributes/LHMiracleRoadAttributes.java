@@ -136,6 +136,15 @@ public class LHMiracleRoadAttributes {
 			Double.MAX_VALUE
 	);
 
+//	public static final String BOW_MINING_SPEED_ID = "attribute.name."+LHMiracleRoad.MODID+"."+ NameTool.BOW_MINING_SPEED;
+//
+//	public static final Attribute BOW_MINING_SPEED = create(
+//			BOW_MINING_SPEED_ID,
+//			1.0,
+//			0.0,
+//			Double.MAX_VALUE
+//	).setSyncable(true);
+
 	/**
 	 * 属性伤害加成
 	 */
@@ -284,6 +293,14 @@ public class LHMiracleRoadAttributes {
 			Double.MAX_VALUE
 	);
 
+	public static final String ARMOR_PENETRATION_ID = "attribute.name."+LHMiracleRoad.MODID+"."+ NameTool.ARMOR_PENETRATION;
+	public static final Attribute ARMOR_PENETRATION = create(
+			ARMOR_PENETRATION_ID,
+			0,
+			0.0,
+			Double.MAX_VALUE
+	);
+
 	private static Attribute create(String id, double base, double min, double max) {
 		return new RangedAttribute(id, base, min, max);
 	}
@@ -303,6 +320,8 @@ public class LHMiracleRoadAttributes {
 		ForgeRegistries.ATTRIBUTES.register(NameTool.DAMAGE_ADDITION, DAMAGE_ADDITION);
 		ForgeRegistries.ATTRIBUTES.register(NameTool.MINING_SPEED, MINING_SPEED);
 		ForgeRegistries.ATTRIBUTES.register(NameTool.MAGIC_DAMAGE_ADDITION, MAGIC_DAMAGE_ADDITION);
+		ForgeRegistries.ATTRIBUTES.register(NameTool.ARMOR_PENETRATION, ARMOR_PENETRATION);
+//		ForgeRegistries.ATTRIBUTES.register(NameTool.BOW_MINING_SPEED, BOW_MINING_SPEED);
 
 		//属性伤害加成
 		ForgeRegistries.ATTRIBUTES.register(NameTool.MAGIC_ATTRIBUTE_DAMAGE, MAGIC_ATTRIBUTE_DAMAGE);
@@ -343,6 +362,8 @@ public class LHMiracleRoadAttributes {
 		event.add(EntityType.PLAYER, DAMAGE_ADDITION);
 		event.add(EntityType.PLAYER, MINING_SPEED);
 		event.add(EntityType.PLAYER, MAGIC_DAMAGE_ADDITION);
+		event.add(EntityType.PLAYER, ARMOR_PENETRATION);
+//		event.add(EntityType.PLAYER, BOW_MINING_SPEED);
 
 		//异常伤害加成
 		event.add(EntityType.PLAYER, ABNORMAL_DAMAGE);

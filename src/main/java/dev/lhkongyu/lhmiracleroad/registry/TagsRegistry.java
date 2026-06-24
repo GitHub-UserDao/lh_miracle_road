@@ -6,6 +6,10 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 
 public class TagsRegistry {
+
+    public static final TagKey<Item> ADVANCED_GEM =
+            ItemTags.create(LHMiracleRoadTool.resourceLocationId("advanced_gem"));
+
     public static final TagKey<Item> GEM =
             ItemTags.create(LHMiracleRoadTool.resourceLocationId("gem"));
 
@@ -20,4 +24,7 @@ public class TagsRegistry {
 
     public static final TagKey<Item> RANGED_WEAPONS =
             ItemTags.create(LHMiracleRoadTool.resourceLocationId("ranged_weapons"));
+
+    public static final TagKey<Item> MAGIC_STAFF =
+            ItemTags.create(LHMiracleRoadTool.resourceLocationId("magic_staff"));
 }

@@ -109,6 +109,24 @@ public class LootEvent {
                     .add(LootItem.lootTableItem(ItemsRegistry.GREEDY_SILVER_SERPENT_RING.get()))
                     .build());
 
+            event.getTable().addPool(LootPool.lootPool()
+                    .when(LootItemRandomChanceCondition.randomChance(0.015f))
+                    .add(LootItem.lootTableItem(ItemsRegistry.EPIC_TROPHY.get()))
+                    .apply(CurioFunction.builder())
+                    .build());
+
+            event.getTable().addPool(LootPool.lootPool()
+                    .when(LootItemRandomChanceCondition.randomChance(0.005f))
+                    .add(LootItem.lootTableItem(ItemsRegistry.LEGEND_TROPHY.get()))
+                    .apply(CurioFunction.builder())
+                    .build());
+
+            event.getTable().addPool(LootPool.lootPool()
+                    .when(LootItemRandomChanceCondition.randomChance(0.01f))
+                    .add(LootItem.lootTableItem(ItemsRegistry.METEORIC_IRON_BLOCK.get()))
+                    .apply(CurioFunction.builder())
+                    .build());
+
             commonCuriosLoot(event);
         }
 
@@ -126,7 +144,7 @@ public class LootEvent {
             commonCuriosLoot(event);
         }
 
-        //下界堡垒系列
+        //下界要塞系列
         if (event.getName().equals(BuiltInLootTables.NETHER_BRIDGE) || event.getName().equals(BuiltInLootTables.BASTION_BRIDGE)) {
             commonLootTable(event);
 
@@ -136,6 +154,12 @@ public class LootEvent {
             event.getTable().addPool(LootPool.lootPool()
                     .when(LootItemRandomChanceCondition.randomChance(0.08f))
                     .add(LootItem.lootTableItem(ItemsRegistry.GREEDY_SILVER_SERPENT_RING.get()))
+                    .build());
+
+            event.getTable().addPool(LootPool.lootPool()
+                    .when(LootItemRandomChanceCondition.randomChance(0.03f))
+                    .add(LootItem.lootTableItem(ItemsRegistry.EPIC_TROPHY.get()))
+                    .apply(CurioFunction.builder())
                     .build());
 
             commonCuriosLoot(event);
@@ -162,6 +186,12 @@ public class LootEvent {
             event.getTable().addPool(LootPool.lootPool()
                     .when(LootItemRandomChanceCondition.randomChance(0.08f))
                     .add(LootItem.lootTableItem(ItemsRegistry.ANCIENT_SPELLCRAFT_RING.get()))
+                    .build());
+
+            //远古核心
+            event.getTable().addPool(LootPool.lootPool()
+                    .when(LootItemRandomChanceCondition.randomChance(0.03f))
+                    .add(LootItem.lootTableItem(ItemsRegistry.ANCIENT_CORE.get()))
                     .build());
         }
 
@@ -200,21 +230,15 @@ public class LootEvent {
                 .add(LootItem.lootTableItem(ItemsRegistry.LIFE_RING.get()))
                 .build());
 
-//        event.getTable().addPool(LootPool.lootPool()
-//                .when(LootItemRandomChanceCondition.randomChance(0.03f))
-//                .add(LootItem.lootTableItem(ItemsRegistry.RECOVERY_RING.get()))
-//                .build());
+        event.getTable().addPool(LootPool.lootPool()
+                .when(LootItemRandomChanceCondition.randomChance(0.03f))
+                .add(LootItem.lootTableItem(ItemsRegistry.RECOVERY_RING.get()))
+                .build());
 
-
-//        event.getTable().addPool(LootPool.lootPool()
-//                .when(LootItemRandomChanceCondition.randomChance(0.03f))
-//                .add(LootItem.lootTableItem(ItemsRegistry.RING_STRENGTH.get()))
-//                .build());
-
-//        event.getTable().addPool(LootPool.lootPool()
-//                .when(LootItemRandomChanceCondition.randomChance(0.03f))
-//                .add(LootItem.lootTableItem(ItemsRegistry.SHIELDING_RING.get()))
-//                .build());
+        event.getTable().addPool(LootPool.lootPool()
+                .when(LootItemRandomChanceCondition.randomChance(0.03f))
+                .add(LootItem.lootTableItem(ItemsRegistry.CAT_RING.get()))
+                .build());
 
         event.getTable().addPool(LootPool.lootPool()
                 .when(LootItemRandomChanceCondition.randomChance(0.03f))
@@ -237,48 +261,6 @@ public class LootEvent {
                 .apply(CurioFunction.builder())
                 .build());
 
-//        event.getTable().addPool(LootPool.lootPool()
-//                .when(LootItemRandomChanceCondition.randomChance(0.015f))
-//                .add(LootItem.lootTableItem(ItemsRegistry.WHISPER_RING.get()))
-//                .apply(CurioFunction.builder())
-//                .build());
-
-        event.getTable().addPool(LootPool.lootPool()
-                .when(LootItemRandomChanceCondition.randomChance(0.01f))
-                .add(LootItem.lootTableItem(ItemsRegistry.BIG_SHIELD_TALISMAN.get()))
-                .apply(CurioFunction.builder())
-                .build());
-
-        event.getTable().addPool(LootPool.lootPool()
-                .when(LootItemRandomChanceCondition.randomChance(0.015f))
-                .add(LootItem.lootTableItem(ItemsRegistry.CONSECRATED_COMBAT_PLUME.get()))
-                .apply(CurioFunction.builder())
-                .build());
-
-        event.getTable().addPool(LootPool.lootPool()
-                .when(LootItemRandomChanceCondition.randomChance(0.01f))
-                .add(LootItem.lootTableItem(ItemsRegistry.HEART_OF_BLOODLUST.get()))
-                .apply(CurioFunction.builder())
-                .build());
-
-        event.getTable().addPool(LootPool.lootPool()
-                .when(LootItemRandomChanceCondition.randomChance(0.015f))
-                .add(LootItem.lootTableItem(ItemsRegistry.HUNTING_BOW_TALISMAN.get()))
-                .apply(CurioFunction.builder())
-                .build());
-
-        event.getTable().addPool(LootPool.lootPool()
-                .when(LootItemRandomChanceCondition.randomChance(0.015f))
-                .add(LootItem.lootTableItem(ItemsRegistry.MANY_WEAPONS_TALISMAN.get()))
-                .apply(CurioFunction.builder())
-                .build());
-
-        event.getTable().addPool(LootPool.lootPool()
-                .when(LootItemRandomChanceCondition.randomChance(0.015f))
-                .add(LootItem.lootTableItem(ItemsRegistry.SPANNING_WINGS.get()))
-                .apply(CurioFunction.builder())
-                .build());
-
         event.getTable().addPool(LootPool.lootPool()
                 .when(LootItemRandomChanceCondition.randomChance(0.03f))
                 .add(LootItem.lootTableItem(ItemsRegistry.WARRIOR_TALISMAN.get()))
@@ -286,10 +268,41 @@ public class LootEvent {
                 .build());
 
         event.getTable().addPool(LootPool.lootPool()
-                .when(LootItemRandomChanceCondition.randomChance(0.0025f))
-                .add(LootItem.lootTableItem(ItemsRegistry.COSSET_RING.get()))
+                .when(LootItemRandomChanceCondition.randomChance(0.015f))
+                .add(LootItem.lootTableItem(ItemsRegistry.ABYSSBIND_BRACELET.get()))
                 .apply(CurioFunction.builder())
                 .build());
+
+        event.getTable().addPool(LootPool.lootPool()
+                .when(LootItemRandomChanceCondition.randomChance(0.04f))
+                .add(LootItem.lootTableItem(ItemsRegistry.COMMON_TROPHY.get()))
+                .apply(CurioFunction.builder())
+                .build());
+
+        event.getTable().addPool(LootPool.lootPool()
+                .when(LootItemRandomChanceCondition.randomChance(0.025f))
+                .add(LootItem.lootTableItem(ItemsRegistry.EXQUISITE_TROPHY.get()))
+                .apply(CurioFunction.builder())
+                .build());
+
+        event.getTable().addPool(LootPool.lootPool()
+                .when(LootItemRandomChanceCondition.randomChance(0.015f))
+                .add(LootItem.lootTableItem(ItemsRegistry.RARE_TROPHY.get()))
+                .apply(CurioFunction.builder())
+                .build());
+
+        event.getTable().addPool(LootPool.lootPool()
+                .when(LootItemRandomChanceCondition.randomChance(0.03f))
+                .add(LootItem.lootTableItem(ItemsRegistry.METEORIC_IRON_FRAGMENT.get()))
+                .apply(CurioFunction.builder())
+                .build());
+
+        event.getTable().addPool(LootPool.lootPool()
+                .when(LootItemRandomChanceCondition.randomChance(0.015f))
+                .add(LootItem.lootTableItem(ItemsRegistry.METEORIC_IRON_BIG_FRAGMENT.get()))
+                .apply(CurioFunction.builder())
+                .build());
+
     }
 
     private static void rareLootTable(final  LootTableLoadEvent event){
@@ -333,14 +346,20 @@ public class LootEvent {
                 .build());
 
         event.getTable().addPool(LootPool.lootPool()
-                .when(LootItemRandomChanceCondition.randomChance(0.025f))
-                .add(LootItem.lootTableItem(ItemsRegistry.HEART_OF_BLOODLUST.get()))
+                .when(LootItemRandomChanceCondition.randomChance(0.05f))
+                .add(LootItem.lootTableItem(ItemsRegistry.EPIC_TROPHY.get()))
                 .apply(CurioFunction.builder())
                 .build());
 
         event.getTable().addPool(LootPool.lootPool()
-                .when(LootItemRandomChanceCondition.randomChance(0.015f))
-                .add(LootItem.lootTableItem(ItemsRegistry.COSSET_RING.get()))
+                .when(LootItemRandomChanceCondition.randomChance(0.02f))
+                .add(LootItem.lootTableItem(ItemsRegistry.LEGEND_TROPHY.get()))
+                .apply(CurioFunction.builder())
+                .build());
+
+        event.getTable().addPool(LootPool.lootPool()
+                .when(LootItemRandomChanceCondition.randomChance(0.06f))
+                .add(LootItem.lootTableItem(ItemsRegistry.METEORIC_IRON_BLOCK.get()))
                 .apply(CurioFunction.builder())
                 .build());
 
@@ -458,18 +477,5 @@ public class LootEvent {
                     .add(LootItem.lootTableItem(ItemsRegistry.DESIRE_RING.get()))
                     .build());
         }
-        //配置烈焰人掉落
-//        else if (event.getName().equals(EntityType.BLAZE.getDefaultLootTable())){
-//            event.getTable().addPool(LootPool.lootPool()
-//                    .when(LootItemRandomChanceCondition.randomChance(0.03f))
-//                    .add(LootItem.lootTableItem(ItemsRegistry.FIRE_RESISTANCE_RING.get()))
-//                    .build());
-//            //配置女巫掉落
-//        }else if (event.getName().equals(EntityType.WITCH.getDefaultLootTable())){
-//            event.getTable().addPool(LootPool.lootPool()
-//                    .when(LootItemRandomChanceCondition.randomChance(0.03f))
-//                    .add(LootItem.lootTableItem(ItemsRegistry.POISON_INVADING_RING.get()))
-//                    .build());
-//        }
     }
 }

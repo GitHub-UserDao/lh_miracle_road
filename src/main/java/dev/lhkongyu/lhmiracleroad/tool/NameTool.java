@@ -32,6 +32,8 @@ public class NameTool {
 
     public static final String MINING_SPEED = "mining_speed";
 
+    public static final String BOW_MINING_SPEED = "bow_mining_speed";
+
     public static final String CRITICAL_HIT_RATE = "critical_hit_rate";
 
     public static final String CRITICAL_HIT_DAMAGE = "critical_hit_damage";
@@ -76,6 +78,8 @@ public class NameTool {
 
     public static final String ABNORMAL_BUILDUP = "abnormal_buildup";
 
+    public static final String ARMOR_PENETRATION = "armor_penetration";
+
 
     //宝石 type 名称
     public static final String FLAME = "flame";
@@ -95,4 +99,15 @@ public class NameTool {
     public static final String SOUL = "soul";
 
     public static final String HOLY = "holy";
+
+    //战利品袋稀有度
+    public static final String COMMON = "common";
+
+    public static final String EXQUISITE = "exquisite";
+
+    public static final String RARE = "rare";
+
+    public static final String EPIC = "epic";
+
+    public static final String LEGEND = "legend";
 }

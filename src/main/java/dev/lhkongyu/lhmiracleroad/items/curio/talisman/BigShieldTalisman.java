@@ -1,10 +1,8 @@
 package dev.lhkongyu.lhmiracleroad.items.curio.talisman;
 
-import com.google.common.collect.ImmutableMultimap;
+
 import com.google.common.collect.Multimap;
 import dev.lhkongyu.lhmiracleroad.attributes.LHMiracleRoadAttributes;
-import dev.lhkongyu.lhmiracleroad.items.curio.LHMiracleRoadCurioItem;
-import dev.lhkongyu.lhmiracleroad.items.curio.RingItem;
 import dev.lhkongyu.lhmiracleroad.items.curio.TalismanItem;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import net.minecraft.ChatFormatting;
@@ -17,7 +15,6 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import top.theillusivec4.curios.api.CuriosApi;
@@ -27,7 +24,7 @@ import top.theillusivec4.curios.api.type.inventory.ICurioStacksHandler;
 
 import java.util.*;
 
-public class BigShieldTalisman extends LHMiracleRoadCurioItem {
+public class BigShieldTalisman extends TalismanItem {
 
     private final AttributeModifier attributeModifier;
 

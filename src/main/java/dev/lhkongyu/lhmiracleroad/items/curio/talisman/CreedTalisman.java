@@ -30,7 +30,7 @@ public class CreedTalisman {
 
     public static TalismanItem createCreedTalisman(){
 
-        return new CreedTalismanItem(new Item.Properties().rarity(Rarity.EPIC),null);
+        return new CreedTalismanItem(new Item.Properties().rarity(Rarity.RARE),null);
     }
 
     public static void equipCreedTalisman(LivingEntity livingEntity, ItemStack stack, boolean isEquipCreedTalisman){

@@ -251,10 +251,11 @@ public class ItemEvent {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void itemAttributeModifier(ItemAttributeModifierEvent event) {
         ItemStack stack = event.getItemStack();
-        Item item = stack.getItem();
         CompoundTag gemTag = stack.getTagElement("lh_gem");
-        if (item instanceof ArmorItem armorItem) {
-            if (armorItem.getType().getSlot() != event.getSlotType()) return;
+        if (LHMiracleRoadTool.itemIsArmors(stack)) {
+//            if (stack.getItem() instanceof ArmorItem armorItem) if (armorItem.getType().getSlot() != event.getSlotType()) return;
+//            else if (stack.getItem() instanceof ElytraItem elytraItem) if (elytraItem.getEquipmentSlot() != event.getSlotType()) return;
+            if (stack.getEquipmentSlot() != event.getSlotType()) return;
             //武器附加重量
             ItemPunishmentTool.itemStackAddPunishmentAttribute(stack, event);
 
@@ -279,17 +280,22 @@ public class ItemEvent {
                 StrengthenGem.setRangedWeaponsAttribute(strengthenLV,event,gemTag);
             }
 
+            //宝石强化 工具
+            if (gemTag != null && LHMiracleRoadTool.itemIsTool(stack)) {
+                int strengthenLV = gemTag.getInt("strengthen_lv");
+                StrengthenGem.setToolsAttribute(strengthenLV,event,gemTag);
+            }
+
+            //宝石强化 工具
+            if (gemTag != null && LHMiracleRoadTool.itemIsMagicStaff(stack)) {
+                int strengthenLV = gemTag.getInt("strengthen_lv");
+                StrengthenGem.setMagicStaffAttribute(strengthenLV,event,gemTag);
+            }
+
             //武器质变
             if (gemTag != null) {
                 AttributeGem.setAttributeStrengthen(gemTag, event);
             }
-
-
-        }else if (item instanceof ElytraItem elytraItem && gemTag != null){
-            if (elytraItem.getEquipmentSlot() != event.getSlotType()) return;
-            //宝石强化 鞘翅
-            int strengthenLV = gemTag.getInt("strengthen_lv");
-            StrengthenGem.setGemStrengthenArmorAttribute(strengthenLV,event);
         }
     }
 

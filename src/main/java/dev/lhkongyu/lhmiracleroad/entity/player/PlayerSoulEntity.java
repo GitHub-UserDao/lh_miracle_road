@@ -6,6 +6,7 @@ import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.client.particle.soul.SoulParticleOption;
 import dev.lhkongyu.lhmiracleroad.registry.EntityRegistry;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
+import dev.lhkongyu.lhmiracleroad.tool.SyncTool;
 import dev.lhkongyu.lhmiracleroad.tool.particle.ParticleTool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -170,7 +171,9 @@ public class PlayerSoulEntity extends Entity {
             }
 
             ParticleTool.getSoulParticle((ServerLevel) level, (ServerPlayer) player,soulCount,150,200,this);
+            int pSoulStart = playerOccupationAttribute.getOccupationExperience();
             playerOccupationAttribute.setOccupationExperience(playerOccupationAttribute.getOccupationExperience() + soulCount);
+            SyncTool.synchronizationSoul(playerOccupationAttribute.getOccupationExperience(), (ServerPlayer) player,pSoulStart);
             clean();
         });
     }

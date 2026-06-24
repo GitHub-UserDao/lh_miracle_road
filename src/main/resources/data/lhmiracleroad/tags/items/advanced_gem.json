@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "lhmiracleroad:lightning_gem",
+    "lhmiracleroad:dark_gem",
+    "lhmiracleroad:holy_gem",
+    "lhmiracleroad:soul_gem"
+  ]
+}

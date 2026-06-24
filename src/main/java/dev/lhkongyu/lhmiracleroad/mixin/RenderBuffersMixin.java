@@ -18,7 +18,7 @@ public class RenderBuffersMixin {
 
     @Shadow @Final private SortedMap<RenderType, BufferBuilder> fixedBuffers;
     @Inject(method = "<init>", at = @At("TAIL"))
-    private void injectCustomRenderType(CallbackInfo ci) {
+    private void lh_miracle_road$injectCustomRenderType(CallbackInfo ci) {
         this.fixedBuffers.put(ItemRenderType.getFlameGlint(), new BufferBuilder(ItemRenderType.getFlameGlint().bufferSize()));
         this.fixedBuffers.put(ItemRenderType.getLightningGlint(), new BufferBuilder(ItemRenderType.getLightningGlint().bufferSize()));
         this.fixedBuffers.put(ItemRenderType.getDarkGlint(), new BufferBuilder(ItemRenderType.getDarkGlint().bufferSize()));

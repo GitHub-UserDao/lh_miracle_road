@@ -22,7 +22,7 @@ public abstract class ItemStackMixin {
             at = @At("HEAD"),
             cancellable = true
     )
-    private void injectCustomMaxDamage(CallbackInfoReturnable<Integer> cir) {
+    private void lh_miracle_road$injectCustomMaxDamage(CallbackInfoReturnable<Integer> cir) {
         ItemStack itemStack = ((ItemStack) (Object) this);
         CompoundTag tag = itemStack.getOrCreateTag().getCompound("lh_gem");
         if (tag.contains("max_durability")) {

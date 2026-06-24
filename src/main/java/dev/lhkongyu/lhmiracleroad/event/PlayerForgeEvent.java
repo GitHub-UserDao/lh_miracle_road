@@ -13,6 +13,7 @@ import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.entity.player.PlayerSoulEntity;
 import dev.lhkongyu.lhmiracleroad.generator.SpellDamageTypes;
 import dev.lhkongyu.lhmiracleroad.items.curio.talisman.ConsecratedCombatPlume;
+import dev.lhkongyu.lhmiracleroad.items.curio.talisman.HawkTalisman;
 import dev.lhkongyu.lhmiracleroad.items.curio.talisman.HuntingBowTalisman;
 import dev.lhkongyu.lhmiracleroad.registry.ItemsRegistry;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
@@ -56,10 +57,10 @@ public class PlayerForgeEvent {
      */
     @SubscribeEvent
     public static void playerClone(PlayerEvent.Clone event) {
-        Player player = event.getOriginal();
-        player.reviveCaps();
+        Player oldPlayer = event.getOriginal();
+        oldPlayer.reviveCaps();
 
-        Optional<PlayerOccupationAttribute> optionalPlayerOccupationAttribute = player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).resolve();
+        Optional<PlayerOccupationAttribute> optionalPlayerOccupationAttribute = oldPlayer.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).resolve();
         if (optionalPlayerOccupationAttribute.isEmpty()) return;
         PlayerOccupationAttribute optional = optionalPlayerOccupationAttribute.get();
 
@@ -78,8 +79,9 @@ public class PlayerForgeEvent {
             playerOccupationAttribute.setMaxLevel(optional.getMaxLevel());
             playerOccupationAttribute.setPoints(optional.getPoints());
 
-            SyncTool.synchronizationClient(playerOccupationAttribute, (ServerPlayer) player);
+            SyncTool.synchronizationClient(playerOccupationAttribute, (ServerPlayer) oldPlayer);
         });
+        oldPlayer.invalidateCaps();
     }
 
     /**
@@ -198,6 +200,7 @@ public class PlayerForgeEvent {
     public static void damageAddition(LivingDamageEvent event) {
         if (event.isCanceled()) return;
         Entity directEntity = event.getSource().getEntity();
+        LivingEntity target = event.getEntity();
         if (directEntity instanceof  Player player){
             ItemStack weapon = player.getMainHandItem();
             //魔法伤害加成
@@ -205,9 +208,17 @@ public class PlayerForgeEvent {
                 AttributeInstance magicInstance = player.getAttribute(LHMiracleRoadAttributes.MAGIC_DAMAGE_ADDITION);
                 if (magicInstance != null) {
                     var attribute = ((AttributeInstanceAccess) magicInstance);
-                    float magnification = (float) attribute.computeIncreasedValueForInitial(1 - magicInstance.getBaseValue());
-                    if (LHMiracleRoadTool.isMagicDamage(event.getSource())) magnification = (magnification - 1) * 0.25f + 1;
+                    float magnification = (float) attribute.lh_miracle_road$computeIncreasedValueForInitial(magicInstance.getBaseValue() > 0 ? 0 : 1);
                     float damage = event.getAmount() * magnification;
+                    event.setAmount(damage);
+                }
+            }
+
+            if (LHMiracleRoadTool.isMagic(event.getSource())){
+                AttributeInstance magicInstance = player.getAttribute(LHMiracleRoadAttributes.MAGIC_ATTRIBUTE_DAMAGE);
+                if (magicInstance != null) {
+                    var attribute = ((AttributeInstanceAccess) magicInstance);
+                    float damage = (float) attribute.lh_miracle_road$computeIncreasedValueForInitial(event.getAmount());
                     event.setAmount(damage);
                 }
             }
@@ -215,12 +226,17 @@ public class PlayerForgeEvent {
             //饰品伤害加成
             player.getCapability(PlayerCurioProvider.PLAYER_CURIO_PROVIDER).ifPresent(playerCurio -> {
                 if (playerCurio.isEquipHuntingBowTalisman() && event.getSource().getDirectEntity() instanceof Arrow){
-                    HuntingBowTalisman.damageCount(player,event.getEntity(), event);
+                    HuntingBowTalisman.damageCount(player,target, event);
                 }
 
                 if (playerCurio.isEquipConsecratedCombatPlume()){
                     ConsecratedCombatPlume.damageCount(player, event);
                 }
+
+                if (playerCurio.isEquipHawkTalisman()){
+                    event.setAmount(HawkTalisman.airDamageAdd(player,event.getAmount()));
+                }
+
             });
 
             //伤害加成
@@ -255,15 +271,14 @@ public class PlayerForgeEvent {
             }else if (LHMiracleRoadTool.percentageProbability(criticalHitRate) && !AbnormalTool.isAbnormalDamageTypes(event.getSource())) {
                 float damage = (float) (event.getAmount() * criticalHitDamage);
                 event.setAmount(damage);
-                LivingEntity entity = event.getEntity();
-                int particleCount = (int) (15 * entity.getBbWidth() * entity.getBbHeight()); // 基于实体体积调整粒子数量
+                int particleCount = (int) (15 * target.getBbWidth() * target.getBbHeight()); // 基于实体体积调整粒子数量
                 ServerLevel serverLevel = (ServerLevel) player.level();
-                serverLevel.sendParticles((ServerPlayer) player, ParticleTypes.CRIT, true, entity.getX(), entity.getY() + entity.getBbHeight() * 0.5, entity.getZ(), particleCount, entity.getBbWidth() / 2, entity.getBbHeight() / 2, entity.getBbWidth() / 2,0.2);
-                serverLevel.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.PLAYER_ATTACK_CRIT, SoundSource.PLAYERS, 1.5F, 1.0F);
+                serverLevel.sendParticles((ServerPlayer) player, ParticleTypes.CRIT, true, target.getX(), target.getY() + target.getBbHeight() * 0.5, target.getZ(), particleCount, target.getBbWidth() / 2, target.getBbHeight() / 2, target.getBbWidth() / 2,0.2);
+                serverLevel.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.PLAYER_ATTACK_CRIT, SoundSource.PLAYERS, 1.5F, 1.0F);
             }
 
             if (event.getSource().is(SpellDamageTypes.FLAME_MAGIC)){
-                AbnormalTool.attackAbnormalBurnBuildup(event.getEntity(), player,event.getAmount());
+                AbnormalTool.attackAbnormalBurnBuildup(target, player,event.getAmount());
             }
 
             if (event.getSource().is(SpellDamageTypes.SOUL_MAGIC)) {
@@ -281,7 +296,7 @@ public class PlayerForgeEvent {
         }
 
         //玩家受到伤害最后计算
-        if (event.getEntity() instanceof Player player) {
+        if (target instanceof ServerPlayer player) {
             AttributeInstance attributeInstance = player.getAttribute(LHMiracleRoadAttributes.DAMAGE_REDUCTION);
             if (attributeInstance != null) {
                 double damageReduction = Math.max(1 - attributeInstance.getValue() + 1,0.1);
@@ -296,4 +311,14 @@ public class PlayerForgeEvent {
             });
         }
     }
+
+//    @SubscribeEvent
+//    public static void onArrowLoose(ArrowLooseEvent event) {
+//        Player player = event.getEntity();
+//        AttributeInstance attr = player.getAttribute(LHMiracleRoadAttributes.BOW_MINING_SPEED);
+//        if (attr != null) {
+//            float speed = (float) attr.getValue();
+//            event.setCharge((int) (event.getCharge() * speed));
+//        }
+//    }
 }

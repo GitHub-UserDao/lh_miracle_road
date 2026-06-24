@@ -88,26 +88,6 @@ public class LHMiracleRoadConfig {
 
         public final ForgeConfigSpec.DoubleValue EXP_SHARING_PERCENTAGE;
 
-        public final ForgeConfigSpec.ConfigValue<String> GEMSTONE_STRENGTHEN_ONE;
-
-        public final ForgeConfigSpec.ConfigValue<String> GEMSTONE_STRENGTHEN_TWO;
-
-        public final ForgeConfigSpec.ConfigValue<String> GEMSTONE_STRENGTHEN_THREE;
-
-        public final ForgeConfigSpec.ConfigValue<String> GEMSTONE_STRENGTHEN_FOUR;
-
-        public final ForgeConfigSpec.ConfigValue<String> GEMSTONE_STRENGTHEN_FIVE;
-
-        public final ForgeConfigSpec.ConfigValue<String> GEMSTONE_STRENGTHEN_SIX;
-
-        public final ForgeConfigSpec.ConfigValue<String> GEMSTONE_STRENGTHEN_SEVEN;
-
-        public final ForgeConfigSpec.ConfigValue<String> GEMSTONE_STRENGTHEN_EIGHT;
-
-        public final ForgeConfigSpec.ConfigValue<String> GEMSTONE_STRENGTHEN_NINE;
-
-        public final ForgeConfigSpec.ConfigValue<String> GEMSTONE_STRENGTHEN_TEN;
-
 
         public Common(ForgeConfigSpec.Builder builder) {
             builder.push("base");
@@ -160,51 +140,6 @@ public class LHMiracleRoadConfig {
 
             ENDER_DRAGON_FORGET_WATER_ODDS = builder.comment("The drop rate of 'Forget Water' from Ender Dragon").defineInRange("ender_dragon_forget_water_odds",0.5,0,1.0);
             builder.pop();
-
-            builder.push("gemstone strengthen").comment("CN:每级强化配置").comment("US:Per-level strengthen config");
-            Queue<String> initGemstoneStrengthenList = getinitGemstoneStrengthenQueue();
-            GEMSTONE_STRENGTHEN_ONE = builder
-                    .comment("LV 1")
-                    .define("gemstone_strengthen_one", initGemstoneStrengthenList.poll());
-
-            GEMSTONE_STRENGTHEN_TWO = builder
-                    .comment("LV 2")
-                    .define("gemstone_strengthen_two", initGemstoneStrengthenList.poll());
-
-            GEMSTONE_STRENGTHEN_THREE = builder
-                    .comment("LV 3")
-                    .define("gemstone_strengthen_three", initGemstoneStrengthenList.poll());
-
-            GEMSTONE_STRENGTHEN_FOUR = builder
-                    .comment("LV 4")
-                    .define("gemstone_strengthen_four", initGemstoneStrengthenList.poll());
-
-            GEMSTONE_STRENGTHEN_FIVE = builder
-                    .comment("LV 5")
-                    .define("gemstone_strengthen_five", initGemstoneStrengthenList.poll());
-
-            GEMSTONE_STRENGTHEN_SIX = builder
-                    .comment("LV 6")
-                    .define("gemstone_strengthen_six", initGemstoneStrengthenList.poll());
-
-            GEMSTONE_STRENGTHEN_SEVEN = builder
-                    .comment("LV 7")
-                    .define("gemstone_strengthen_seven", initGemstoneStrengthenList.poll());
-
-            GEMSTONE_STRENGTHEN_EIGHT = builder
-                    .comment("LV 8")
-                    .define("gemstone_strengthen_eight", initGemstoneStrengthenList.poll());
-
-            GEMSTONE_STRENGTHEN_NINE = builder
-                    .comment("LV 9")
-                    .define("gemstone_strengthen_nine", initGemstoneStrengthenList.poll());
-
-            GEMSTONE_STRENGTHEN_TEN = builder
-                    .comment("LV 10")
-                    .define("gemstone_strengthen_ten", initGemstoneStrengthenList.poll());
-
-            builder.pop();
-
         }
 
         private static List<String> initLiegeMobList(){
@@ -255,44 +190,6 @@ public class LHMiracleRoadConfig {
             ordinaryMobList.add("enderman");
             ordinaryMobList.add("blaze");
             ordinaryMobList.add("necromancer");
-            return ordinaryMobList;
-        }
-
-        private static Queue<String> getinitGemstoneStrengthenQueue(){
-            Queue<String> ordinaryMobList = Lists.newLinkedList();
-            Gson gson = new Gson();
-            for (int i = 1; i <= 6; i++) {
-                JsonObject lv = new JsonObject();
-                lv.addProperty("attack", 0.25);
-                lv.addProperty("attack_speed", 0.02);
-                lv.addProperty("ranged", 0.03);
-                lv.addProperty("armor", 0.2);
-                lv.addProperty("armor_toughness", 0.1);
-                if (i > 3) lv.addProperty("durability", 1.25);
-                else lv.addProperty("durability", 1.1);
-                ordinaryMobList.add(gson.toJson(lv));
-            }
-
-            for (int i = 7; i <= 9; i++) {
-                JsonObject lv = new JsonObject();
-                lv.addProperty("attack", 0.25);
-                lv.addProperty("attack_speed", 0.03);
-                lv.addProperty("ranged", 0.04);
-                lv.addProperty("armor", 0.4);
-                lv.addProperty("armor_toughness", 0.2);
-                lv.addProperty("durability", 1.5);
-                ordinaryMobList.add(gson.toJson(lv));
-            }
-
-            JsonObject lv = new JsonObject();
-            lv.addProperty("attack", 0.75);
-            lv.addProperty("attack_speed", 0.04);
-            lv.addProperty("ranged", 0.1);
-            lv.addProperty("armor", 0.6);
-            lv.addProperty("armor_toughness", 0.3);
-            lv.addProperty("durability", 2);
-            ordinaryMobList.add(gson.toJson(lv));
-
             return ordinaryMobList;
         }
     }

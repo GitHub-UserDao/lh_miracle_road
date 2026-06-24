@@ -22,7 +22,7 @@ public abstract class AttributeInstanceMixin implements AttributeInstanceAccess 
 
 	@Override
 	@Unique
-	public double computeIncreasedValueForInitial(double initial) {
+	public double lh_miracle_road$computeIncreasedValueForInitial(double initial) {
 		double value1 = initial + this.getBaseValue();
 		for (AttributeModifier modifier : this.getModifiersOrEmpty(AttributeModifier.Operation.ADDITION)) {
 			value1 += modifier.getAmount();
@@ -39,7 +39,7 @@ public abstract class AttributeInstanceMixin implements AttributeInstanceAccess 
 
 	@Override
 	@Unique
-	public double computeDecreasedValueForInitial(double initial) {
+	public double lh_miracle_road$computeDecreasedValueForInitial(double initial) {
 		double value1 = initial - this.getBaseValue();
 		for (AttributeModifier modifier : this.getModifiersOrEmpty(AttributeModifier.Operation.ADDITION)) {
 			value1 -= modifier.getAmount();

@@ -16,7 +16,7 @@ public class TabsRegistry {
 	public static final RegistryObject<CreativeModeTab> ITEMS = TABS.register("items",
 			() -> CreativeModeTab.builder()
 					.title(Component.translatable("itemGroup.lhmiracleroad.items"))
-					.icon(() -> new ItemStack(ItemsRegistry.DEATH_SOUL.get()))
+					.icon(() -> new ItemStack(ItemsRegistry.MIRACULOUS_TALISMAN.get()))
 					.withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
 					.hideTitle()
 					.displayItems((params, output) -> {

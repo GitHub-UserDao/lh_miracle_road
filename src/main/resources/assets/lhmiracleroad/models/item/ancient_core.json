@@ -1,0 +1,27 @@
+{
+	"format_version": "1.9.0",
+	"credit": "Made with Blockbench",
+	"textures": {
+		"ancient_core": "lhmiracleroad:item/ancient_core"
+	},
+	"elements": [
+		{
+			"from": [4, 3, 4],
+			"to": [12, 11, 12],
+			"rotation": {"angle": 0, "axis": "y", "origin": [4, 3, 4]},
+			"faces": {
+				"north": {"uv": [0, 0, 4, 4], "texture": "#ancient_core"},
+				"east": {"uv": [0, 0, 4, 4], "texture": "#ancient_core"},
+				"south": {"uv": [0, 0, 4, 4], "texture": "#ancient_core"},
+				"west": {"uv": [0, 0, 4, 4], "texture": "#ancient_core"},
+				"up": {"uv": [0, 0, 4, 4], "texture": "#ancient_core"},
+				"down": {"uv": [0, 0, 4, 4], "texture": "#ancient_core"}
+			}
+		}
+	],
+	"display": {
+		"gui": {
+			"rotation": [22.5, 45, 0]
+		}
+	}
+}

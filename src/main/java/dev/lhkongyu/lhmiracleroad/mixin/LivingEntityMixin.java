@@ -6,13 +6,15 @@ import dev.lhkongyu.lhmiracleroad.attributes.LHMiracleRoadAttributes;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.items.curio.ring.RadianceRing;
-import dev.lhkongyu.lhmiracleroad.items.curio.ring.WhisperRing;
+import dev.lhkongyu.lhmiracleroad.items.curio.ring.CatRing;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import dev.lhkongyu.lhmiracleroad.tool.SyncTool;
 import dev.lhkongyu.lhmiracleroad.tool.particle.ParticleTool;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.CombatRules;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -25,10 +27,7 @@ import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -47,7 +46,7 @@ public abstract class LivingEntityMixin {
 	private int entityDroppedXp = 0;
 
 	@ModifyVariable(method = "hurt", at = @At("HEAD"), ordinal = 0, argsOnly = true)
-	private float modifyVariableAtDamage(float damage, DamageSource source) {
+	private float lh_miracle_road$modifyVariableAtDamage(float damage, DamageSource source) {
 		if (damage < 0) {
 			return damage;
 		}
@@ -55,40 +54,48 @@ public abstract class LivingEntityMixin {
 		if (source.getEntity() instanceof Player player) {
 			if (source.is(DamageTypeTags.IS_PROJECTILE)) {
 				var attribute = ((AttributeInstanceAccess) player.getAttribute(LHMiracleRoadAttributes.RANGED_DAMAGE));
-				damage = (float) attribute.computeIncreasedValueForInitial(damage);
-			}
+                if (attribute != null) {
+                    damage = (float) attribute.lh_miracle_road$computeIncreasedValueForInitial(damage);
+                }
+            }
 		}
 		return damage;
 	}
 
 	@ModifyVariable(method = "heal", at = @At("HEAD"), ordinal = 0, argsOnly = true)
-	private float modifyVariableAtHeal(float amount) {
+	private float lh_miracle_road$modifyVariableAtHeal(float amount) {
 		if (amount < 0) {
 			return amount;
 		}
 
 		if (((LivingEntity) (Object) this) instanceof Player player) {
 			var attribute = ((AttributeInstanceAccess) player.getAttribute(LHMiracleRoadAttributes.HEALING));
-			amount = (float) attribute.computeIncreasedValueForInitial(amount);
-		}
+            if (attribute != null) {
+                amount = (float) attribute.lh_miracle_road$computeIncreasedValueForInitial(amount);
+            }
+        }
 		return amount;
 	}
 
 	@Inject(method = "getJumpPower", at = @At("RETURN"), cancellable = true)
-	private void injectAtGetJumpVelocity(CallbackInfoReturnable<Float> cir) {
+	private void lh_miracle_road$injectAtGetJumpVelocity(CallbackInfoReturnable<Float> cir) {
 		if (((LivingEntity) (Object) this) instanceof Player player) {
 			var attribute = ((AttributeInstanceAccess) player.getAttribute(LHMiracleRoadAttributes.JUMP));
-			cir.setReturnValue((float) attribute.computeIncreasedValueForInitial(cir.getReturnValueF()));
-		}
+            if (attribute != null) {
+                cir.setReturnValue((float) attribute.lh_miracle_road$computeIncreasedValueForInitial(cir.getReturnValueF()));
+            }
+        }
 	}
 
 	@ModifyVariable(method = "calculateFallDamage", at = @At("STORE"), ordinal = 2)
-	private float modifyVariableAtComputeFallDamage(float reduction) {
+	private float lh_miracle_road$modifyVariableAtComputeFallDamage(float reduction) {
 		if (((LivingEntity) (Object) this) instanceof Player player) {
 			var attribute = ((AttributeInstanceAccess) player.getAttribute(LHMiracleRoadAttributes.JUMP));
-			reduction += (attribute.computeIncreasedValueForInitial(1.0f) - 1.0f) * 10.0f;
+            if (attribute != null) {
+                reduction += (float) ((attribute.lh_miracle_road$computeIncreasedValueForInitial(1.0f) - 1.0f) * 10.0f);
+            }
 
-			if(WhisperRing.getIsEquipWhisperRing(player)){
+            if(CatRing.getIsEquipCatRing(player)){
 				reduction += 20;
 			}
 		}
@@ -96,7 +103,7 @@ public abstract class LivingEntityMixin {
 	}
 
 	@Inject(method = "dropAllDeathLoot", at = @At("TAIL"))
-	private void injectAtDrop(DamageSource source, CallbackInfo ci) {
+	private void lh_miracle_road$injectAtDrop(DamageSource source, CallbackInfo ci) {
 		int hp = (int) LHMiracleRoadTool.getAttributeValue(this.getAttribute(Attributes.MAX_HEALTH));
 		int atk = (int) LHMiracleRoadTool.getAttributeValue(this.getAttribute(Attributes.ATTACK_DAMAGE));
 		int arm = (int) LHMiracleRoadTool.getAttributeValue(this.getAttribute(Attributes.ARMOR));
@@ -146,13 +153,13 @@ public abstract class LivingEntityMixin {
 	}
 
 	@ModifyArg(method = "dropExperience", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/ExperienceOrb;award(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/phys/Vec3;I)V"), index = 2)
-	private int injectAtDropXp(int droppedXp) {
+	private int lh_miracle_road$injectAtDropXp(int droppedXp) {
 		entityDroppedXp = droppedXp;
 		return droppedXp;
 	}
 
 	@Inject(at = @At(value = "HEAD"), method = "addEffect(Lnet/minecraft/world/effect/MobEffectInstance;Lnet/minecraft/world/entity/Entity;)Z", cancellable = true)
-	private void addEffect(MobEffectInstance p_147208_, Entity p_147209_, CallbackInfoReturnable<Boolean> cir) {
+	private void lh_miracle_road$addEffect(MobEffectInstance p_147208_, Entity p_147209_, CallbackInfoReturnable<Boolean> cir) {
 		if (((LivingEntity) (Object) this) instanceof Player player) {
 			if (RadianceRing.getIsEquipRadianceRing(player)) {
 				if (p_147208_.getEffect().isBeneficial()) return;
@@ -160,6 +167,24 @@ public abstract class LivingEntityMixin {
 				cir.setReturnValue(false);
 			}
 		}
+	}
+
+	@Redirect(method = "getDamageAfterArmorAbsorb",
+			at = @At(value = "INVOKE", target = "Lnet/minecraft/world/damagesource/CombatRules;getDamageAfterAbsorb(FFF)F"))
+	private float lh_miracle_road$armorPenetration(float damage, float armor, float toughness, DamageSource source, float originalDamage) {
+		if (source.getEntity() instanceof LivingEntity attacker) {
+			if (!attacker.level().isClientSide()) {
+				var attribute = ((AttributeInstanceAccess) attacker.getAttribute(LHMiracleRoadAttributes.ARMOR_PENETRATION));
+
+				if (attribute != null) {
+					double penetration = attribute.lh_miracle_road$computeIncreasedValueForInitial(1) - 1;
+					penetration = Mth.clamp(penetration, 0F, 1F);
+					armor *= (float) (1F - penetration);
+				}
+			}
+		}
+
+		return CombatRules.getDamageAfterAbsorb(damage, armor, toughness);
 	}
 }
 

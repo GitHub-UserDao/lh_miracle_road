@@ -55,6 +55,12 @@ public class PlayerChannel {
                 .encoder(ClientPromptMessage::encode)
                 .consumerMainThread(ClientPromptMessage::handle)
                 .add();
+
+        channel.messageBuilder(AbyssbindActivatePacket.class, 7,NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(AbyssbindActivatePacket::encode)
+                .decoder(AbyssbindActivatePacket::new)
+                .consumerMainThread(AbyssbindActivatePacket::handle)
+                .add();
     }
 
     public static <MSG> void sendToServer(MSG msg) {

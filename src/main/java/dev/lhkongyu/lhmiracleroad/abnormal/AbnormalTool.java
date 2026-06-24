@@ -61,12 +61,12 @@ public class AbnormalTool {
     public static int getBurnMaxBuildup(float hp){
         int node = 20;
 
-        if (hp <= 20) return 10;
+        if (hp <= 20) return 14;
 
-        int buildup = 10;
+        int buildup = 16;
         int stages = Math.max(0, (int)((hp - 20) / node));
         for (int i = 0; i < stages; i++) {
-            buildup += Math.max(2, (node - 8) - ((i + 1) * 2));
+            buildup += Math.max(2, (node - 6) - ((i + 1) * 2));
         }
         return buildup;
     }
@@ -119,7 +119,19 @@ public class AbnormalTool {
 
     public static void attackAbnormalBurnBuildup(LivingEntity target,LivingEntity source,float amount) {
         if (amount > 0){
-            amount = abnormalBuildupRaise(amount,source);
+            if (source instanceof Player player) {
+                AttributeInstance abnormalBurnAttributeInstance = player.getAttribute(LHMiracleRoadAttributes.ABNORMAL_BURN_BUILDUP);
+                if (abnormalBurnAttributeInstance != null) {
+                    AttributeInstanceAccess abnormalBurnInstanceAccess = ((AttributeInstanceAccess) abnormalBurnAttributeInstance);
+                    float accessDamage = (float) abnormalBurnInstanceAccess.lh_miracle_road$computeIncreasedValueForInitial(1);
+                    amount = amount * accessDamage;
+                }
+
+                AttributeInstance abnormalAttributeInstance = player.getAttribute(LHMiracleRoadAttributes.ABNORMAL_BUILDUP);
+                if (abnormalAttributeInstance != null) {
+                    amount = (float) (amount * abnormalAttributeInstance.getValue());
+                }
+            }
             int maxBuildup = AbnormalTool.getBurnMaxBuildup(target.getMaxHealth());
             setAbnormalBuildup(AbnormalType.BURN,amount,maxBuildup,target,source);
         }

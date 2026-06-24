@@ -7,5 +7,7 @@
     "lhmiracleroad:hammer_iron",
     "lhmiracleroad:hammer_netherite",
     "lhmiracleroad:hammer_ancient"
+  ],
+  "optional": [
   ]
 }

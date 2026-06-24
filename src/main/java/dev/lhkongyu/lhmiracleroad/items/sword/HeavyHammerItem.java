@@ -2,7 +2,6 @@ package dev.lhkongyu.lhmiracleroad.items.sword;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
-import dev.lhkongyu.lhmiracleroad.registry.EnchantmentRegistry;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -14,6 +13,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraftforge.common.ForgeMod;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
@@ -75,7 +75,6 @@ public class HeavyHammerItem extends TieredItem {
     public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
 
         // 通用允许
-
         if (enchantment == Enchantments.MENDING) {
             return true;
         }
@@ -84,11 +83,27 @@ public class HeavyHammerItem extends TieredItem {
             return true;
         }
 
-//        if (enchantment == EnchantmentRegistry.SHOCKWAVE.get()) {
-//            return true;
-//        }
+        if (enchantment == Enchantments.MOB_LOOTING) {
+            return true;
+        }
 
-        return false;
+        if (enchantment == Enchantments.FIRE_ASPECT) {
+            return true;
+        }
+
+        if (enchantment == Enchantments.KNOCKBACK) {
+            return true;
+        }
+
+        if (enchantment == Enchantments.SHARPNESS) {
+            return true;
+        }
+
+        if (enchantment == Enchantments.SMITE) {
+            return true;
+        }
+
+        return enchantment == Enchantments.BANE_OF_ARTHROPODS;
     }
 
     @Override
@@ -100,7 +115,14 @@ public class HeavyHammerItem extends TieredItem {
         for (Enchantment enchantment : enchants.keySet()) {
 
 //            && enchantment != EnchantmentRegistry.SHOCKWAVE.get()
-            if (enchantment != Enchantments.MENDING && enchantment != Enchantments.UNBREAKING ) {
+            if (enchantment != Enchantments.MENDING
+                    && enchantment != Enchantments.UNBREAKING
+                    && enchantment != Enchantments.MOB_LOOTING
+                    && enchantment != Enchantments.FIRE_ASPECT
+                    && enchantment != Enchantments.KNOCKBACK
+                    && enchantment != Enchantments.SHARPNESS
+                    && enchantment != Enchantments.SMITE
+                    && enchantment != Enchantments.BANE_OF_ARTHROPODS) {
                 return false;
             }
         }

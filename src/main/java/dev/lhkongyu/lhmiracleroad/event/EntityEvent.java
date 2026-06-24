@@ -11,27 +11,37 @@ import dev.lhkongyu.lhmiracleroad.capability.PlayerCurioProvider;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.entity.player.PlayerSoulEntity;
 import dev.lhkongyu.lhmiracleroad.generator.SpellDamageTypes;
+import dev.lhkongyu.lhmiracleroad.items.curio.bracelet.AbyssbindBracelet;
 import dev.lhkongyu.lhmiracleroad.items.curio.talisman.HeartOfBloodLust;
 import dev.lhkongyu.lhmiracleroad.items.gem.AttributeGem;
+import dev.lhkongyu.lhmiracleroad.packet.AbyssbindActivatePacket;
+import dev.lhkongyu.lhmiracleroad.packet.PlayerChannel;
+import dev.lhkongyu.lhmiracleroad.registry.ParticleRegistry;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import dev.lhkongyu.lhmiracleroad.tool.NameTool;
 import dev.lhkongyu.lhmiracleroad.tool.SyncTool;
+import dev.lhkongyu.lhmiracleroad.tool.particle.ParticleTool;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
+import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Mod.EventBusSubscriber(modid = LHMiracleRoad.MODID,bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class EntityEvent {
@@ -56,19 +66,69 @@ public class EntityEvent {
             });
         }
 
-        if (entity instanceof Player player){
-            if (LHMiracleRoadConfig.COMMON.SOUL_LOSS_COUNT.get() >= 1 || LHMiracleRoadConfig.COMMON.SOUL_LOSS_COUNT.get() < 0) return;
-            Level level = player.level();
-            if (LHMiracleRoadConfig.COMMON.DARK_SOUL.get()) {
-                PlayerSoulEntity oldSoul = LHMiracleRoadTool.SOUL_ENTITY_MAP.get(player.getUUID());
-                if (oldSoul != null && oldSoul.isAlive()) {
-                    oldSoul.discard();
+        if (entity instanceof ServerPlayer player){
+            if (AbyssbindBracelet.getIsEquipAbyssbindBracelet(player)){
+                // 消耗饰品
+                AbyssbindBracelet.consume(player);
+                // 取消死亡并回血
+                event.setCanceled(true);
+                player.setHealth(player.getMaxHealth() * 0.3f);
+                // 清除负面效果
+                List<MobEffectInstance> list = new ArrayList<>(player.getActiveEffects());
+                for (MobEffectInstance effect : list) {
+                    if (effect.getEffect().isBeneficial())
+                        continue;
+                    player.removeEffect(effect.getEffect());
                 }
-            }
+                player.setTicksFrozen(0);
+                player.clearFire();
 
-            PlayerSoulEntity playerSoulEntity = new PlayerSoulEntity(level,player);
-            playerSoulEntity.setPos(player.position().add(0,1.5,0));
-            level.addFreshEntity(playerSoulEntity);
+                //生命回复2、抗火、伤害吸收1
+                player.addEffect(new MobEffectInstance(
+                        MobEffects.REGENERATION,
+                        20 * 5,
+                        1
+                ));
+                player.addEffect(new MobEffectInstance(
+                        MobEffects.FIRE_RESISTANCE,
+                        20 * 5,
+                        0
+                ));
+                player.addEffect(new MobEffectInstance(
+                        MobEffects.ABSORPTION,
+                        20 * 60,
+                        0
+                ));
+
+                // 传送回重生点
+                LHMiracleRoadTool.teleportToRespawn(player);
+                ParticleTool.nearbyPlayers(player.level(), player.getX(), player.getY(), player.getZ()).forEach(serverPlayer -> {
+                    for (int i = 0; i < 40; i++) {
+                        ((ServerLevel)player.level()).sendParticles(
+                                serverPlayer,
+                                (SimpleParticleType) ParticleRegistry.DARK.get(),
+                                true,
+                                serverPlayer.getRandomX(0.5), serverPlayer.getRandomY(),
+                                serverPlayer.getRandomZ(0.5),
+                                1, 0, 0.15, 0, 0.075);
+                    }
+                });
+                PlayerChannel.sendToClient(new AbyssbindActivatePacket(), player);
+            }else {
+                if (LHMiracleRoadConfig.COMMON.SOUL_LOSS_COUNT.get() >= 1 || LHMiracleRoadConfig.COMMON.SOUL_LOSS_COUNT.get() < 0)
+                    return;
+                Level level = player.level();
+                if (LHMiracleRoadConfig.COMMON.DARK_SOUL.get()) {
+                    PlayerSoulEntity oldSoul = LHMiracleRoadTool.SOUL_ENTITY_MAP.get(player.getUUID());
+                    if (oldSoul != null && oldSoul.isAlive()) {
+                        oldSoul.discard();
+                    }
+                }
+
+                PlayerSoulEntity playerSoulEntity = new PlayerSoulEntity(level, player);
+                playerSoulEntity.setPos(player.position().add(0, 1.5, 0));
+                level.addFreshEntity(playerSoulEntity);
+            }
         }
     }
 
@@ -144,9 +204,9 @@ public class EntityEvent {
 
         if (!NameTool.HOLY.equals(type)) return;
 
-        // 回复1颗爱心(2点生命)
+        // 回复血量
         if (entity.getHealth() < entity.getMaxHealth()) {
-            entity.heal(2.0F);
+            entity.heal(1.0F + Math.max((float) ((int) entity.getMaxHealth() * 0.02),1f));
         }
     }
 

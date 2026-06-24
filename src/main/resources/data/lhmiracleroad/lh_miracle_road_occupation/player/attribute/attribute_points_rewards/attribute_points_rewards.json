@@ -340,15 +340,15 @@
         {
           "attribute": "abnormal_damage",
           "value": 0.005,
-          "level_promote": 45,
-          "level_promote_value": -0.0025,
+          "level_promote": 35,
+          "level_promote_value": -0.0015,
           "operation": "multiply_base",
-          "min": 0.0025
+          "min": 0.0015
         },
         {
           "attribute": "abnormal_buildup",
           "value": 0.015,
-          "level_promote": 25,
+          "level_promote": 35,
           "level_promote_value": -0.0025,
           "operation": "multiply_base",
           "min": 0.005

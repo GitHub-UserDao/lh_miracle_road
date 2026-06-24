@@ -10,8 +10,7 @@ public class GuiGraphicsFake {
     public static void blit(PoseStack pose, int x, int y, int u, int v, int width, int height, int texWidth, int texHeight) {
         Matrix4f matrix = pose.last().pose();
 
-        BufferBuilder buffer = Tesselator.getInstance()
-                        .getBuilder();
+        BufferBuilder buffer = Tesselator.getInstance().getBuilder();
 
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
 

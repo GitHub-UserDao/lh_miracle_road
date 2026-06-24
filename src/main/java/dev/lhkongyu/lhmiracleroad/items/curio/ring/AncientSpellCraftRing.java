@@ -22,8 +22,7 @@ public class AncientSpellCraftRing {
 
     public static RingItem addAttributeModifier(){
         ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
-        builder.put(LHMiracleRoadAttributes.DAMAGE_ADDITION, new AttributeModifier(UUID.fromString("d051e99d-c3ea-56dc-b6cb-f60f5623322e"), "", .16, AttributeModifier.Operation.MULTIPLY_BASE));
-        builder.put(LHMiracleRoadAttributes.MAGIC_DAMAGE_ADDITION, new AttributeModifier(UUID.fromString("382fa8b3-8cbe-ae9b-4945-6bb58e894f2f"), "", .10, AttributeModifier.Operation.MULTIPLY_BASE));
+        builder.put(LHMiracleRoadAttributes.MAGIC_DAMAGE_ADDITION, new AttributeModifier(UUID.fromString("382fa8b3-8cbe-ae9b-4945-6bb58e894f2f"), "", .14, AttributeModifier.Operation.MULTIPLY_BASE));
 
         if (LHMiracleRoadTool.isModExist("irons_spellbooks")) {
             Map<UUID,String> attributeNameMap = new LinkedHashMap<>();
@@ -38,7 +37,7 @@ public class AncientSpellCraftRing {
                         .orElse(null);
                 Attribute instanceAttribute = ForgeRegistries.ATTRIBUTES.getValue(resourceLocation);
                 if (instanceAttribute != null) {
-                    builder.put(instanceAttribute, new AttributeModifier(key, "", .10, AttributeModifier.Operation.MULTIPLY_BASE));
+                    builder.put(instanceAttribute, new AttributeModifier(key, "", .14, AttributeModifier.Operation.MULTIPLY_BASE));
                 }
             }
         }

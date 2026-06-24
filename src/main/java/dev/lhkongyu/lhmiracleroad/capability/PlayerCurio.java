@@ -9,7 +9,7 @@ public class PlayerCurio {
 
     private boolean isEquipRadianceRing = false;
 
-    private boolean isEquipWhisperRing = false;
+    private boolean isEquipCatRing = false;
 
     private boolean isEquipHunterMark = false;
 
@@ -20,6 +20,10 @@ public class PlayerCurio {
     private boolean isEquipSpanningWings = false;
 
     private boolean isEquipHeartOfBloodLust = false;
+
+    private boolean isEquipHawkTalisman = false;
+
+    private boolean isEquipAbyssbindBracelet = false;
 
     private int hunterMarkKillAmount = 0;
 
@@ -33,12 +37,12 @@ public class PlayerCurio {
         isEquipRadianceRing = equipRadianceRing;
     }
 
-    public boolean isEquipWhisperRing() {
-        return isEquipWhisperRing;
+    public boolean isEquipCatRing() {
+        return isEquipCatRing;
     }
 
-    public void setEquipWhisperRing(boolean equipWhisperRing) {
-        isEquipWhisperRing = equipWhisperRing;
+    public void setEquipCatRing(boolean equipCatRing) {
+        isEquipCatRing = equipCatRing;
     }
 
     public boolean isEquipHunterMark() {
@@ -81,6 +85,22 @@ public class PlayerCurio {
         isEquipHeartOfBloodLust = equipHeartOfBloodLust;
     }
 
+    public boolean isEquipHawkTalisman() {
+        return isEquipHawkTalisman;
+    }
+
+    public void setEquipHawkTalisman(boolean equipHawkTalisman) {
+        isEquipHawkTalisman = equipHawkTalisman;
+    }
+
+    public boolean isEquipAbyssbindBracelet() {
+        return isEquipAbyssbindBracelet;
+    }
+
+    public void setEquipAbyssbindBracelet(boolean equipAbyssbindBracelet) {
+        isEquipAbyssbindBracelet = equipAbyssbindBracelet;
+    }
+
     public int getHunterMarkKillAmount() {
         return hunterMarkKillAmount;
     }
@@ -107,23 +127,27 @@ public class PlayerCurio {
 
     public void saveNBTData(CompoundTag compoundTag){
         compoundTag.putBoolean("isEquipRadianceRing",isEquipRadianceRing);
-        compoundTag.putBoolean("isEquipWhisperRing",isEquipWhisperRing);
+        compoundTag.putBoolean("isEquipCatRing",isEquipCatRing);
         compoundTag.putBoolean("isEquipHunterMark",isEquipHunterMark);
         compoundTag.putBoolean("isEquipHuntingBowTalisman",isEquipHuntingBowTalisman);
         compoundTag.putBoolean("isEquipConsecratedCombatPlume",isEquipConsecratedCombatPlume);
         compoundTag.putBoolean("isEquipSpanningWings",isEquipSpanningWings);
         compoundTag.putBoolean("isEquipHeartOfBloodLust",isEquipHeartOfBloodLust);
+        compoundTag.putBoolean("isEquipHawkTalisman",isEquipHawkTalisman);
+        compoundTag.putBoolean("isEquipAbyssbindBracelet",isEquipAbyssbindBracelet);
         compoundTag.putInt("hunterMarkKillAmount",hunterMarkKillAmount);
     }
 
     public void loadNBTData(CompoundTag compoundTag){
         isEquipRadianceRing = compoundTag.getBoolean("isEquipRadianceRing");
-        isEquipWhisperRing = compoundTag.getBoolean("isEquipWhisperRing");
+        isEquipCatRing = compoundTag.getBoolean("isEquipCatRing");
         isEquipHunterMark = compoundTag.getBoolean("isEquipHunterMark");
         isEquipHuntingBowTalisman = compoundTag.getBoolean("isEquipHuntingBowTalisman");
         isEquipConsecratedCombatPlume = compoundTag.getBoolean("isEquipConsecratedCombatPlume");
         isEquipSpanningWings = compoundTag.getBoolean("isEquipSpanningWings");
         isEquipHeartOfBloodLust = compoundTag.getBoolean("isEquipHeartOfBloodLust");
+        isEquipHawkTalisman = compoundTag.getBoolean("isEquipHawkTalisman");
+        isEquipAbyssbindBracelet = compoundTag.getBoolean("isEquipAbyssbindBracelet");
         hunterMarkKillAmount = compoundTag.getInt("hunterMarkKillAmount");
     }
 }

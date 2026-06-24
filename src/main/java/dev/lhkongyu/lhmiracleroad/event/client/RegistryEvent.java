@@ -15,11 +15,14 @@ import dev.lhkongyu.lhmiracleroad.entity.renderer.LightningBoltRenderer;
 import dev.lhkongyu.lhmiracleroad.entity.renderer.PlayerSoulRenderer;
 import dev.lhkongyu.lhmiracleroad.client.particle.soul.SoulParticle;
 import dev.lhkongyu.lhmiracleroad.registry.EntityRegistry;
+import dev.lhkongyu.lhmiracleroad.registry.ItemsRegistry;
 import dev.lhkongyu.lhmiracleroad.registry.ParticleRegistry;
 import dev.lhkongyu.lhmiracleroad.client.screen.overlay.SoulHudOverlay;
+import dev.lhkongyu.lhmiracleroad.items.trophy.TrophyDecorator;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
+import net.minecraftforge.client.event.RegisterItemDecorationsEvent;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -70,5 +73,17 @@ public class RegistryEvent {
     public static void registerGuiOverlays(RegisterGuiOverlaysEvent event) {
         // 在这里注册到右下角（HUD 之上）
         event.registerAboveAll("soul_hud", new SoulHudOverlay());
+    }
+
+    @SubscribeEvent
+    public static void registerItemDecorations(RegisterItemDecorationsEvent event) {
+
+        TrophyDecorator decorator = new TrophyDecorator();
+
+        event.register(ItemsRegistry.COMMON_TROPHY.get(), decorator);
+        event.register(ItemsRegistry.EXQUISITE_TROPHY.get(), decorator);
+        event.register(ItemsRegistry.RARE_TROPHY.get(), decorator);
+        event.register(ItemsRegistry.EPIC_TROPHY.get(), decorator);
+        event.register(ItemsRegistry.LEGEND_TROPHY.get(), decorator);
     }
 }

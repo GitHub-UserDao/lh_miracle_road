@@ -13,11 +13,9 @@ import dev.lhkongyu.lhmiracleroad.registry.ItemsRegistry;
 import dev.lhkongyu.lhmiracleroad.registry.ParticleRegistry;
 import dev.lhkongyu.lhmiracleroad.tool.*;
 import dev.lhkongyu.lhmiracleroad.tool.particle.ParticleTool;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
@@ -30,11 +28,9 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.ItemAttributeModifierEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import org.joml.Vector3f;
 
 import java.util.Map;
@@ -68,8 +64,8 @@ public class AttributeGem {
 
     private static void setAttribute(ItemAttributeModifierEvent event,double bonusAttack,double attack,
                                         UUID attributeUUID,UUID attackUUID,String name,Attribute attribute){
-       if (LHMiracleRoadTool.itemIsRangedWeapons(event.getItemStack())) {
-           bonusAttack = bonusAttack * 2 + 1;
+        if (LHMiracleRoadTool.itemIsRangedWeapons(event.getItemStack())) {
+           bonusAttack = bonusAttack + 2;
             event.addModifier(attribute,
                     new AttributeModifier(attributeUUID, "lh_gem_" + name, bonusAttack, AttributeModifier.Operation.ADDITION));
         }else {
@@ -82,6 +78,20 @@ public class AttributeGem {
        }
     }
 
+    private static void setAbnormal(ItemAttributeModifierEvent event,double abnormalValue,
+                                     UUID abnormalUUID,UUID attackUUID,String name,Attribute attribute){;
+        if (LHMiracleRoadTool.itemIsRangedWeapons(event.getItemStack())) {
+            event.addModifier(attribute,
+                    new AttributeModifier(abnormalUUID, "lh_gem_" + name, abnormalValue, AttributeModifier.Operation.ADDITION));
+            event.addModifier(LHMiracleRoadAttributes.RANGED_DAMAGE,
+                    new AttributeModifier(attackUUID, "lh_gem_ranged_" + name, -0.1, AttributeModifier.Operation.MULTIPLY_TOTAL));
+        }else {
+            event.addModifier(attribute, new AttributeModifier(abnormalUUID, "lh_gem_" + name, abnormalValue, AttributeModifier.Operation.ADDITION));
+            event.addModifier(Attributes.ATTACK_DAMAGE,
+                    new AttributeModifier(attackUUID, "lh_gem_attack_" + name, -1, AttributeModifier.Operation.ADDITION));
+        }
+    }
+
     /**
      * 根据攻击速度计算异常状态积累值
      * @param attackSpeed 攻击速度值
@@ -90,19 +100,19 @@ public class AttributeGem {
     private static int calculateAbnormalValue(double attackSpeed,ItemStack itemStack) {
         // 基准满性能值
         int fullPerformance = 38;
-        if (LHMiracleRoadTool.itemIsRangedWeapons(itemStack)) return (int) (fullPerformance * 0.8);
-        if (attackSpeed <= 0.8){
-            // 0.8 及以下：更高性能
+        if (LHMiracleRoadTool.itemIsRangedWeapons(itemStack)) return (int) (fullPerformance * 0.85);
+        if (attackSpeed <= 0.6){
+            // 0.6 及以下：更高性能
             return 42;
-        } else if (attackSpeed <= 1.2) {
-            // 0.8 - 1.2 满性能
+        } else if (attackSpeed <= 1) {
+            // 0.6 - 1 满性能
             return fullPerformance;
         } else if (attackSpeed <= 1.6) {
-            // 1.2 - 1.6：性能下降 20%
-            return (int) (fullPerformance * 0.8);
+            // 1 - 1.6：性能下降 15%
+            return (int) (fullPerformance * 0.85);
         }else if (attackSpeed <= 2.0){
-            // 1.6 - 2.0：性能下降 30%
-            return (int) (fullPerformance * 0.7);
+            // 1.6 - 2.0：性能下降 25%
+            return (int) (fullPerformance * 0.75);
         }else if (attackSpeed <= 2.4){
             // 2.0 - 2.4：性能下降 40%
             return (int) (fullPerformance * 0.6);
@@ -123,7 +133,7 @@ public class AttributeGem {
         UUID abnormalUUID = UUID.fromString("4f57bcf7-9775-4176-984b-b59786d16b10");
 
         double convertValue = 1;
-        double bonusAttack =  2;
+        double bonusAttack =  3;
         double baseAttackSpeed = 4;
 
         Multimap<Attribute, AttributeModifier> modifiers = event.getModifiers();
@@ -154,25 +164,24 @@ public class AttributeGem {
                     NameTool.LIGHTNING_ATTRIBUTE_DAMAGE,LHMiracleRoadAttributes.LIGHTNING_ATTRIBUTE_DAMAGE);
             case NameTool.DARK -> setAttribute(event,bonusAttack,attack,attributeUUID,attackUUID,
                     NameTool.DARK_ATTRIBUTE_DAMAGE,LHMiracleRoadAttributes.DARK_ATTRIBUTE_DAMAGE);
-            case NameTool.BLOOD -> event.addModifier(LHMiracleRoadAttributes.ABNORMAL_BLEED_BUILDUP,
-                        new AttributeModifier(abnormalUUID, "lh_gem_abnormal_" + NameTool.ABNORMAL_BLEED_BUILDUP, abnormalValue, AttributeModifier.Operation.ADDITION));
-            case NameTool.POISON -> event.addModifier(LHMiracleRoadAttributes.ABNORMAL_POISON_BUILDUP,
-                        new AttributeModifier(abnormalUUID, "lh_gem_abnormal_" + NameTool.ABNORMAL_POISON_BUILDUP, abnormalValue, AttributeModifier.Operation.ADDITION));
-            case NameTool.ICE -> {
-                setAttribute(event,bonusAttack,attack,attributeUUID,attackUUID,
-                        NameTool.MAGIC_ATTRIBUTE_DAMAGE,LHMiracleRoadAttributes.MAGIC_ATTRIBUTE_DAMAGE);
-
-                event.addModifier(LHMiracleRoadAttributes.ABNORMAL_FROST_BUILDUP,
-                        new AttributeModifier(abnormalUUID, "lh_gem_abnormal_" + NameTool.ABNORMAL_FROST_BUILDUP, abnormalValue, AttributeModifier.Operation.ADDITION));
-            }
+            case NameTool.BLOOD -> setAbnormal(event,abnormalValue,abnormalUUID,attackUUID,
+                    NameTool.ABNORMAL_BLEED_BUILDUP,LHMiracleRoadAttributes.ABNORMAL_BLEED_BUILDUP);
+            case NameTool.POISON -> setAbnormal(event,abnormalValue,abnormalUUID,attackUUID,
+                    NameTool.ABNORMAL_POISON_BUILDUP,LHMiracleRoadAttributes.ABNORMAL_POISON_BUILDUP);
+            case NameTool.ICE -> setAbnormal(event,abnormalValue,abnormalUUID,attackUUID,
+                    NameTool.ABNORMAL_FROST_BUILDUP,LHMiracleRoadAttributes.ABNORMAL_FROST_BUILDUP);
             case NameTool.HOLY -> setAttribute(event,bonusAttack,attack,attributeUUID,attackUUID,
                     NameTool.HOLY_ATTRIBUTE_DAMAGE,LHMiracleRoadAttributes.HOLY_ATTRIBUTE_DAMAGE);
             case NameTool.SOUL -> setAttribute(event,bonusAttack,attack,attributeUUID,attackUUID,
                     NameTool.SOUL_ATTRIBUTE_DAMAGE,LHMiracleRoadAttributes.SOUL_ATTRIBUTE_DAMAGE);
             case NameTool.HEAVY -> event.addModifier(Attributes.ATTACK_DAMAGE,
                         new AttributeModifier(attackUUID, "lh_gem_attack_" + NameTool.HEAVY, 0.2, AttributeModifier.Operation.MULTIPLY_BASE));
-            case NameTool.SHARP -> event.addModifier(Attributes.ATTACK_SPEED,
-                        new AttributeModifier(attackUUID, "lh_gem_attack_" + NameTool.SHARP, 0.2, AttributeModifier.Operation.MULTIPLY_BASE));
+            case NameTool.SHARP ->{
+//                event.addModifier(Attributes.ATTACK_SPEED,
+//                        new AttributeModifier(attackUUID, "lh_gem_attack_" + NameTool.SHARP, 0.2, AttributeModifier.Operation.MULTIPLY_BASE));
+                event.addModifier(LHMiracleRoadAttributes.ARMOR_PENETRATION,
+                        new AttributeModifier(UUID.fromString("51a1025f-9761-45a1-a7df-af693c77b858"), "lh_gem_armor_penetration_" + NameTool.SHARP, 0.3, AttributeModifier.Operation.MULTIPLY_BASE));
+            }
         }
     }
 
@@ -181,7 +190,6 @@ public class AttributeGem {
         return switch (type) {
             case NameTool.SHARP -> 3;
             case NameTool.HEAVY -> 2;
-            case NameTool.POISON, NameTool.BLOOD -> 1;
             default -> 0;
         };
     }
@@ -201,11 +209,14 @@ public class AttributeGem {
         float attributeInstanceDamage = .0f;
         var attribute = ((AttributeInstanceAccess) attributeInstance);
         if (attribute != null) {
-            attributeInstanceDamage = (float) attribute.computeIncreasedValueForInitial(0);
+            attributeInstanceDamage = (float) attribute.lh_miracle_road$computeIncreasedValueForInitial(0);
         }
 
         if (attributeInstanceDamage > 0) {
 //            hurtEvent.invulnerableTime = 0;
+            if (resourceKey.equals(SpellDamageTypes.FLAME_MAGIC)){
+                target.setRemainingFireTicks(10);
+            }
             LHMiracleRoadTool.attackMagicHurt(source,target,resourceKey,attributeInstanceDamage);
 
             if (resourceKey.equals(SpellDamageTypes.LIGHTNING_MAGIC)){

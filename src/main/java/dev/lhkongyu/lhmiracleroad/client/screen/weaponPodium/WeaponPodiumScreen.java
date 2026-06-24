@@ -89,6 +89,7 @@ public class WeaponPodiumScreen extends ItemCombinerScreen<WeaponPodiumMenu> {
             case NOT_METAMORPHOSIS -> msg = Component.translatable("tooltip.lhmiracleroad.weapon_podium.not_metamorphosis");
             case REPEAT_METAMORPHOSIS -> msg = Component.translatable("tooltip.lhmiracleroad.weapon_podium.repeat_metamorphosis");
             case SOUL_NOT_SUFFICIENT -> msg = Component.translatable("tooltip.lhmiracleroad.weapon_podium.soul_not_sufficient");
+            case HAMMER_NETHERITE -> msg = Component.translatable("tooltip.lhmiracleroad.weapon_podium.hammer_netherite");
             case NONE -> {
                 return;
             }

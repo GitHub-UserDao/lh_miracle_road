@@ -1,6 +1,5 @@
 package dev.lhkongyu.lhmiracleroad.items.curio;
 
-import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import dev.lhkongyu.lhmiracleroad.items.curio.ring.*;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
@@ -9,23 +8,22 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import top.theillusivec4.curios.api.SlotContext;
-import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
 import java.util.List;
-import java.util.UUID;
 
 public class RingItem extends LHMiracleRoadCurioItem{
+
+    @Override
+    public String getCurioName() {
+        return "ring";
+    }
 
     public RingItem(Properties properties, Multimap<Attribute, AttributeModifier> defaultModifiers) {
         super(properties,defaultModifiers);
@@ -45,7 +43,7 @@ public class RingItem extends LHMiracleRoadCurioItem{
         Item item = stack.getItem();
         switch (item.getDescriptionId()) {
             case "item.lhmiracleroad.radiance_ring" -> RadianceRing.resettingEffect(slotContext.entity());
-            case "item.lhmiracleroad.whisper_ring" -> WhisperRing.equipWhisperRing(slotContext.entity(),true);
+            case "item.lhmiracleroad.cat_ring" -> CatRing.equipCatRing(slotContext.entity(),true);
         }
     }
 
@@ -54,7 +52,7 @@ public class RingItem extends LHMiracleRoadCurioItem{
         Item item = stack.getItem();
         switch (item.getDescriptionId()) {
             case "item.lhmiracleroad.radiance_ring" -> RadianceRing.equipRadianceRing(slotContext.entity(),false);
-            case "item.lhmiracleroad.whisper_ring" -> WhisperRing.equipWhisperRing(slotContext.entity(),false);
+            case "item.lhmiracleroad.cat_ring" -> CatRing.equipCatRing(slotContext.entity(),false);
         }
     }
 

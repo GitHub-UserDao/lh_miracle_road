@@ -6,7 +6,9 @@ import dev.lhkongyu.lhmiracleroad.capability.ItemStackPunishmentAttributeProvide
 import dev.lhkongyu.lhmiracleroad.capability.PlayerCurioProvider;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.command.GetPlayerOccupationLevelCommand;
+import dev.lhkongyu.lhmiracleroad.config.strengthen.StrengthenConfig;
 import dev.lhkongyu.lhmiracleroad.tool.data.SynchronizationData;
+import dev.lhkongyu.lhmiracleroad.items.trophy.TrophyManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -17,6 +19,7 @@ import net.minecraftforge.event.OnDatapackSyncEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 /**
  * register event 注册事件
@@ -76,10 +79,11 @@ public class RegisterEvent {
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
     private static class ModRegisterEvent {
 
-//        @SubscribeEvent
-//        public static void onCommonSetup(FMLCommonSetupEvent event) {
-//            System.err.println(1);
-//        }
+        @SubscribeEvent
+        public static void onCommonSetup(FMLCommonSetupEvent event) {
+            TrophyManager.load();
+            StrengthenConfig.load();
+        }
     }
 
 }

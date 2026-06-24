@@ -117,6 +117,10 @@ public class WeaponPodiumMenu extends ItemCombinerMenu {
             error = WeaponPodiumError.HAMMER_LEVEL_LOW;
             resultSlots.setItem(0, ItemStack.EMPTY);
             return;
+        }else if (gemItemStack.is(TagsRegistry.ADVANCED_GEM) && hammerItemStack.is(ItemsRegistry.HAMMER_NETHERITE.get())){
+            error = WeaponPodiumError.HAMMER_LEVEL_LOW;
+            resultSlots.setItem(0, ItemStack.EMPTY);
+            return;
         }
 
         //根据宝石进行强化
@@ -158,7 +162,7 @@ public class WeaponPodiumMenu extends ItemCombinerMenu {
                 return;
             }
 
-            result = StrengthenGem.strengthen(baseItemStack,gemItemStack);
+            result = StrengthenGem.strengthen(baseItemStack);
         }else if (gemItemStack.is(TagsRegistry.GEM)) {
             //判断是否属于武器
             if (!LHMiracleRoadTool.itemIsWeaponsAll(baseItemStack)) {
@@ -183,6 +187,25 @@ public class WeaponPodiumMenu extends ItemCombinerMenu {
             }
 
             result = AttributeGem.attributeStrengthen(baseItemStack,gemItemStack);
+        }else if (gemItemStack.is(ItemsRegistry.ANCIENT_CORE.get())){
+
+            if (!baseItemStack.is(ItemsRegistry.HAMMER_NETHERITE.get())){
+                error = WeaponPodiumError.HAMMER_NETHERITE;
+                resultSlots.setItem(0, ItemStack.EMPTY);
+                return;
+            }
+
+            soutCount = 5000;
+            if (GemTool.isSoulSufficient(player,soutCount)){
+                error = WeaponPodiumError.SOUL_NOT_SUFFICIENT;
+                resultSlots.setItem(0, ItemStack.EMPTY);
+                return;
+            }
+            result = new ItemStack(ItemsRegistry.HAMMER_ANCIENT.get());
+            CompoundTag tag = baseItemStack.getTag();
+            if (tag != null) {
+                result.setTag(tag.copy()); // 复制 NBT
+            }
         }
 
         resultSlots.setItem(0, result);
@@ -193,7 +216,7 @@ public class WeaponPodiumMenu extends ItemCombinerMenu {
     protected ItemCombinerMenuSlotDefinition createInputSlotDefinitions() {
         return ItemCombinerMenuSlotDefinition.create()
                 .withSlot(0, 26, 40, LHMiracleRoadTool::itemIsWeaponsAndEquipmentAll)
-                .withSlot(1, 75, 40,  stack -> stack.is(TagsRegistry.GEM) || stack.is(TagsRegistry.STRENGTHEN_GEM))
+                .withSlot(1, 75, 40,  stack -> stack.is(TagsRegistry.GEM) || stack.is(TagsRegistry.STRENGTHEN_GEM) || stack.is(ItemsRegistry.ANCIENT_CORE.get()))
                 .withSlot(2, 51, 20, stack -> stack.is(TagsRegistry.HAMMERS))
                 .withResultSlot(3, 133, 40).build();
     }

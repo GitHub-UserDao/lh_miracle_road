@@ -76,6 +76,6 @@ public class Magic extends Projectile {
 
     @Override
     public boolean canHitEntity(Entity target) {
-        return this.isBelongTeammate(target) && super.canHitEntity(target);
+        return this.isBelongTeammate(target) && super.canHitEntity(target) && target.isAlive();
     }
 }

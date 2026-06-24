@@ -49,6 +49,11 @@
     "show_value_type": "base_percentage"
   },
   {
+    "attribute": "armor_penetration",
+    "attribute_text": "armor_penetration",
+    "show_value_type": "base_percentage"
+  },
+  {
     "attribute": "critical_hit_rate",
     "attribute_text": "critical_hit_rate",
     "show_value_type": "base_percentage"
@@ -166,17 +171,22 @@
   {
     "attribute": "abnormal_bleed_buildup",
     "attribute_text": "abnormal_bleed_buildup",
-    "show_value_type": "base"
+    "show_value_type": "extra_base "
   },
   {
     "attribute": "abnormal_frost_buildup",
     "attribute_text": "abnormal_frost_buildup",
-    "show_value_type": "base"
+    "show_value_type": "extra_base "
   },
   {
     "attribute": "abnormal_poison_buildup",
     "attribute_text": "abnormal_poison_buildup",
-    "show_value_type": "base"
+    "show_value_type": "extra_base "
+  },
+  {
+    "attribute": "abnormal_burn_buildup",
+    "attribute_text": "abnormal_burn_buildup",
+    "show_value_type": "extra_percentage "
   },
   {
     "attribute": "abnormal_damage",
@@ -186,6 +196,26 @@
   {
     "attribute": "abnormal_buildup",
     "attribute_text": "abnormal_buildup",
+    "show_value_type": "extra_percentage"
+  },
+  {
+    "attribute": "abnormal_bleed_damage",
+    "attribute_text": "abnormal_bleed_damage",
+    "show_value_type": "extra_percentage"
+  },
+  {
+    "attribute": "abnormal_frost_damage",
+    "attribute_text": "abnormal_frost_damage",
+    "show_value_type": "extra_percentage"
+  },
+  {
+    "attribute": "abnormal_poison_damage",
+    "attribute_text": "abnormal_poison_damage",
+    "show_value_type": "extra_percentage"
+  },
+  {
+    "attribute": "abnormal_burn_damage",
+    "attribute_text": "abnormal_burn_damage",
     "show_value_type": "extra_percentage"
   },
   {

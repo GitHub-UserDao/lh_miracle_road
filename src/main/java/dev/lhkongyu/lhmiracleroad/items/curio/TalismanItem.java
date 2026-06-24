@@ -1,8 +1,6 @@
 package dev.lhkongyu.lhmiracleroad.items.curio;
 
 import com.google.common.collect.Multimap;
-import dev.lhkongyu.lhmiracleroad.items.curio.bracelet.HunterMark;
-import dev.lhkongyu.lhmiracleroad.items.curio.ring.WhisperRing;
 import dev.lhkongyu.lhmiracleroad.items.curio.talisman.*;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import net.minecraft.ChatFormatting;
@@ -21,6 +19,11 @@ import top.theillusivec4.curios.api.SlotContext;
 import java.util.List;
 
 public class TalismanItem extends LHMiracleRoadCurioItem{
+    @Override
+    public String getCurioName() {
+        return "charm";
+    }
+
     public TalismanItem(Properties properties, Multimap<Attribute, AttributeModifier> defaultModifiers) {
         super(properties, defaultModifiers);
     }
@@ -42,6 +45,7 @@ public class TalismanItem extends LHMiracleRoadCurioItem{
             case "item.lhmiracleroad.consecrated_combat_plume" -> ConsecratedCombatPlume.equipConsecratedCombatPlume(slotContext.entity(),true);
             case "item.lhmiracleroad.spanning_wings" -> SpanningWings.equipSpanningWings(slotContext.entity(),true);
             case "item.lhmiracleroad.heart_of_bloodlust" -> HeartOfBloodLust.equipHeartOfBloodLust(slotContext.entity(),true);
+            case "item.lhmiracleroad.hawk_talisman" -> HawkTalisman.equipHawkTalisman(slotContext.entity(),true);
         }
     }
 
@@ -53,6 +57,7 @@ public class TalismanItem extends LHMiracleRoadCurioItem{
             case "item.lhmiracleroad.consecrated_combat_plume" -> ConsecratedCombatPlume.equipConsecratedCombatPlume(slotContext.entity(),false);
             case "item.lhmiracleroad.spanning_wings" -> SpanningWings.equipSpanningWings(slotContext.entity(),false);
             case "item.lhmiracleroad.heart_of_bloodlust" -> HeartOfBloodLust.equipHeartOfBloodLust(slotContext.entity(),false);
+            case "item.lhmiracleroad.hawk_talisman" -> HawkTalisman.equipHawkTalisman(slotContext.entity(),false);
         }
     }
 
