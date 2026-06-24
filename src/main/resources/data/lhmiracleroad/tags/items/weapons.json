@@ -3,11 +3,21 @@
   "values": [
     "#minecraft:swords",
     "#minecraft:axes",
-    "minecraft:trident",
-    "lhmiracleroad:hammer_iron",
-    "lhmiracleroad:hammer_netherite",
-    "lhmiracleroad:hammer_ancient"
-  ],
-  "optional": [
+    {
+      "id": "minecraft:trident",
+      "required": false
+    },
+    {
+      "id": "lhmiracleroad:hammer_iron",
+      "required": false
+    },
+    {
+      "id": "lhmiracleroad:hammer_netherite",
+      "required": false
+    },
+    {
+      "id": "lhmiracleroad:hammer_ancient",
+      "required": false
+    }
   ]
 }

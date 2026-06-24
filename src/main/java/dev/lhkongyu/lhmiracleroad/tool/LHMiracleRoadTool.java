@@ -752,7 +752,8 @@ public class LHMiracleRoadTool {
         return itemIsWeaponsAll(stack)
                 || itemIsArmors(stack)
                 || itemIsTool(stack)
-                || itemIsShield(stack);
+                || itemIsShield(stack)
+                || itemIsMagicStaff(stack);
     }
 
     public static boolean itemIsShield(ItemStack stack){

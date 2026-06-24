@@ -1,13 +1,29 @@
 {
   "replace": false,
   "values": [
-  ],
-  "optional": [
-    "irons_spellbooks:graybeard_staff",
-    "irons_spellbooks:blood_staff",
-    "irons_spellbooks:ice_staff",
-    "irons_spellbooks:artificer_cane",
-    "irons_spellbooks:lightning_rod",
-    "irons_spellbooks:pyrium_staff"
+    {
+      "id": "irons_spellbooks:graybeard_staff",
+      "required": false
+    },
+    {
+      "id": "irons_spellbooks:blood_staff",
+      "required": false
+    },
+    {
+      "id": "irons_spellbooks:ice_staff",
+      "required": false
+    },
+    {
+      "id": "irons_spellbooks:artificer_cane",
+      "required": false
+    },
+    {
+      "id": "irons_spellbooks:lightning_rod",
+      "required": false
+    },
+    {
+      "id": "irons_spellbooks:pyrium_staff",
+      "required": false
+    }
   ]
 }
