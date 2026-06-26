@@ -15,7 +15,7 @@ public class FireParticle extends AbstractSheetParticle {
     public FireParticle(ClientLevel level, double x, double y, double z, SpriteSet spriteSet, double xd, double yd, double zd) {
         super(level, x, y, z, spriteSet, xd, yd, zd);
         this.scale(this.random.nextFloat() * 1.75F + 1.0F);
-        this.lifetime = 15 + (int)(Math.random() * (double)15.0F);
+        this.lifetime = 12 + (int)(Math.random() * (double)6.0F);
         this.gravity = -0.1F;
         this.hasPhysics = false;
 

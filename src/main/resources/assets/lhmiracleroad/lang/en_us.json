@@ -328,9 +328,9 @@
   "item.lhmiracleroad.meteoric_iron_block": "Meteoric Iron Block",
   "item.lhmiracleroad.meteoric_iron_big_fragment": "Large Meteoric Iron Fragment",
   "item.lhmiracleroad.meteoric_iron_fragment": "Meteoric Iron Fragment",
-  "item.lhmiracleroad.hammer_iron": "Iron Mallet",
-  "item.lhmiracleroad.hammer_netherite": "Netherite Mallet",
-  "item.lhmiracleroad.hammer_ancient": "Ancient Mallet",
+  "item.lhmiracleroad.hammer_iron": "Iron Hammer",
+  "item.lhmiracleroad.hammer_netherite": "Netherite Hammer",
+  "item.lhmiracleroad.hammer_ancient": "Ancient Hammer",
   "item.lhmiracleroad.ancient_core": "Ancient Core",
   "tooltip.lhmiracleroad.gem.name.flame": "Flame",
   "tooltip.lhmiracleroad.gem.name.lightning": "Lightning",
@@ -358,7 +358,7 @@
 
   "ui.lhmiracleroad.weapon_podium": "Podium Platform",
   "block.lhmiracleroad.weapon_podium": "Podium Platform",
-  "tooltip.lhmiracleroad.weapon_podium.hammer_level_low": "Requires a higher level mallet",
+  "tooltip.lhmiracleroad.weapon_podium.hammer_level_low": "Requires a higher level Hammer",
   "tooltip.lhmiracleroad.weapon_podium.max_level": "Reinforcement level reached maximum",
   "tooltip.lhmiracleroad.weapon_podium.strengthen_lv_deficiency": "Reinforcement stone does not match",
   "tooltip.lhmiracleroad.weapon_podium.gem_not_enough": "Insufficient number of reinforcement stones",
@@ -366,9 +366,9 @@
   "tooltip.lhmiracleroad.weapon_podium.not_metamorphosis": "This item cannot be infused",
   "tooltip.lhmiracleroad.weapon_podium.repeat_metamorphosis": "Cannot repeat infusion",
   "tooltip.lhmiracleroad.weapon_podium.soul_not_sufficient": "Insufficient souls",
-  "tooltip.lhmiracleroad.weapon_podium.hammer_netherite": "Weapon requires Netherite Mallet",
+  "tooltip.lhmiracleroad.weapon_podium.hammer_netherite": "Weapon requires Netherite Hammer",
 
   "tooltip.hint.lhmiracleroad.weapon_podium.weapon": "Place weapons, equipment, or tools",
   "tooltip.hint.lhmiracleroad.weapon_podium.gem": "Place gems or cores",
-  "tooltip.hint.lhmiracleroad.weapon_podium.hammer": "Place a mallet"
+  "tooltip.hint.lhmiracleroad.weapon_podium.hammer": "Place a Hammer"
 }

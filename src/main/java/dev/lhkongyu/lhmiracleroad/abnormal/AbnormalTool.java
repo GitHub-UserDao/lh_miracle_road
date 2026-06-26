@@ -238,12 +238,12 @@ public class AbnormalTool {
                 break;
             case NameTool.FLAME:
                 ParticleTool.spawnServerParticles(target.level(),
-                        (SimpleParticleType)ParticleRegistry.FIRE_BOTTOM_PARTICLE.get(),
+                        (SimpleParticleType)ParticleRegistry.FIRE_PARTICLE.get(),
                         true,
                         position.x, position.y, position.z,
                         particleCount,
                         width / 4.0F, height / 5.0F, width / 4.0F,
-                        0.1);
+                        0.06);
         }
     }
 }

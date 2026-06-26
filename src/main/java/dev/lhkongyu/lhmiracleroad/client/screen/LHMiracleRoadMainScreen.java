@@ -333,7 +333,7 @@ public class LHMiracleRoadMainScreen extends Screen {
                 JsonObject showGuiAttribute = LHMiracleRoadTool.isAsJsonObject(showGuiAttributeJsonElement);
                 String attributeName = LHMiracleRoadTool.isAsString(showGuiAttribute.get("attribute"));
                 Double value = ClientData.SHOW_ATTRIBUTE_VALUE.get(attributeName);
-                if (value == null) return;
+                if (value == null) continue;
 
                 String attributeText = ResourceLocationTool.ATTRIBUTE_DETAILS_TEXT_PREFIX + LHMiracleRoadTool.isAsString(showGuiAttribute.get("attribute_text"));
                 ShowAttributesTypes showValueType = ShowAttributesTypes.fromString(LHMiracleRoadTool.isAsString(showGuiAttribute.get("show_value_type")));

@@ -43,6 +43,9 @@ public abstract class LivingEntityMixin {
 	@Shadow public abstract Collection<MobEffectInstance> getActiveEffects();
 
 	@Unique
+	private static final ThreadLocal<DamageSource> CURRENT_SOURCE = new ThreadLocal<>();
+
+	@Unique
 	private int entityDroppedXp = 0;
 
 	@ModifyVariable(method = "hurt", at = @At("HEAD"), ordinal = 0, argsOnly = true)
@@ -169,22 +172,31 @@ public abstract class LivingEntityMixin {
 		}
 	}
 
-	@Redirect(method = "getDamageAfterArmorAbsorb",
-			at = @At(value = "INVOKE", target = "Lnet/minecraft/world/damagesource/CombatRules;getDamageAfterAbsorb(FFF)F"))
-	private float lh_miracle_road$armorPenetration(float damage, float armor, float toughness, DamageSource source, float originalDamage) {
+	@ModifyArg(method = "getDamageAfterArmorAbsorb", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/damagesource/CombatRules;getDamageAfterAbsorb(FFF)F"), index = 1)
+	private float modifyArmor(float armor) {
+		DamageSource source = CURRENT_SOURCE.get();
+		if (source == null) return armor;
 		if (source.getEntity() instanceof LivingEntity attacker) {
-			if (!attacker.level().isClientSide()) {
-				var attribute = ((AttributeInstanceAccess) attacker.getAttribute(LHMiracleRoadAttributes.ARMOR_PENETRATION));
+			var attribute = ((AttributeInstanceAccess) attacker.getAttribute(LHMiracleRoadAttributes.ARMOR_PENETRATION));
 
-				if (attribute != null) {
-					double penetration = attribute.lh_miracle_road$computeIncreasedValueForInitial(1) - 1;
-					penetration = Mth.clamp(penetration, 0F, 1F);
-					armor *= (float) (1F - penetration);
-				}
+			if (attribute != null) {
+				double penetration = attribute.lh_miracle_road$computeIncreasedValueForInitial(1) - 1;
+				penetration = Mth.clamp(penetration, 0F, 1F);
+				armor *= (float) (1F - penetration);
 			}
 		}
-
-		return CombatRules.getDamageAfterAbsorb(damage, armor, toughness);
+		return armor;
 	}
+
+	@Inject(method = "getDamageAfterArmorAbsorb", at = @At("HEAD")
+	) private void captureSource(DamageSource source, float damage, CallbackInfoReturnable<Float> cir) {
+		CURRENT_SOURCE.set(source);
+	}
+
+	@Inject(method = "getDamageAfterArmorAbsorb", at = @At("RETURN"))
+	private void clearSource(DamageSource source, float damage, CallbackInfoReturnable<Float> cir) {
+		CURRENT_SOURCE.remove();
+	}
+
 }
 

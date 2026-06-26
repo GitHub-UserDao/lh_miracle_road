@@ -18,6 +18,7 @@ public class ParticleRegistry {
     public static final DeferredRegister<ParticleType<?>> PARTICLE_TYPES;
 
     public static final RegistryObject<ParticleType<SoulParticleOption>> SOUL_PARTICLE;
+    public static final RegistryObject<ParticleType<SimpleParticleType>> FIRE_PARTICLE;
     public static final RegistryObject<ParticleType<SimpleParticleType>> FIRE_BOTTOM_PARTICLE;
     public static final RegistryObject<ParticleType<SimpleParticleType>> BLEED;
     public static final RegistryObject<ParticleType<SimpleParticleType>> BLEED_GROUND;
@@ -40,6 +41,7 @@ public class ParticleRegistry {
                 return SoulParticleOption.CODEC;
             }
         });
+        FIRE_PARTICLE = PARTICLE_TYPES.register("fire", () -> new SimpleParticleType(false));
         FIRE_BOTTOM_PARTICLE = PARTICLE_TYPES.register("fire_bottom", () -> new SimpleParticleType(false));
         BLEED = PARTICLE_TYPES.register("bleed", () -> new SimpleParticleType(false));
         BLEED_GROUND = PARTICLE_TYPES.register("bleed_ground", () -> new SimpleParticleType(false));

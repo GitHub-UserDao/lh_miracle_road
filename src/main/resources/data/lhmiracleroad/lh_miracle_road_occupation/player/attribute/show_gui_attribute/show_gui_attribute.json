@@ -34,6 +34,12 @@
     "show_value_type": "base"
   },
   {
+    "condition": "irons_spellbooks",
+    "attribute": "irons_spellbooks:spell_power",
+    "attribute_text": "brain_iron",
+    "show_value_type": "base_percentage"
+  },
+  {
     "attribute": "damage_addition",
     "attribute_text": "damage_addition",
     "show_value_type": "extra_percentage"
@@ -88,12 +94,6 @@
     "attribute": "armor_toughness",
     "attribute_text": "endurance_armor_resilience",
     "show_value_type": "base"
-  },
-  {
-    "condition": "irons_spellbooks",
-    "attribute": "irons_spellbooks:spell_power",
-    "attribute_text": "brain_iron",
-    "show_value_type": "base_percentage"
   },
   {
     "condition": "ars_nouveau",

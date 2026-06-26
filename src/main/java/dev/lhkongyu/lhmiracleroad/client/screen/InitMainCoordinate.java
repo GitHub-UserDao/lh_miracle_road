@@ -13,6 +13,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -140,61 +141,51 @@ public class InitMainCoordinate {
         levelComponent = Component.translatable("lhmiracleroad.gui.attribute.text.level",occupationLevel);
     }
 
-    public int setShowDetailedAttributePage(){
+    public int setShowDetailedAttributePage() {
+
         showDetailedAttributePages = new ArrayList<>();
-        List<JsonObject> showGuiAttributeList = ClientData.SHOW_GUI_ATTRIBUTE;
 
-        //设置每一面能放多少条数据
-        int eachPageMaxSize = 15;
+        List<JsonObject> attributes = ClientData.SHOW_GUI_ATTRIBUTE;
 
-        if (showGuiAttributeList.size() > eachPageMaxSize){
+        final int firstPageSize = 15;
+        final int pageSize = 30;
+        final int columnSize = 15;
 
-            //将第一页右边显示的属性文本进行默认填充
-            Map<String,List<JsonObject>> showGuiAttribute = Maps.newLinkedHashMap();
-            List<JsonObject> attributeInitPartList = new ArrayList<>();
-            for (int i = 0; i < eachPageMaxSize; i++) {
-                attributeInitPartList.add(showGuiAttributeList.get(i));
-            }
-            showGuiAttribute.put("right",attributeInitPartList);
-            showDetailedAttributePages.add(showGuiAttribute);
-
-            //设置每页能放多少条数据
-            int subsequentPageMaxSize = 30;
-            int page = Math.max(1,(showGuiAttributeList.size() - eachPageMaxSize) / subsequentPageMaxSize);
-
-            for (int i = 0; i < page; i++) {
-                int size = (subsequentPageMaxSize * (i + 1)) + eachPageMaxSize;
-                if (size > (showGuiAttributeList.size() - eachPageMaxSize)){
-                    size = showGuiAttributeList.size();
-                }
-
-                int frequency = 0;
-                Map<String,List<JsonObject>> showGuiAttributeTail = Maps.newLinkedHashMap();
-                List<JsonObject> attributeTailList = new ArrayList<>();
-                for (int j = eachPageMaxSize + (subsequentPageMaxSize * i); j < size; j++) {
-                    frequency++;
-                    attributeTailList.add(showGuiAttributeList.get(j));
-                    //当前页前15条设置是左边的
-                    if (frequency == eachPageMaxSize){
-                        showGuiAttributeTail.put("left",new ArrayList<>(attributeTailList));
-                        attributeTailList.clear();
-                    }
-                }
-                //如果循环次数大于15就代表该页面有右边的数据
-                if (frequency > eachPageMaxSize){
-                    showGuiAttributeTail.put("right",attributeTailList);
-                }else {
-                    //因为有可能小于15条那就填充左边的数据
-                    showGuiAttributeTail.putIfAbsent("left", attributeTailList);
-                }
-                showDetailedAttributePages.add(showGuiAttributeTail);
-            }
-        }else {
-            //将第一页右边显示的属性文本进行默认填充
-            Map<String,List<JsonObject>> showGuiAttributeObject = Maps.newLinkedHashMap();
-            showGuiAttributeObject.put("right",showGuiAttributeList);
-            showDetailedAttributePages.add(showGuiAttributeObject);
+        if (attributes.isEmpty()) {
+            return 0;
         }
+
+        // 第一页（右边15条）
+        Map<String, List<JsonObject>> firstPage = new LinkedHashMap<>();
+
+        int firstEnd = Math.min(firstPageSize, attributes.size());
+
+        firstPage.put("right", new ArrayList<>(attributes.subList(0, firstEnd)));
+
+        showDetailedAttributePages.add(firstPage);
+
+        // 后续页面
+        for (int start = firstEnd; start < attributes.size(); start += pageSize) {
+
+            int end = Math.min(start + pageSize, attributes.size());
+
+            List<JsonObject> pageData = attributes.subList(start, end);
+
+            Map<String, List<JsonObject>> page = new LinkedHashMap<>();
+
+            int split = Math.min(columnSize, pageData.size());
+
+            // 左边
+            page.put("left", new ArrayList<>(pageData.subList(0, split)));
+
+            // 右边
+            if (pageData.size() > columnSize)
+                page.put("right", new ArrayList<>(pageData.subList(split, pageData.size())));
+
+
+            showDetailedAttributePages.add(page);
+        }
+
         return showDetailedAttributePages.size() - 1;
     }
 

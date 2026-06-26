@@ -68,7 +68,7 @@ public class AbnormalCapability implements IAbnormalCapability {
             case BLEED -> {
                 float current = target.getHealth();
                 float max = target.getMaxHealth();
-                float damage = 6f + max * 0.06f + Math.min(current * 0.1f, 10f);
+                float damage = 5f + max * 0.05f + Math.min(current * 0.1f, 8f);
 
                 LHMiracleRoadTool.magicHurt(source,target,SpellDamageTypes.ABNORMAL_BLEED,damage);
 
@@ -78,7 +78,7 @@ public class AbnormalCapability implements IAbnormalCapability {
             }
             case FROST -> {
                 float max = target.getMaxHealth();
-                float damage = 10f + max * 0.08f;
+                float damage = 8f + max * 0.065f;
                 LHMiracleRoadTool.magicHurt(source,target,SpellDamageTypes.ABNORMAL_FROST,damage);
 
                 AbnormalTool.abnormalAddParticle(target,damage, NameTool.ICE);
@@ -166,7 +166,7 @@ public class AbnormalCapability implements IAbnormalCapability {
             if (source == null) return;
             if (source instanceof LivingEntity sourceLivingEntity) {
                 LHMiracleRoadTool.magicHurt(sourceLivingEntity,target,SpellDamageTypes.ABNORMAL_BURN,2f);
-                AbnormalTool.abnormalSustainParticle(target,3,NameTool.FLAME);
+                AbnormalTool.abnormalSustainParticle(target,4,NameTool.FLAME);
             }
         }
     }

@@ -541,8 +541,6 @@ public class LHMiracleRoadTool {
             AttributeInstance attributeInstance = player.getAttribute(attribute);
             if (attributeInstance == null) continue;
 
-//            showAttributeObject.addProperty("v", attributeInstance.getValue());
-//            showAttributeObject.addProperty("b", attributeInstance.getBaseValue());
             double modifierValue = 0.0;
             AttributeInstanceAccess attributeInstanceAccess = ((AttributeInstanceAccess) attributeInstance);
             switch (showValueType){

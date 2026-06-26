@@ -10,7 +10,7 @@ import java.util.*;
 
 public class MiraculousTalismanData {
 
-    public static final int level = 6;
+    public static final int level = 7;
 
     public static final String NBT_MIRACULOUS_ATTRIBUTE = "NBTMiraculousAttribute";
 

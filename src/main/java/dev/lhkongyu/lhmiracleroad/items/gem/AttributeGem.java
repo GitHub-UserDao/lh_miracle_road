@@ -28,6 +28,7 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.ItemAttributeModifierEvent;
@@ -65,7 +66,7 @@ public class AttributeGem {
     private static void setAttribute(ItemAttributeModifierEvent event,double bonusAttack,double attack,
                                         UUID attributeUUID,UUID attackUUID,String name,Attribute attribute){
         if (LHMiracleRoadTool.itemIsRangedWeapons(event.getItemStack())) {
-           bonusAttack = bonusAttack + 2;
+           bonusAttack = bonusAttack + 3;
             event.addModifier(attribute,
                     new AttributeModifier(attributeUUID, "lh_gem_" + name, bonusAttack, AttributeModifier.Operation.ADDITION));
         }else {
@@ -133,7 +134,7 @@ public class AttributeGem {
         UUID abnormalUUID = UUID.fromString("4f57bcf7-9775-4176-984b-b59786d16b10");
 
         double convertValue = 1;
-        double bonusAttack =  3;
+        double bonusAttack =  2;
         double baseAttackSpeed = 4;
 
         Multimap<Attribute, AttributeModifier> modifiers = event.getModifiers();
@@ -220,7 +221,9 @@ public class AttributeGem {
             LHMiracleRoadTool.attackMagicHurt(source,target,resourceKey,attributeInstanceDamage);
 
             if (resourceKey.equals(SpellDamageTypes.LIGHTNING_MAGIC)){
-                if (LHMiracleRoadTool.percentageProbability(25)) {
+                float luck = 0;
+                if (source instanceof Player player) luck = player.getLuck() * 1.5f;
+                if (LHMiracleRoadTool.percentageProbability(25 + luck)) {
                     MagicRelease.createLightningBolt(source.level(), source, target.position(), attributeInstanceDamage * 1.5f, 3);
                 }
             }
@@ -240,12 +243,12 @@ public class AttributeGem {
             switch (type){
                 case NameTool.FLAME:
                     ParticleTool.spawnServerParticles(source.level(),
-                            (SimpleParticleType)ParticleRegistry.FIRE_BOTTOM_PARTICLE.get(),
+                            (SimpleParticleType)ParticleRegistry.FIRE_PARTICLE.get(),
                             true,
                             position.x, position.y, position.z,
                             particleCount,
                             width / 4.0F, height / 5.0F, width / 4.0F,
-                            0.1);
+                            0.06);
                 break;
                 case NameTool.LIGHTNING:
                     ParticleTool.spawnServerParticles(source.level(),
@@ -320,7 +323,7 @@ public class AttributeGem {
      */
     public static float attributeAdditionalDamage(float amount,DamageSource damageSource,LivingEntity target,LivingEntity source){
         if (damageSource.is(SpellDamageTypes.DARK_MAGIC)){
-            amount += target.getHealth() * 0.05f;
+            amount += target.getHealth() * 0.04f;
         }else if (damageSource.is(SpellDamageTypes.HOLY_MAGIC)){
             if (target.getMobType() == MobType.UNDEAD) amount += amount * 0.5f;
         }else if (damageSource.is(SpellDamageTypes.SOUL_MAGIC)){
