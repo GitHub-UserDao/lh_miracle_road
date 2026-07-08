@@ -8,6 +8,8 @@ public class LHInternalShaders {
 
     private static ShaderInstance renderTypeMagic;
 
+    private static ShaderInstance renderTypeItemOutline;
+
     @Nullable
     public static ShaderInstance getRenderTypeMagic() {
         return renderTypeMagic;
@@ -15,6 +17,15 @@ public class LHInternalShaders {
 
     public static void setRenderTypeMagic(ShaderInstance instance) {
         renderTypeMagic = instance;
+    }
+
+    @Nullable
+    public static ShaderInstance getRenderTypeItemOutline() {
+        return renderTypeItemOutline;
+    }
+
+    public static void setRenderTypeItemOutline(ShaderInstance instance) {
+        renderTypeItemOutline = instance;
     }
 
 }

@@ -1,0 +1,9 @@
+{
+  "heavy": 20,
+  "attribute_need": [
+    {
+      "attribute_id": "power",
+      "need_points": 22
+    }
+  ]
+}

@@ -130,15 +130,15 @@ public class ItemRenderType extends RenderType {
     }
 
     static {
-        FLAME_GLINT = createPixelRenderType("fire_glint","textures/glints/fire_glint.png",16.0f,32.0F);
-        LIGHTNING_GLINT = createPixelGlintRenderType("lightning_glint","textures/glints/lightning_glint.png",32.0f,32.0F);
-        DARK_GLINT = createPixelRenderType("dark_glint","textures/glints/dark_glint.png",16.0f,32.0F);
-        BLOOD_GLINT = createPixelRenderType("blood_glint","textures/glints/blood_glint.png",16.0f,32.0F);
-        POISON_GLINT = createPixelRenderType("poison_glint","textures/glints/poison_glint.png",16.0f,32.0F);
-        ICE_GLINT = createPixelRenderType("ice_glint","textures/glints/ice_glint.png",16.0f,32.0F);
-        SHARP_GLINT  = createPixelRenderType("ice_glint","textures/glints/sharp_glint.png",16.0f,32.0F);
-        SOUL_GLINT  = createPixelRenderType("ice_glint","textures/glints/soul_glint.png",16.0f,32.0F);
-        HOLY_GLINT  = createPixelGlintRenderType("ice_glint","textures/glints/holy_glint.png",16.0f,32.0F);
+        FLAME_GLINT = createPixelRenderType("fire_glint","textures/glints/fire_glint.png",16.0f,48.0F);
+        LIGHTNING_GLINT = createPixelGlintRenderType("lightning_glint","textures/glints/lightning_glint.png",32.0f,48.0F);
+        DARK_GLINT = createPixelRenderType("dark_glint","textures/glints/dark_glint.png",16.0f,48.0F);
+        BLOOD_GLINT = createPixelRenderType("blood_glint","textures/glints/blood_glint.png",16.0f,48.0F);
+        POISON_GLINT = createPixelRenderType("poison_glint","textures/glints/poison_glint.png",16.0f,48.0F);
+        ICE_GLINT = createPixelRenderType("ice_glint","textures/glints/ice_glint.png",16.0f,48.0F);
+        SHARP_GLINT  = createPixelRenderType("ice_glint","textures/glints/sharp_glint.png",16.0f,48.0F);
+        SOUL_GLINT  = createPixelRenderType("ice_glint","textures/glints/soul_glint.png",16.0f,48.0F);
+        HOLY_GLINT  = createPixelGlintRenderType("ice_glint","textures/glints/holy_glint.png",16.0f,48.0F);
     }
 
     public static RenderType getGlint(String type){

@@ -1,4 +1,5 @@
 package dev.lhkongyu.lhmiracleroad.tool.mathcalculator;
+import dev.lhkongyu.lhmiracleroad.abnormal.AbnormalTool;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -500,7 +501,9 @@ public class MathCalculatorUtil {
     public static void main(String args[]){
 //        String k2 ="min(pow(3.02 * lv,2) + 98.4 * lv, 19999999)";
 //        System.err.println(LHMiracleRoadTool.evaluateFormula(k2,15));
-        String k2 ="(exp / 7 + max(hp,20) * 12) * (1 + atk * 0.15 + arm * 0.1 + atou * 0.15 + buff * 0.05)";
-        System.err.println(LHMiracleRoadTool.evaluateFormula(k2,40000,120,40,40,20,0));
+        int abnormal = AbnormalTool.getMaxBuildup(500,0);
+        System.err.println(abnormal);
+//        String k2 ="(exp / 7 + max(hp,20) * 12) * (1 + atk * 0.15 + arm * 0.1 + atou * 0.15 + buff * 0.05)";
+//        System.err.println(LHMiracleRoadTool.evaluateFormula(k2,40000,120,40,40,20,0));
     }
 }

@@ -593,6 +593,15 @@ public class LHMiracleRoadTool {
     }
 
     /**
+     * 幸运值收益
+     * @param luck
+     * @return
+     */
+    public static double getLuckBonus(double up,double luck) {
+        return up * (1 - java.lang.Math.pow(0.5, luck / 10.0));
+    }
+
+    /**
      * 玩家的奖惩状态更新
      *
      * @param player

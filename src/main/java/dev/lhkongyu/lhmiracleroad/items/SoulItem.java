@@ -110,7 +110,8 @@ public class SoulItem extends Item {
         player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).ifPresent(playerOccupationAttribute -> {
             if (playerOccupationAttribute.getOccupationExperience() >= 100000){
                 ServerLevel serverLevel = (ServerLevel) player.level();
-                if (LHMiracleRoadTool.percentageProbability(50)){
+                double luck = LHMiracleRoadTool.getLuckBonus(30.0,player.getLuck());
+                if (LHMiracleRoadTool.percentageProbability(50 + luck)){
                     int soulStart = playerOccupationAttribute.getOccupationExperience();
                     playerOccupationAttribute.addOccupationExperience(playerOccupationAttribute.getOccupationExperience());
                     ParticleTool.getSoulParticle(serverLevel,player,playerOccupationAttribute.getOccupationExperience(),150);

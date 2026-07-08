@@ -23,37 +23,18 @@ import org.joml.Vector3f;
 
 public class AbnormalTool {
 
-    public static int getMaxBuildup(float hp) {
+    public static int getMaxBuildup(float hp, float armor){
         int node = 20;
 
-        if (hp <= 20) return 100;
+        if (hp <= 20) return applyArmor(80, armor);
 
-        int buildup = 100;
-
-        if (hp > 30) buildup += 45;
+        int buildup = 80;
+        if (hp > 30) buildup += 40;
         if (hp > 50) buildup += 35;
-        if (hp > 70) buildup += 25;
-
-        int stages = Math.max(0, (int)((hp - 80) / node));
-
-        for (int i = 0; i < stages; i++) {
-            buildup += Math.max(8, (node + 5) - ((i + 1) * 2));
-        }
-        return buildup;
-    }
-
-    public static int getBleedMaxBuildup(float hp, float armor){
-        int node = 20;
-
-        if (hp <= 20) return applyArmor(60, armor);
-
-        int buildup = 60;
-        if (hp > 30) buildup += 35;
-        if (hp > 50) buildup += 25;
 
         int stages = Math.max(0, (int)((hp - 60) / node));
         for (int i = 0; i < stages; i++) {
-            buildup += Math.max(5, (node + 5) - ((i + 1) * 2));
+            buildup += Math.max(3, (node + 15) - ((i + 1) * 2));
         }
         return applyArmor(buildup, armor);
     }
@@ -63,7 +44,7 @@ public class AbnormalTool {
 
         if (hp <= 20) return 14;
 
-        int buildup = 16;
+        int buildup = 14;
         int stages = Math.max(0, (int)((hp - 20) / node));
         for (int i = 0; i < stages; i++) {
             buildup += Math.max(2, (node - 6) - ((i + 1) * 2));
@@ -72,7 +53,7 @@ public class AbnormalTool {
     }
 
     private static int applyArmor(int buildup, float armor) {
-        return Math.round(buildup * (1F + armor * 0.02F));
+        return Math.round(buildup * (1F + armor * 0.015F));
     }
 
     public static float abnormalBuildupRaise(float damage,LivingEntity source){
@@ -101,18 +82,18 @@ public class AbnormalTool {
         int maxBuildup;
         if (bleed > 0){
             bleed = abnormalBuildupRaise(bleed,source);
-            maxBuildup = AbnormalTool.getBleedMaxBuildup(target.getMaxHealth(),target.getArmorValue());
+            maxBuildup = AbnormalTool.getMaxBuildup(target.getMaxHealth(),target.getArmorValue());
             setAbnormalBuildup(AbnormalType.BLEED,bleed,maxBuildup,target,source);
         }
         if (frost > 0){
             frost = abnormalBuildupRaise(frost,source);
-            maxBuildup = AbnormalTool.getMaxBuildup(target.getMaxHealth());
+            maxBuildup = AbnormalTool.getMaxBuildup(target.getMaxHealth(),target.getArmorValue());
             setAbnormalBuildup(AbnormalType.FROST,frost,maxBuildup,target,source);
         }
 
         if (poison > 0){
             poison = abnormalBuildupRaise(poison,source);
-            maxBuildup = AbnormalTool.getMaxBuildup(target.getMaxHealth());
+            maxBuildup = AbnormalTool.getMaxBuildup(target.getMaxHealth(),target.getArmorValue());
             setAbnormalBuildup(AbnormalType.POISON,poison,maxBuildup,target,source);
         }
     }

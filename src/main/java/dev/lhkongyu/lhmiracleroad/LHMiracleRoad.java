@@ -80,6 +80,7 @@ public class LHMiracleRoad
     private void registerShaders(final RegisterShadersEvent e) {
         try {
             e.registerShader(new ShaderInstance(e.getResourceProvider(), new ResourceLocation(MODID, "rendertype_magic"), DefaultVertexFormat.NEW_ENTITY), LHInternalShaders::setRenderTypeMagic);
+            e.registerShader(new ShaderInstance(e.getResourceProvider(), new ResourceLocation(MODID, "rendertype_item_outline"), DefaultVertexFormat.NEW_ENTITY), LHInternalShaders::setRenderTypeItemOutline);
         } catch (IOException exception) {
             exception.printStackTrace();
         }

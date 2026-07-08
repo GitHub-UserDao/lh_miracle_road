@@ -222,7 +222,7 @@ public class AttributeGem {
 
             if (resourceKey.equals(SpellDamageTypes.LIGHTNING_MAGIC)){
                 float luck = 0;
-                if (source instanceof Player player) luck = player.getLuck() * 1.5f;
+                if (source instanceof Player player)  luck = (float) LHMiracleRoadTool.getLuckBonus(50.0,player.getLuck());
                 if (LHMiracleRoadTool.percentageProbability(25 + luck)) {
                     MagicRelease.createLightningBolt(source.level(), source, target.position(), attributeInstanceDamage * 1.5f, 3);
                 }
@@ -347,7 +347,7 @@ public class AttributeGem {
             }
         }else if (damageSource.is(SpellDamageTypes.LIGHTNING_MAGIC)){
             int arm = (int) LHMiracleRoadTool.getAttributeValue(target.getAttribute(Attributes.ARMOR));
-            amount += amount * Math.min((arm * 0.025f),100);
+            amount += amount * Math.min((arm * 0.01f),100);
         }
 
         return amount;
