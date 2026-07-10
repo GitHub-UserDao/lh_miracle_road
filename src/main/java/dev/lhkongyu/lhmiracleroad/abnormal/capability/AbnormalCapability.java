@@ -19,13 +19,13 @@ public class AbnormalCapability implements IAbnormalCapability {
     private final EnumMap<AbnormalType, AbnormalData> map =
             new EnumMap<>(AbnormalType.class);
 
-    private static final int FROST_TIME = 30;
+    private static final int FROST_TIME = 12;
 
-    private static final int POISON_TIME = 45;
+    private static final int POISON_TIME = 25;
 
     private static final int BURN_TIME = 2;
 
-    private static final int DISSIPATE_TIME = 20;
+    private static final int DISSIPATE_TIME = 10;
 
     private static final float TICK_COUNT = 0.05f;
 
@@ -137,7 +137,7 @@ public class AbnormalCapability implements IAbnormalCapability {
 
         if (target.tickCount % 10 == 0) {
             SyncTool.abnormalSync(target);
-            AbnormalTool.abnormalSustainParticle(target,5,NameTool.POISON);
+            AbnormalTool.abnormalSustainParticle(target,3,NameTool.POISON);
         }
 
         if (target.tickCount % 20 == 0) {

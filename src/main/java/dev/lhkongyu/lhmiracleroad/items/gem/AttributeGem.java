@@ -239,7 +239,7 @@ public class AttributeGem {
             float width = target.getBbWidth();
             float height = target.getBbHeight();
             Vec3 position = target.position().add(0.0F, (height / 2.0F), 0.0F);
-            int particleCount = (int) Math.max(8.0F * width * height,5);
+            int particleCount = (int)Math.min(Math.max(8.0F * width * height,5),50);
             switch (type){
                 case NameTool.FLAME:
                     ParticleTool.spawnServerParticles(source.level(),
@@ -248,7 +248,7 @@ public class AttributeGem {
                             position.x, position.y, position.z,
                             particleCount,
                             width / 4.0F, height / 5.0F, width / 4.0F,
-                            0.06);
+                            0.05);
                 break;
                 case NameTool.LIGHTNING:
                     ParticleTool.spawnServerParticles(source.level(),
@@ -292,7 +292,7 @@ public class AttributeGem {
                             (SimpleParticleType)ParticleRegistry.POISON.get(),
                             true,
                             position.x, position.y, position.z,
-                            particleCount,
+                            Math.max(particleCount / 2,6),
                             width / 5.0F, height / 5.0F, width / 5.0F,
                             0.03);
                     break;
@@ -312,7 +312,7 @@ public class AttributeGem {
                             position.x, position.y, position.z,
                             particleCount / 2,
                             0.1, 0.1, 0.1,
-                            .1f);
+                            .075f);
                     break;
             }
         }

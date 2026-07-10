@@ -198,6 +198,7 @@ public class AbnormalTool {
         float height = target.getBbHeight();
         Vec3 position = target.position().add(0.0F, (height / 2.0F), 0.0F);
 
+        particleCount = (int) Math.min(Math.max(particleCount * width * height,particleCount),30);
         switch (abnormal){
             case NameTool.ICE:
                 ParticleTool.spawnServerParticles(target.level(),
@@ -224,7 +225,7 @@ public class AbnormalTool {
                         position.x, position.y, position.z,
                         particleCount,
                         width / 4.0F, height / 5.0F, width / 4.0F,
-                        0.06);
+                        0.05);
         }
     }
 }

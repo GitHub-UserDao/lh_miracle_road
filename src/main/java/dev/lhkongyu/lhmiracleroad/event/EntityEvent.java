@@ -206,7 +206,7 @@ public class EntityEvent {
 
         // 回复血量
         if (entity.getHealth() < entity.getMaxHealth()) {
-            entity.heal(1.0F + Math.max((float) ((int) entity.getMaxHealth() * 0.02),1f));
+            entity.heal(2.0F + Math.max((float) ((int) entity.getMaxHealth() * 0.04),1f));
         }
     }
 

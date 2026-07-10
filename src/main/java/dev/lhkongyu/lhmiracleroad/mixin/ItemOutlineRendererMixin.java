@@ -21,10 +21,10 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public abstract class ItemOutlineRendererMixin {
 
     @Unique
-    private static final float LH_MIRACLE_ROAD_OUTLINE_SCALE = 1.035F;
+    private static final float LH_MIRACLE_ROAD_OUTLINE_SCALE = 1F;
 
     @Unique
-    private static final float LH_MIRACLE_ROAD_OUTLINE_PIXEL = 1.0F / 16.0F;
+    private static final float LH_MIRACLE_ROAD_OUTLINE_PIXEL = 0.4F / 16.0F;
 
     @Unique
     private static final float[][] LH_MIRACLE_ROAD_OUTLINE_OFFSETS = new float[][]{
@@ -44,11 +44,12 @@ public abstract class ItemOutlineRendererMixin {
     @Redirect(method = "render", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/client/renderer/entity/ItemRenderer;renderModelLists(Lnet/minecraft/client/resources/model/BakedModel;Lnet/minecraft/world/item/ItemStack;IILcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;)V"))
     private void lh_miracle_road$renderOutline(ItemRenderer itemRenderer, BakedModel model, ItemStack stack, int packedLight, int packedOverlay, PoseStack poseStack, VertexConsumer buffer, ItemStack originalStack, ItemDisplayContext context, boolean leftHand, PoseStack originalPoseStack, MultiBufferSource multiBufferSource, int originalPackedLight, int originalPackedOverlay, BakedModel originalModel) {
-        int outlineColor = ItemOutlineColor.getColor(stack);
-        if (ItemOutlineColor.hasOutline(outlineColor)) {
-            VertexConsumer outlineBuffer = new ItemOutlineVertexConsumer(multiBufferSource.getBuffer(ItemOutlineRenderType.getRenderType()), outlineColor);
-
-            for (float[] offset : LH_MIRACLE_ROAD_OUTLINE_OFFSETS) {
+        int[] outlineColors = ItemOutlineColor.getColors(stack);
+        if (ItemOutlineColor.hasOutline(outlineColors)) {
+            for (int i = 0; i < LH_MIRACLE_ROAD_OUTLINE_OFFSETS.length; i++) {
+                float[] offset = LH_MIRACLE_ROAD_OUTLINE_OFFSETS[i];
+                int outlineColor = outlineColors[i % outlineColors.length];
+                VertexConsumer outlineBuffer = new ItemOutlineVertexConsumer(multiBufferSource.getBuffer(ItemOutlineRenderType.getRenderType()), outlineColor);
                 poseStack.pushPose();
                 poseStack.translate(offset[0], offset[1], offset[2]);
                 poseStack.scale(LH_MIRACLE_ROAD_OUTLINE_SCALE, LH_MIRACLE_ROAD_OUTLINE_SCALE, LH_MIRACLE_ROAD_OUTLINE_SCALE);

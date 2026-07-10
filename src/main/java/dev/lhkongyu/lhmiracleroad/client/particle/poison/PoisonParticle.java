@@ -15,7 +15,7 @@ public class PoisonParticle extends AbstractSheetParticle {
     public PoisonParticle(ClientLevel level, double x, double y, double z, SpriteSet spriteSet, double xd, double yd, double zd) {
         super(level, x, y, z, spriteSet, xd, yd, zd);
         this.scale(this.random.nextFloat() * 1.75F + 1.0F);
-        this.lifetime = 10 + (int)(Math.random() * (double)5.0F);
+        this.lifetime = 13 + (int)(Math.random() * (double)8.0F);
         this.gravity = -0.175F;
         this.hasPhysics = false;
 
