@@ -27,17 +27,16 @@ public abstract class ItemRendererMixin implements ResourceManagerReloadListener
 
         if (localplayer != null && item.getTag() != null) {
             CompoundTag compoundTag = item.getOrCreateTag().getCompound("lh_gem");
-            if (compoundTag.contains("type")) return lh_miracle_road$getFoilBufferDirect(item, multiBuffer, p_115224_, compoundTag.getString("type"));
+            if (compoundTag.contains("type")) return lh_miracle_road$getFoilBufferDirect(multiBuffer, p_115224_, compoundTag.getString("type"));
         }
         return ItemRenderer.getFoilBufferDirect(multiBuffer, p_115224_, true, item.hasFoil());
     }
 
     @Unique
-    private static VertexConsumer lh_miracle_road$getFoilBufferDirect(ItemStack item, MultiBufferSource multiBufferSource, RenderType base, String type) {
+    private static VertexConsumer lh_miracle_road$getFoilBufferDirect(MultiBufferSource multiBufferSource, RenderType base, String type) {
 
         return VertexMultiConsumer.create(
                 multiBufferSource.getBuffer(ItemRenderType.getGlint(type)),
                 multiBufferSource.getBuffer(base));
     }
-
 }

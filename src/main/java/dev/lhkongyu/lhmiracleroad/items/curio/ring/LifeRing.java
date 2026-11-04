@@ -12,7 +12,7 @@ import net.minecraft.world.item.Rarity;
 import java.util.UUID;
 
 /**
- * 生命戒指 的饰品功能
+ * 生命戒指 的饰品功能f
  */
 public class LifeRing {
 

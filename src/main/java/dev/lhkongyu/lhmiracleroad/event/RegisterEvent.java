@@ -6,6 +6,8 @@ import dev.lhkongyu.lhmiracleroad.capability.ItemStackPunishmentAttributeProvide
 import dev.lhkongyu.lhmiracleroad.capability.PlayerCurioProvider;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.command.GetPlayerOccupationLevelCommand;
+import dev.lhkongyu.lhmiracleroad.config.initItem.InitItemConfig;
+import dev.lhkongyu.lhmiracleroad.config.occupation.OccupationConfig;
 import dev.lhkongyu.lhmiracleroad.config.strengthen.StrengthenConfig;
 import dev.lhkongyu.lhmiracleroad.tool.data.SynchronizationData;
 import dev.lhkongyu.lhmiracleroad.items.trophy.TrophyManager;
@@ -83,6 +85,8 @@ public class RegisterEvent {
         public static void onCommonSetup(FMLCommonSetupEvent event) {
             TrophyManager.load();
             StrengthenConfig.load();
+            OccupationConfig.load();
+            InitItemConfig.load();
         }
     }
 

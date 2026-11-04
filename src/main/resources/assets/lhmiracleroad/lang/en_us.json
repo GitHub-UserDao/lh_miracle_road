@@ -1,7 +1,7 @@
 {
   "key.categories.lhmiracleroad": "Miracle Road",
   "key.display_miracle_road": "Miracle Road Open",
-  "lhmiracleroad.gui.text.select": "select",
+  "lhmiracleroad.gui.text.select": "Yes",
   "lhmiracleroad.gui.titles.init_item": "Init Item",
   "lhmiracleroad.gui.titles.init_attribute": "Init Attr",
   "lhmiracleroad.gui.attribute.name.power": "power",

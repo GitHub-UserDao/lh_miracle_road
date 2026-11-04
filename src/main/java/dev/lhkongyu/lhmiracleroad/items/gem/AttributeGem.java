@@ -325,7 +325,7 @@ public class AttributeGem {
         if (damageSource.is(SpellDamageTypes.DARK_MAGIC)){
             amount += target.getHealth() * 0.04f;
         }else if (damageSource.is(SpellDamageTypes.HOLY_MAGIC)){
-            if (target.getMobType() == MobType.UNDEAD) amount += amount * 0.5f;
+            if (target.getMobType() == MobType.UNDEAD) amount += amount;
         }else if (damageSource.is(SpellDamageTypes.SOUL_MAGIC)){
             if (source instanceof ServerPlayer player){
                 Optional<PlayerOccupationAttribute> optional =

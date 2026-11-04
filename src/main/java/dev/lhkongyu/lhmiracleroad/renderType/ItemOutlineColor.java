@@ -7,9 +7,9 @@ import net.minecraft.world.item.ItemStack;
 
 public final class ItemOutlineColor {
 
-    private static final long BREATH_PERIOD_MILLIS = 2000L;
+    private static final long BREATH_PERIOD_MILLIS = 3000L;
 
-    private static final float BREATH_MIN_BRIGHTNESS = 0.7F;
+    private static final float BREATH_MIN_BRIGHTNESS = 0.6F;
 
     private ItemOutlineColor() {
     }

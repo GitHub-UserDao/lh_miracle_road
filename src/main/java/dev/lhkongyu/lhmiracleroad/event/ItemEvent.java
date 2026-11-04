@@ -253,9 +253,8 @@ public class ItemEvent {
         ItemStack stack = event.getItemStack();
         CompoundTag gemTag = stack.getTagElement("lh_gem");
         if (LHMiracleRoadTool.itemIsArmors(stack)) {
-//            if (stack.getItem() instanceof ArmorItem armorItem) if (armorItem.getType().getSlot() != event.getSlotType()) return;
-//            else if (stack.getItem() instanceof ElytraItem elytraItem) if (elytraItem.getEquipmentSlot() != event.getSlotType()) return;
-            if (stack.getEquipmentSlot() != event.getSlotType()) return;
+            if (stack.getItem() instanceof ArmorItem armorItem) if (armorItem.getType().getSlot() != event.getSlotType()) return;
+            else if (stack.getItem() instanceof ElytraItem elytraItem) if (elytraItem.getEquipmentSlot() != event.getSlotType()) return;
             //武器附加重量
             ItemPunishmentTool.itemStackAddPunishmentAttribute(stack, event);
 

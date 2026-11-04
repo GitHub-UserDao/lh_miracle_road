@@ -1,7 +1,7 @@
 {
   "key.categories.lhmiracleroad": "奇迹之路",
   "key.display_miracle_road": "打开奇迹之路",
-  "lhmiracleroad.gui.text.select": "选择",
+  "lhmiracleroad.gui.text.select": "确认",
   "lhmiracleroad.gui.titles.init_item": "初始物品",
   "lhmiracleroad.gui.titles.init_attribute": "初始属性",
   "lhmiracleroad.gui.attribute.name.power": "力量",
