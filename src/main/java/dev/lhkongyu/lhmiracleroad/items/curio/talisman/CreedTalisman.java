@@ -42,16 +42,15 @@ public class CreedTalisman {
             if (optionalPlayerOccupationAttribute.isEmpty()) return;
             PlayerOccupationAttribute playerOccupationAttribute = optionalPlayerOccupationAttribute.get();
 
+            Integer level = playerOccupationAttribute.getOccupationAttributeLevel().get(key);
+            if (level == null) return;
+
             if (isEquipCreedTalisman)
                 playerOccupationAttribute.addCurioAttributeLevel(key, CreedTalismanData.level);
             else
                 playerOccupationAttribute.subtractCurioAttributeLevel(key, CreedTalismanData.level);
 
-            Integer level = playerOccupationAttribute.getOccupationAttributeLevel().get(key);
-            if (level == null ) return;
-
             JsonObject jsonObject = AttributePointsRewardsReloadListener.ATTRIBUTE_POINTS_REWARDS.get(key);
-            if (jsonObject == null) return;
             //给对应属性类型进行 属性增长/减少
             PlayerAttributeTool.setAttributeNotRecoverHP(serverPlayer, jsonObject, level, playerOccupationAttribute, key);
 

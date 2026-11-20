@@ -38,16 +38,15 @@ public class MiraculousTalisman {
 
             for (JsonElement keyElement : keys) {
                 String key = keyElement.getAsString();
+                Integer level = playerOccupationAttribute.getOccupationAttributeLevel().get(key);
+                if (level == null) continue;
+
                 if (isEquipMiraculousTalisman)
                     playerOccupationAttribute.addCurioAttributeLevel(key, MiraculousTalismanData.level);
                 else
                     playerOccupationAttribute.subtractCurioAttributeLevel(key, MiraculousTalismanData.level);
 
-                Integer level = playerOccupationAttribute.getOccupationAttributeLevel().get(key);
-                if (level == null) return;
-
                 JsonObject jsonObject = AttributePointsRewardsReloadListener.ATTRIBUTE_POINTS_REWARDS.get(key);
-                if (jsonObject == null) return;
                 //给对应属性类型进行 属性增长/减少
                 PlayerAttributeTool.setAttributeNotRecoverHP(serverPlayer, jsonObject, level, playerOccupationAttribute, key);
 

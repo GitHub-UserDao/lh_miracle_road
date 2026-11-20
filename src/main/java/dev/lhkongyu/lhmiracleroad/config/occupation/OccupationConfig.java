@@ -4,8 +4,11 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
+import dev.lhkongyu.lhmiracleroad.config.initItem.InitItemConfig;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLPaths;
 
 import java.io.IOException;
@@ -14,6 +17,7 @@ import java.io.Writer;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.FileAlreadyExistsException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -28,6 +32,7 @@ public class OccupationConfig {
     private static final Path PATH = FMLPaths.CONFIGDIR.get().resolve(LHMiracleRoad.MODID).resolve("Occupation");
 
     private static final Map<String, Occupation> OCCUPATION_BY_ID = new HashMap<>();
+    private static JsonObject outcastTemplate;
 
     public static void load() {
         try {
@@ -45,18 +50,37 @@ public class OccupationConfig {
             }
 
             OCCUPATION_BY_ID.clear();
+            outcastTemplate = null;
 
             for (Path file : files) {
                 for (Occupation occupation : readFile(file)) {
                     if (occupation == null || occupation.id == null || occupation.id.isBlank()) {
                         continue;
                     }
+                    if ("outcast".equals(occupation.id)) outcastTemplate = GSON.toJsonTree(occupation).getAsJsonObject();
+                    filterUnavailableRewards(occupation);
                     OCCUPATION_BY_ID.put(occupation.id, occupation);
                 }
             }
         } catch (Exception e) {
             LHMiracleRoad.LOGGER.error("Failed load occupation config", e);
         }
+    }
+
+    private static void filterUnavailableRewards(Occupation occupation) {
+        if (occupation.occupationAttributes == null) return;
+
+        ModList mods = ModList.get();
+        occupation.occupationAttributes.removeIf(attribute -> {
+            if (attribute == null || attribute.pointsRewards == null) return true;
+
+            attribute.pointsRewards.removeIf(reward -> {
+                if (reward == null) return true;
+                String modId = reward.getMod_id();
+                return modId != null && !modId.isBlank() && !mods.isLoaded(modId);
+            });
+            return attribute.pointsRewards.isEmpty();
+        });
     }
 
     private static List<Path> findJsonFiles() throws IOException {
@@ -93,67 +117,91 @@ public class OccupationConfig {
         }
     }
 
+    public static Occupation createFromOutcast(String id) throws IOException {
+        if (id == null || !id.matches("[a-zA-Z0-9_-][a-zA-Z0-9_.-]*")) {
+            throw new IllegalArgumentException("Invalid occupation ID");
+        }
+        Path target = PATH.resolve(id + ".json");
+        if (OCCUPATION_BY_ID.containsKey(id) || Files.exists(target)) {
+            throw new FileAlreadyExistsException(target.toString());
+        }
+        JsonObject template = outcastTemplate == null
+                ? GSON.toJsonTree(defaultOutcast()).getAsJsonObject() : outcastTemplate.deepCopy();
+        template.addProperty("id", id);
+        template.addProperty("name", id);
+        Occupation created = GSON.fromJson(template, Occupation.class);
+        filterUnavailableRewards(created);
+
+        Files.createDirectories(PATH);
+        Path temp = Files.createTempFile(PATH, "occupation-", ".tmp");
+        try {
+            Files.writeString(temp, GSON.toJson(template));
+            Files.move(temp, target);
+            try {
+                InitItemConfig.copyOutcastItemsIfAbsent(id);
+            } catch (IOException e) {
+                Files.delete(target);
+                throw e;
+            }
+        } finally {
+            Files.deleteIfExists(temp);
+        }
+        OCCUPATION_BY_ID.put(id, created);
+        return created;
+    }
+
     private static List<Occupation> createDefaults() {
         return List.of(
                 createOccupation("assassin", "assassin",
-                        attribute("hp", 12),
+                        attribute("hp", 9),
                         attribute("focus", 8),
-                        attribute("power", 14),
-                        attribute("sturdy", 10),
-                        attribute("brain", 12),
-                        attribute("agile", 16),
-                        attribute("luck", 10),
+                        attribute("power", 13),
+                        attribute("sturdy", 9),
+                        attribute("brain", 11),
+                        attribute("agile", 18),
+                        attribute("luck", 11),
                         attribute("reaction", 14)
                 ),
                 createOccupation("knight", "knight",
-                        attribute("hp", 16),
+                        attribute("hp", 18),
                         attribute("focus", 9),
-                        attribute("power", 15),
-                        attribute("sturdy", 15),
+                        attribute("power", 16),
+                        attribute("sturdy", 16),
                         attribute("brain", 8),
-                        attribute("agile", 12),
+                        attribute("agile", 13),
                         attribute("luck", 9),
-                        attribute("reaction", 10)
+                        attribute("reaction", 9)
                 ),
                 createOccupation("mage", "mage",
                         attribute("hp", 8),
-                        attribute("focus", 16),
-                        attribute("power", 10),
+                        attribute("focus", 17),
+                        attribute("power", 9),
                         attribute("sturdy", 8),
-                        attribute("brain", 17),
-                        attribute("agile", 10),
-                        attribute("luck", 11),
+                        attribute("brain", 19),
+                        attribute("agile", 12),
+                        attribute("luck", 10),
                         attribute("reaction", 9)
                 ),
-                createOccupation("outcast", "outcast",
-                        attribute("hp", 10),
-                        attribute("focus", 10),
-                        attribute("power", 10),
-                        attribute("sturdy", 10),
-                        attribute("brain", 10),
-                        attribute("agile", 10),
-                        attribute("luck", 10),
-                        attribute("reaction", 10)
-                ),
+                defaultOutcast(),
                 createOccupation("samurai", "samurai",
                         attribute("hp", 14),
                         attribute("focus", 8),
                         attribute("power", 14),
-                        attribute("sturdy", 14),
+                        attribute("sturdy", 13),
                         attribute("brain", 9),
                         attribute("agile", 14),
-                        attribute("luck", 9),
-                        attribute("reaction", 12)
+                        attribute("luck", 8),
+                        attribute("reaction", 13)
                 ),
                 createOccupation("ranger", "ranger",
-                        attribute("hp", 12),
-                        attribute("focus", 9),
+                        attribute("hp", 11),
+                        attribute("focus", 8),
                         attribute("power", 17),
-                        attribute("sturdy", 14),
-                        attribute("brain", 10),
-                        attribute("agile", 12),
-                        attribute("luck", 12),
-                        attribute("reaction", 11)
+                        attribute("sturdy", 9),
+                        attribute("brain", 9),
+                        attribute("agile", 17),
+                        attribute("luck", 9),
+                        attribute("reaction", 12)
                 )
         );
     }
@@ -164,6 +212,12 @@ public class OccupationConfig {
         occupation.name = name;
         occupation.occupationAttributes = List.of(attributes);
         return occupation;
+    }
+
+    private static Occupation defaultOutcast() {
+        return createOccupation("outcast", "outcast", attribute("hp", 10), attribute("focus", 10),
+                attribute("power", 10), attribute("sturdy", 10), attribute("brain", 10),
+                attribute("agile", 10), attribute("luck", 10), attribute("reaction", 10));
     }
 
     private static OccupationAttribute attribute(String typeId, int initLv) {
@@ -256,5 +310,11 @@ public class OccupationConfig {
 
     public static Occupation getOccupation(String id) {
         return OCCUPATION_BY_ID.get(id);
+    }
+
+    public static List<Occupation> getOccupations() {
+        return OCCUPATION_BY_ID.values().stream()
+                .sorted(Comparator.comparing(Occupation::getId))
+                .toList();
     }
 }

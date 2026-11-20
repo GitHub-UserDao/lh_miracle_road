@@ -10,13 +10,13 @@ import net.minecraftforge.network.simple.SimpleChannel;
 
 public class PlayerChannel {
 
-    private static final String PROTOCOL_VERSION = "1";
+    private static final String PROTOCOL_VERSION = "2";
 
     public static final SimpleChannel channel = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(LHMiracleRoad.MODID, "lh_miracle_road_player_attribute"),
             () -> PROTOCOL_VERSION,
-            s-> true,
-            s-> true
+            PROTOCOL_VERSION::equals,
+            PROTOCOL_VERSION::equals
     );
 
     public static void register(){
@@ -60,6 +60,30 @@ public class PlayerChannel {
                 .encoder(AbyssbindActivatePacket::encode)
                 .decoder(AbyssbindActivatePacket::new)
                 .consumerMainThread(AbyssbindActivatePacket::handle)
+                .add();
+
+        channel.messageBuilder(PlayerAttributeValuesRequest.class, 8, NetworkDirection.PLAY_TO_SERVER)
+                .decoder(PlayerAttributeValuesRequest::new)
+                .encoder(PlayerAttributeValuesRequest::encode)
+                .consumerMainThread(PlayerAttributeValuesRequest::handle)
+                .add();
+
+        channel.messageBuilder(PlayerAttributeValuesSnapshot.class, 9, NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(PlayerAttributeValuesSnapshot::new)
+                .encoder(PlayerAttributeValuesSnapshot::encode)
+                .consumerMainThread(PlayerAttributeValuesSnapshot::handle)
+                .add();
+
+        channel.messageBuilder(InitItemPreviewMessage.class, 10, NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(InitItemPreviewMessage::new)
+                .encoder(InitItemPreviewMessage::encode)
+                .consumerMainThread(InitItemPreviewMessage::handle)
+                .add();
+
+        channel.messageBuilder(OccupationCatalogMessage.class, 11, NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(OccupationCatalogMessage::new)
+                .encoder(OccupationCatalogMessage::encode)
+                .consumerMainThread(OccupationCatalogMessage::handle)
                 .add();
     }
 

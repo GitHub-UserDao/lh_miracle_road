@@ -7,6 +7,8 @@ import dev.lhkongyu.lhmiracleroad.packet.PlayerChannel;
 import dev.lhkongyu.lhmiracleroad.packet.PlayerOccupationMessage;
 import dev.lhkongyu.lhmiracleroad.client.screen.LHMiracleRoadMainScreen;
 import dev.lhkongyu.lhmiracleroad.client.screen.LHMiracleRoadOccupationScreen;
+import dev.lhkongyu.lhmiracleroad.client.screen.occupation.UpgradeInterfaceScreen;
+import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
@@ -42,8 +44,10 @@ public class ClientEvents {
                 Optional<PlayerOccupationAttribute> optionalPlayerOccupationAttribute = player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).resolve();
                 if (optionalPlayerOccupationAttribute.isPresent()) {
                     PlayerOccupationAttribute playerOccupationAttribute = optionalPlayerOccupationAttribute.get();
-                    if (playerOccupationAttribute.getOccupationId() != null && !playerOccupationAttribute.getOccupationId().isEmpty()) {
-                        minecraft.setScreen(new LHMiracleRoadMainScreen(1));
+                    String occupationId = playerOccupationAttribute.getOccupationId();
+                    if (occupationId != null && !occupationId.isEmpty()) {
+                        minecraft.setScreen(LHMiracleRoadTool.getOccupationClient(occupationId) == null
+                                ? new UpgradeInterfaceScreen() : new LHMiracleRoadMainScreen(1));
                         return;
                     }
                 }

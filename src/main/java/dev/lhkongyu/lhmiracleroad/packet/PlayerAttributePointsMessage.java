@@ -2,7 +2,6 @@ package dev.lhkongyu.lhmiracleroad.packet;
 
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
-import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import dev.lhkongyu.lhmiracleroad.tool.PlayerAttributeTool;
 import dev.lhkongyu.lhmiracleroad.tool.SyncTool;
 import net.minecraft.network.FriendlyByteBuf;
@@ -12,21 +11,27 @@ import net.minecraftforge.network.NetworkEvent;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-public record PlayerAttributePointsMessage(String attributeTypeName) {
+public record PlayerAttributePointsMessage(String attributeTypeName, int count) {
+
+    public PlayerAttributePointsMessage(String attributeTypeName) {
+        this(attributeTypeName, 1);
+    }
 
     public PlayerAttributePointsMessage(FriendlyByteBuf buf){
-        this(buf.readUtf());
+        this(buf.readUtf(), buf.isReadable() ? buf.readVarInt() : 1);
     }
     public void encode(FriendlyByteBuf buf){
         buf.writeUtf(attributeTypeName);
+        // Keep one-level requests in the legacy packet format.
+        if (count != 1) buf.writeVarInt(count);
     }
 
     public void handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context context = supplier.get();
         context.enqueueWork(() -> {
             ServerPlayer player = context.getSender();
-            if (player == null) return;
-            PlayerAttributeTool.points(player, attributeTypeName);
+            if (player == null || (count != 1 && count != 10)) return;
+            PlayerAttributeTool.points(player, attributeTypeName, count);
 
             Optional<PlayerOccupationAttribute> optionalPlayerOccupationAttribute = player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).resolve();
             if (optionalPlayerOccupationAttribute.isEmpty()) return;

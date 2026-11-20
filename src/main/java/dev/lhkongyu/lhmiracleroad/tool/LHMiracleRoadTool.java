@@ -46,6 +46,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.*;
 import net.minecraftforge.fml.ModList;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.joml.Math;
 import org.joml.Vector3f;
 
@@ -450,7 +451,11 @@ public class LHMiracleRoadTool {
             case NameTool.ABNORMAL_BURN_BUILDUP -> LHMiracleRoadAttributes.ABNORMAL_BURN_BUILDUP;
             case NameTool.ABNORMAL_BUILDUP -> LHMiracleRoadAttributes.ABNORMAL_BUILDUP;
             case NameTool.ARMOR_PENETRATION -> LHMiracleRoadAttributes.ARMOR_PENETRATION;
-            default -> AttributePointsRewardsReloadListener.recordAttribute.get(attributeName);
+            default -> {
+                ResourceLocation id = ResourceLocation.tryParse(attributeName);
+                Attribute registered = id == null ? null : ForgeRegistries.ATTRIBUTES.getValue(id);
+                yield registered == null ? AttributePointsRewardsReloadListener.recordAttribute.get(attributeName) : registered;
+            }
         };
     }
 

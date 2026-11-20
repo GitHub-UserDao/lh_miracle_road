@@ -295,6 +295,7 @@ public class LHMiracleRoadMainScreen extends Screen {
 
         for (String key : ClientData.ATTRIBUTE_TYPES.keySet()) {
             Integer level = playerOccupationAttribute.getOccupationAttributeLevel().get(key);
+            if (level == null) continue;
             level += playerOccupationAttribute.getCurioAttributeLevelValue(key);
             String nameText = ResourceLocationTool.ATTRIBUTE_NAME_PREFIX + key;
             Component componentNameText = Component.translatable(nameText);
@@ -390,8 +391,9 @@ public class LHMiracleRoadMainScreen extends Screen {
             int lineHeight = font.lineHeight;
             for (String key : ClientData.ATTRIBUTE_TYPES.keySet()) {
                 JsonObject data = ClientData.ATTRIBUTE_POINTS_REWARDS.get(key);
+                Integer currentLevel = playerOccupationAttribute.getOccupationAttributeLevel().get(key);
+                if (data == null || currentLevel == null) continue;
                 int maxLevel = LHMiracleRoadTool.isAsInt(data.get("max_level"));
-                int currentLevel = playerOccupationAttribute.getOccupationAttributeLevel().get(key);
                 int attributeMaxLevel = playerOccupationAttribute.getAttributeMaxLevel();
                 if (LHMiracleRoadTool.isShowPointsButton(currentLevel, maxLevel, attributeMaxLevel)) {
                     ImageButton showPointsButton =

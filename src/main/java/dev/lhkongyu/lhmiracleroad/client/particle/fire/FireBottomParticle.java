@@ -13,7 +13,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class FireBottomParticle extends AbstractSheetParticle {
     public FireBottomParticle(ClientLevel level, double x, double y, double z, SpriteSet spriteSet, double xd, double yd, double zd) {
         super(level, x, y, z, spriteSet, xd, yd, zd);
-        this.scale(this.random.nextFloat() * 1.75F + 1.0F);
+        this.scale(this.random.nextFloat() * 1.45F + 1.0F);
         this.lifetime = 6 + (int)(Math.random() * 6.0F);
         this.gravity = -0.125F;
         this.hasPhysics = false;

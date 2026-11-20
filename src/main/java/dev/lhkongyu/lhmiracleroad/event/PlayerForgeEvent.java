@@ -122,8 +122,8 @@ public class PlayerForgeEvent {
         Optional<PlayerOccupationAttribute> playerOccupationAttributeOptional = event.getEntity().getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).resolve();
         if (playerOccupationAttributeOptional.isPresent()) {
             PlayerOccupationAttribute playerOccupationAttribute = playerOccupationAttributeOptional.get();
-            loggedInSyncAttribute(playerOccupationAttribute, (ServerPlayer) player);
             playerOccupationAttribute.setCurioAttributeLevel(Maps.newHashMap());
+            loggedInSyncAttribute(playerOccupationAttribute, (ServerPlayer) player);
             SyncTool.synchronizationClient(playerOccupationAttribute, (ServerPlayer) player);
             SyncTool.synchronizationShowAttribute((ServerPlayer) player);
             //更新玩家奖惩状态
@@ -155,11 +155,13 @@ public class PlayerForgeEvent {
             player.getAttribute(LHMiracleRoadAttributes.BURDEN).setBaseValue(LHMiracleRoadConfig.COMMON.INIT_BURDEN.get());
             for (String key : modifierMap.keySet()) {
                 Attribute attribute = LHMiracleRoadTool.stringConversionAttribute(key);
-                if (attribute == null) continue;
+                AttributeInstance instance = attribute == null ? null : player.getAttribute(attribute);
+                if (instance == null) continue;
 
-                player.getAttribute(attribute).addTransientModifier(modifierMap.get(key));
+                AttributeModifier modifier = modifierMap.get(key);
+                if (instance.getModifier(modifier.getId()) == null) instance.addTransientModifier(modifier);
                 if (attribute.getDescriptionId().equals(Attributes.MAX_HEALTH.getDescriptionId())){
-                    player.setHealth((float) player.getAttribute(attribute).getValue());
+                    player.setHealth((float) instance.getValue());
                 }
             }
             SyncTool.synchronizationClient(playerOccupationAttribute, (ServerPlayer) player);
@@ -173,6 +175,7 @@ public class PlayerForgeEvent {
      */
     private static void loggedInSyncAttribute(PlayerOccupationAttribute playerOccupationAttribute,ServerPlayer player){
         if (playerOccupationAttribute.getOccupationId() != null) {
+            if (PlayerAttributeTool.restoreConfiguredOccupation(player, playerOccupationAttribute)) return;
             JsonObject occupation = LHMiracleRoadTool.getOccupation(playerOccupationAttribute.getOccupationId());
             if (occupation == null){
                 PlayerAttributeTool.resetOccupation(player,playerOccupationAttribute);

@@ -7,6 +7,7 @@ public class OccupationItem {
     boolean is_split;
     boolean is_wear;
     boolean is_deputy;
+    boolean is_main_hand;
 
     public String getItem() {
         return item;
@@ -30,5 +31,9 @@ public class OccupationItem {
 
     public boolean isDeputy() {
         return is_deputy;
+    }
+
+    public boolean isIs_main_hand() {
+        return is_main_hand;
     }
 }
