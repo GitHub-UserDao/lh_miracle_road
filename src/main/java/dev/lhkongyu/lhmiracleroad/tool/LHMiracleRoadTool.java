@@ -1,20 +1,14 @@
 package dev.lhkongyu.lhmiracleroad.tool;
 
-import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
-import dev.lhkongyu.lhmiracleroad.attributes.AttributeInstanceAccess;
 import dev.lhkongyu.lhmiracleroad.attributes.LHMiracleRoadAttributes;
-import dev.lhkongyu.lhmiracleroad.attributes.ShowAttributesTypes;
 import dev.lhkongyu.lhmiracleroad.capability.ItemStackPunishmentAttribute;
 import dev.lhkongyu.lhmiracleroad.capability.ItemStackPunishmentAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
-import dev.lhkongyu.lhmiracleroad.data.ClientData;
-import dev.lhkongyu.lhmiracleroad.data.reloader.*;
 import dev.lhkongyu.lhmiracleroad.entity.player.PlayerSoulEntity;
 import dev.lhkongyu.lhmiracleroad.generator.SpellDamageTypes;
 import dev.lhkongyu.lhmiracleroad.items.gem.AttributeGem;
@@ -23,8 +17,6 @@ import dev.lhkongyu.lhmiracleroad.tool.mathcalculator.MathCalculatorUtil;
 import net.minecraft.client.gui.Font;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceKey;
@@ -129,84 +121,6 @@ public class LHMiracleRoadTool {
     }
 
     /**
-     * 获取描述文本
-     *
-     * @param jsonArray
-     * @param level
-     * @param id
-     * @return
-     */
-    public static List<Component> getDescribeText(JsonArray jsonArray, int level, String id) {
-        List<Component> components = new ArrayList<>();
-        for (JsonElement jsonElement : jsonArray) {
-            JsonObject object = jsonElement.getAsJsonObject();
-            String modId = isAsString(object.get("condition"));
-            String describe = ResourceLocationTool.ATTRIBUTE_DETAILS_TEXT_PREFIX + isAsString(object.get("describe"));
-            String attribute = isAsString(object.get("attribute"));
-            int percentageBase = 100;
-            if (modId != null && !modId.isEmpty()) {
-                if (isModExist(modId))
-                    components.add(Component.translatable(describe, getDescribeTextValue(level, id, attribute,percentageBase)));
-            } else
-                components.add(Component.translatable(describe, getDescribeTextValue(level, id, attribute,percentageBase)));
-        }
-        return components;
-    }
-
-    /**
-     * 计算出描述文本后显示的值
-     *
-     * @param level
-     * @param id
-     * @param attribute
-     * @return
-     */
-    private static String getDescribeTextValue(int level, String id, String attribute,int percentageBase) {
-        String showValue = null;
-//        Map<String, String> valueMap = attributePromoteValueShow.get(id);
-//        if (valueMap != null) {
-//            showValue = valueMap.get(attribute);
-//            if (showValue != null) return showValue;
-//        }
-        JsonObject data = ClientData.ATTRIBUTE_POINTS_REWARDS.get(id);
-        if (data == null) return "";
-        JsonArray pointsRewards = isAsJsonArray(data.get("points_rewards"));
-        if (pointsRewards == null || pointsRewards.isEmpty()) return "";
-        for (JsonElement jsonElement : pointsRewards) {
-            JsonObject jsonObject = isAsJsonObject(jsonElement);
-            String rewardsAttribute = isAsString(jsonObject.get("attribute"));
-            if (rewardsAttribute == null) return "";
-            if (attribute.equals(rewardsAttribute)) {
-                double value = isAsDouble(jsonObject.get("value"));
-                int levelPromote = isAsInt(jsonObject.get("level_promote"));
-                double levelPromoteValue = isAsDouble(jsonObject.get("level_promote_value"));
-                AttributeModifier.Operation operation = stringConversionOperation(isAsString(jsonObject.get("operation")));
-                if (operation == null) return "";
-                double min = LHMiracleRoadTool.isAsDouble(jsonObject.get("min"));
-                double attributeValue = LHMiracleRoadTool.calculateTotalIncrease(level, value, levelPromoteValue, levelPromote,min);
-                showValue = switch (operation) {
-                    case ADDITION -> "+ " + attributeValue;
-                    case MULTIPLY_BASE, MULTIPLY_TOTAL -> "+ " + new BigDecimal(attributeValue * percentageBase).setScale(4, RoundingMode.HALF_UP).doubleValue() + "%";
-                };
-//                Map<String, String> map = Maps.newHashMap();
-//                map.put(attribute, showValue);
-//                attributePromoteValueShow.put(id, map);
-                return showValue;
-            }
-
-        }
-        return "";
-    }
-
-    public static boolean isJsonArrayModIdsExist(JsonArray jsonArray) {
-        if (jsonArray == null || jsonArray.isEmpty()) return false;
-        for (int i = 0; i < jsonArray.size(); i++) {
-            if (isModExist(jsonArray.get(i).getAsString())) return false;
-        }
-        return true;
-    }
-
-    /**
      * 获取该mod是否存在
      *
      * @param modId
@@ -234,10 +148,6 @@ public class LHMiracleRoadTool {
 
     public static double isAsDouble(JsonElement jsonElement) {
         return jsonElement != null ? jsonElement.getAsDouble() : 0.0;
-    }
-
-    public static Boolean isAsBoolean(JsonElement jsonElement) {
-        return jsonElement != null && jsonElement.getAsBoolean();
     }
 
     /**
@@ -284,104 +194,6 @@ public class LHMiracleRoadTool {
         returnValue = value * level;
         dfReturnValue = new BigDecimal(returnValue);
         return dfReturnValue.setScale(4, RoundingMode.HALF_UP).doubleValue();
-    }
-
-    /**
-     * 通过职业信息获取，职业每个属性的初始等级
-     *
-     * @param occupation
-     * @return
-     */
-    public static Map<String, Integer> setInitAttributeLevel(JsonObject occupation) {
-        Map<String, Integer> map = Maps.newHashMap();
-        JsonArray initAttribute = LHMiracleRoadTool.isAsJsonArray(occupation.get("init_attribute"));
-        for (JsonElement jsonElement : initAttribute) {
-            JsonObject object = LHMiracleRoadTool.isAsJsonObject(jsonElement);
-            if (object == null) continue;
-            String id = object.get("id").getAsString();
-            JsonArray attributeObject = AttributeReloadListener.ATTRIBUTE_TYPES.get(id);
-            if (attributeObject == null || attributeObject.isEmpty()) continue;
-            int level = object.get("level").getAsInt();
-            map.put(id, level);
-        }
-
-        return map;
-    }
-
-    /**
-     * 通过职业信息获取，职业每个属性的初始等级(客户端)
-     * @param occupation
-     * @return
-     */
-    public static Map<String, Integer> setInitAttributeLevelClient(JsonObject occupation) {
-        Map<String, Integer> map = Maps.newHashMap();
-        JsonArray initAttribute = LHMiracleRoadTool.isAsJsonArray(occupation.get("init_attribute"));
-        for (JsonElement jsonElement : initAttribute) {
-            JsonObject object = LHMiracleRoadTool.isAsJsonObject(jsonElement);
-            if (object == null) continue;
-            String id = object.get("id").getAsString();
-            JsonArray attributeObject = ClientData.ATTRIBUTE_TYPES.get(id);
-            if (attributeObject == null || attributeObject.isEmpty()) continue;
-            int level = object.get("level").getAsInt();
-            map.put(id, level);
-        }
-
-        return map;
-    }
-
-    /**
-     * 通过职业信息获取该职业初始物品信息
-     *
-     * @param occupation
-     * @return
-     */
-    public static List<JsonObject> setInitItem(JsonObject occupation) {
-        List<JsonObject> objects = new ArrayList<>();
-        JsonArray initItem = InitItemResourceReloadListener.INIT_ITEM.get(isAsString(occupation.get("id")));
-        if (initItem == null || initItem.isEmpty()) return objects;
-        for (JsonElement jsonElement : initItem) {
-            JsonObject object = LHMiracleRoadTool.isAsJsonObject(jsonElement);
-            if (object == null) continue;
-            objects.add(object);
-        }
-        return objects;
-    }
-
-    /**
-     * 通过职业信息获取该职业客户端的初始物品信息
-     *
-     * @param occupation
-     * @return
-     */
-    public static List<JsonObject> setInitItemClient(JsonObject occupation) {
-        List<JsonObject> objects = new ArrayList<>();
-        JsonArray initItem = ClientData.INIT_ITEM.get(isAsString(occupation.get("id")));
-        if (initItem == null || initItem.isEmpty()) return objects;
-        for (JsonElement jsonElement : initItem) {
-            JsonObject object = LHMiracleRoadTool.isAsJsonObject(jsonElement);
-            if (object == null) continue;
-            objects.add(object);
-        }
-        return objects;
-    }
-
-    /**
-     * 设置始物品标签
-     *
-     * @param itemStack
-     * @param tagObj
-     */
-    public static void setTag(ItemStack itemStack, String tagObj) {
-        if (tagObj != null) {
-            CompoundTag modTag;
-            try {
-                modTag = NbtUtils.snbtToStructure(tagObj);
-                modTag.remove("palette");
-            } catch (CommandSyntaxException e) {
-                throw new RuntimeException(e);
-            }
-            itemStack.setTag(modTag);
-        }
     }
 
     /**
@@ -453,47 +265,9 @@ public class LHMiracleRoadTool {
             case NameTool.ARMOR_PENETRATION -> LHMiracleRoadAttributes.ARMOR_PENETRATION;
             default -> {
                 ResourceLocation id = ResourceLocation.tryParse(attributeName);
-                Attribute registered = id == null ? null : ForgeRegistries.ATTRIBUTES.getValue(id);
-                yield registered == null ? AttributePointsRewardsReloadListener.recordAttribute.get(attributeName) : registered;
+                yield id == null ? null : ForgeRegistries.ATTRIBUTES.getValue(id);
             }
         };
-    }
-
-    /**
-     * 判断该属性名称是否符合属性对象的 descriptionId
-     *
-     * @param descriptionId
-     * @param attributeName
-     * @return
-     */
-    public static boolean isAttributeName(String descriptionId, String attributeName) {
-        String[] parts = attributeName.split(":");
-        if (parts.length != 2) {
-            // 如果不符合key:value的格式，则直接返回false
-            return false;
-        }
-        String key = parts[0];
-        String value = parts[1];
-        if (descriptionId.equals(value)) {
-            return true;
-        }
-
-        String format = key + "." + value;
-        if (descriptionId.equals(format)) {
-            return true;
-        }
-        return descriptionId.equals("attribute.name." + format) || descriptionId.equals("attribute." + format);
-    }
-
-    /**
-     * 设置部分属性基础值
-     *
-     * @param player
-     * @param initDifficultyLevel
-     */
-    public static void setConfigBaseAttribute(ServerPlayer player, int initDifficultyLevel) {
-        player.getAttribute(LHMiracleRoadAttributes.BURDEN).setBaseValue(LHMiracleRoadConfig.COMMON.INIT_BURDEN.get());
-        player.getAttribute(LHMiracleRoadAttributes.INIT_DIFFICULTY_LEVEL).setBaseValue(initDifficultyLevel);
     }
 
     /**
@@ -527,48 +301,6 @@ public class LHMiracleRoadTool {
         formula = formula.replaceAll("atou", String.valueOf(atou));
         formula = formula.replaceAll("buff", String.valueOf(buff));
         return MathCalculatorUtil.getCalculatorInt(formula);
-    }
-
-    /**
-     * 设置在gui显示的属性信息
-     *
-     * @param player
-     * @return
-     */
-    public static JsonObject setShowAttribute(ServerPlayer player) {
-        JsonObject showAttribute =  new JsonObject();
-        for (JsonObject attributeObject : ShowGuiAttributeReloadListener.SHOW_GUI_ATTRIBUTE) {
-            String attributeName = LHMiracleRoadTool.isAsString(attributeObject.get("attribute"));
-            ShowAttributesTypes showValueType = ShowAttributesTypes.fromString(LHMiracleRoadTool.isAsString(attributeObject.get("show_value_type")));
-
-            Attribute attribute = stringConversionAttribute(attributeName);
-            if (attribute == null) continue;
-            AttributeInstance attributeInstance = player.getAttribute(attribute);
-            if (attributeInstance == null) continue;
-
-            double modifierValue = 0.0;
-            AttributeInstanceAccess attributeInstanceAccess = ((AttributeInstanceAccess) attributeInstance);
-            switch (showValueType){
-                case BASE:
-                    modifierValue = attributeInstanceAccess.lh_miracle_road$computeIncreasedValueForInitial(0);
-                    break;
-                case BASE_PERCENTAGE:
-                    if (attributeInstance.getBaseValue() > 0){
-                        modifierValue = attributeInstanceAccess.lh_miracle_road$computeIncreasedValueForInitial(0);
-                        break;
-                    }
-                case EXTRA_BASE,EXTRA_PERCENTAGE:
-                    modifierValue = attributeInstanceAccess.lh_miracle_road$computeIncreasedValueForInitial(attributeInstance.getBaseValue() > 0 ? 0 : 1);
-                    if (attributeName.equals(NameTool.CRITICAL_HIT_RATE) && modifierValue == 100) {
-                        modifierValue = attributeInstanceAccess.lh_miracle_road$computeIncreasedValueForInitial(0);
-                        break;
-                    }
-                    modifierValue -= attributeInstance.getBaseValue() > 0 ? attributeInstance.getBaseValue() : 1;
-                    break;
-            }
-            showAttribute.addProperty(attributeName, modifierValue);
-        }
-        return showAttribute;
     }
 
     /**
@@ -652,49 +384,6 @@ public class LHMiracleRoadTool {
     }
 
     /**
-     * 通过职业id获取职业信息
-     *
-     * @param occupationId
-     * @return
-     */
-    public static JsonObject getOccupation(String occupationId) {
-        JsonObject occupation = null;
-        for (int i = 0; i < OccupationReloadListener.OCCUPATION.size(); i++) {
-            JsonObject jsonObject = OccupationReloadListener.OCCUPATION.get(i);
-            if (jsonObject.get("id").getAsString().equals(occupationId)) {
-                occupation = jsonObject;
-            }
-        }
-        return occupation;
-    }
-
-    public static JsonObject getOccupationClient(String occupationId) {
-        JsonObject occupation = null;
-        for (int i = 0; i < ClientData.OCCUPATION.size(); i++) {
-            JsonObject jsonObject = ClientData.OCCUPATION.get(i);
-            if (jsonObject.get("id").getAsString().equals(occupationId)) {
-                occupation = jsonObject;
-            }
-        }
-        return occupation;
-    }
-
-    /**
-     * 显示的value格式
-     * @return
-     */
-    public static String getShowValueType(ShowAttributesTypes showValueType,double modifierValue,int percentageBase){
-        final double v = new BigDecimal(modifierValue).setScale(4, RoundingMode.HALF_UP).doubleValue();
-        final BigDecimal bigDecimal = new BigDecimal(modifierValue * percentageBase).setScale(4, RoundingMode.HALF_UP);
-        return switch (showValueType){
-            case BASE -> String.valueOf(v);
-            case EXTRA_BASE -> "+" + v;
-            case BASE_PERCENTAGE -> bigDecimal.doubleValue() + "%";
-            case EXTRA_PERCENTAGE -> "+" + bigDecimal.doubleValue() + "%";
-        };
-    }
-
-    /**
      * 返回出生点
      * @param player
      */
@@ -710,11 +399,6 @@ public class LHMiracleRoadTool {
                 player.getYRot(),
                 player.getXRot()
         );
-    }
-
-    public static boolean isShowPointsButton(int currentLevel,int maxLevel,int attributeMaxLevel){
-        if (attributeMaxLevel < 1) return currentLevel < maxLevel;
-        else return currentLevel < attributeMaxLevel;
     }
 
     public static JsonObject getEquipment(Map<String,Map<String,JsonObject>> equipment,String id){

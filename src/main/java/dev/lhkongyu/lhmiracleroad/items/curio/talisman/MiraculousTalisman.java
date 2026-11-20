@@ -2,11 +2,9 @@ package dev.lhkongyu.lhmiracleroad.items.curio.talisman;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.data.loot.nbt.MiraculousTalismanData;
-import dev.lhkongyu.lhmiracleroad.data.reloader.AttributePointsRewardsReloadListener;
 import dev.lhkongyu.lhmiracleroad.items.curio.MiraculousTalismanItem;
 import dev.lhkongyu.lhmiracleroad.items.curio.TalismanItem;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
@@ -46,9 +44,7 @@ public class MiraculousTalisman {
                 else
                     playerOccupationAttribute.subtractCurioAttributeLevel(key, MiraculousTalismanData.level);
 
-                JsonObject jsonObject = AttributePointsRewardsReloadListener.ATTRIBUTE_POINTS_REWARDS.get(key);
-                //给对应属性类型进行 属性增长/减少
-                PlayerAttributeTool.setAttributeNotRecoverHP(serverPlayer, jsonObject, level, playerOccupationAttribute, key);
+                PlayerAttributeTool.refreshAttributeRewards(serverPlayer, playerOccupationAttribute, key, level);
 
                 SyncTool.synchronizationClient(playerOccupationAttribute,serverPlayer);
                 //更新玩家奖惩状态

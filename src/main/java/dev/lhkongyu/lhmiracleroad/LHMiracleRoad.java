@@ -68,13 +68,8 @@ public class LHMiracleRoad
     }
 
     private void reloadListnerEvent(final AddReloadListenerEvent event) {
-        event.addListener(new AttributeReloadListener());
-        event.addListener(new OccupationReloadListener());
-        event.addListener(new AttributePointsRewardsReloadListener());
         event.addListener(new EquipmentReloadListener());
-        event.addListener(new ShowGuiAttributeReloadListener());
         event.addListener(new PunishmentReloadListener());
-        event.addListener(new InitItemResourceReloadListener());
     }
 
     private void registerShaders(final RegisterShadersEvent e) {

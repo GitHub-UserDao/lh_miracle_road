@@ -1,14 +1,10 @@
 package dev.lhkongyu.lhmiracleroad.data.loot.nbt;
 
-import com.google.gson.JsonArray;
-import dev.lhkongyu.lhmiracleroad.data.reloader.AttributeReloadListener;
-import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
+import dev.lhkongyu.lhmiracleroad.config.occupation.OccupationConfig;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class CreedTalismanData {
 
@@ -17,11 +13,10 @@ public class CreedTalismanData {
     public static final String NBT_CREED_ATTRIBUTE = "NBTCreedAttribute";
 
     public static void setCreedTalismanData(ItemStack stack) {
-        var spellTag = stack.getOrCreateTag();
-        Map<String, JsonArray> attributeTypes = AttributeReloadListener.ATTRIBUTE_TYPES;
-        String randomKey = getRandomKey(attributeTypes);
-
-        spellTag.putString(NBT_CREED_ATTRIBUTE, randomKey);
+        List<String> ids = OccupationConfig.getAttributeTypeIds();
+        if (ids.isEmpty()) return;
+        String id = ids.get(ThreadLocalRandom.current().nextInt(ids.size()));
+        stack.getOrCreateTag().putString(NBT_CREED_ATTRIBUTE, id);
     }
 
     public static String getCreedTalismanData(ItemStack stack){
@@ -30,18 +25,6 @@ public class CreedTalismanData {
         } else {
             return null;
         }
-    }
-
-    public static String getRandomKey(Map<String, JsonArray> attributeTypes) {
-        if (attributeTypes == null || attributeTypes.isEmpty()) {
-            return null;
-        }
-        List<String> keys = new ArrayList<>(attributeTypes.keySet());
-
-        Random random = new Random();
-        int randomIndex =random.nextInt(keys.size());
-
-        return keys.get(randomIndex);
     }
 
 }

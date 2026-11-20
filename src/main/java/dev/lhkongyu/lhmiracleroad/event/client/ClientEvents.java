@@ -1,14 +1,9 @@
 package dev.lhkongyu.lhmiracleroad.event.client;
 
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
-import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
-import dev.lhkongyu.lhmiracleroad.packet.PlayerChannel;
-import dev.lhkongyu.lhmiracleroad.packet.PlayerOccupationMessage;
-import dev.lhkongyu.lhmiracleroad.client.screen.LHMiracleRoadMainScreen;
-import dev.lhkongyu.lhmiracleroad.client.screen.LHMiracleRoadOccupationScreen;
+import dev.lhkongyu.lhmiracleroad.client.screen.occupation.OccupationChooseScreen;
 import dev.lhkongyu.lhmiracleroad.client.screen.occupation.UpgradeInterfaceScreen;
-import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
@@ -18,8 +13,6 @@ import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.lwjgl.glfw.GLFW;
-
-import java.util.Optional;
 
 @Mod.EventBusSubscriber(modid = LHMiracleRoad.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ClientEvents {
@@ -38,21 +31,13 @@ public class ClientEvents {
         public static void inputEvent(InputEvent.Key event) {
             Minecraft minecraft = Minecraft.getInstance();
             Player player = minecraft.player;
-            if (player == null || minecraft.screen != null) return;
-            if (event.getKey() == LH_MIRACLE_ROAD_TREE_KEY.getKey().getValue()) {
-                PlayerChannel.sendToServer(new PlayerOccupationMessage(""));
-                Optional<PlayerOccupationAttribute> optionalPlayerOccupationAttribute = player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).resolve();
-                if (optionalPlayerOccupationAttribute.isPresent()) {
-                    PlayerOccupationAttribute playerOccupationAttribute = optionalPlayerOccupationAttribute.get();
-                    String occupationId = playerOccupationAttribute.getOccupationId();
-                    if (occupationId != null && !occupationId.isEmpty()) {
-                        minecraft.setScreen(LHMiracleRoadTool.getOccupationClient(occupationId) == null
-                                ? new UpgradeInterfaceScreen() : new LHMiracleRoadMainScreen(1));
-                        return;
-                    }
-                }
-                minecraft.setScreen(new LHMiracleRoadOccupationScreen());
-            }
+            if (player == null || minecraft.screen != null || event.getAction() != GLFW.GLFW_PRESS
+                    || !LH_MIRACLE_ROAD_TREE_KEY.matches(event.getKey(), event.getScanCode())) return;
+
+            boolean hasOccupation = player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER)
+                    .map(attributes -> attributes.getOccupationId() != null && !attributes.getOccupationId().isBlank())
+                    .orElse(false);
+            minecraft.setScreen(hasOccupation ? new UpgradeInterfaceScreen() : new OccupationChooseScreen());
         }
     }
 }

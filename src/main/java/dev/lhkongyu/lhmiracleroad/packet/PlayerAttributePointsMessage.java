@@ -1,6 +1,5 @@
 package dev.lhkongyu.lhmiracleroad.packet;
 
-import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.tool.PlayerAttributeTool;
 import dev.lhkongyu.lhmiracleroad.tool.SyncTool;
@@ -8,22 +7,16 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
 
-import java.util.Optional;
 import java.util.function.Supplier;
 
 public record PlayerAttributePointsMessage(String attributeTypeName, int count) {
 
-    public PlayerAttributePointsMessage(String attributeTypeName) {
-        this(attributeTypeName, 1);
-    }
-
     public PlayerAttributePointsMessage(FriendlyByteBuf buf){
-        this(buf.readUtf(), buf.isReadable() ? buf.readVarInt() : 1);
+        this(buf.readUtf(), buf.readVarInt());
     }
     public void encode(FriendlyByteBuf buf){
         buf.writeUtf(attributeTypeName);
-        // Keep one-level requests in the legacy packet format.
-        if (count != 1) buf.writeVarInt(count);
+        buf.writeVarInt(count);
     }
 
     public void handle(Supplier<NetworkEvent.Context> supplier) {
@@ -33,14 +26,8 @@ public record PlayerAttributePointsMessage(String attributeTypeName, int count) 
             if (player == null || (count != 1 && count != 10)) return;
             PlayerAttributeTool.points(player, attributeTypeName, count);
 
-            Optional<PlayerOccupationAttribute> optionalPlayerOccupationAttribute = player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).resolve();
-            if (optionalPlayerOccupationAttribute.isEmpty()) return;
-            PlayerOccupationAttribute playerOccupationAttribute = optionalPlayerOccupationAttribute.get();
-
-            //设置一下在gui渲染的属性
-//            playerOccupationAttribute.setShowAttribute(LHMiracleRoadTool.setShowAttribute(player));
-            SyncTool.synchronizationClient(playerOccupationAttribute, player);
-            SyncTool.synchronizationShowAttribute(player);
+            player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER)
+                    .ifPresent(attributes -> SyncTool.synchronizationClient(attributes, player));
         });
         context.setPacketHandled(true);
     }

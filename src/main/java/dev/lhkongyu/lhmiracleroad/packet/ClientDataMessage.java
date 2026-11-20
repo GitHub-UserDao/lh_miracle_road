@@ -1,6 +1,5 @@
 package dev.lhkongyu.lhmiracleroad.packet;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -32,12 +31,6 @@ public record ClientDataMessage(JsonObject data) {
             String key = LHMiracleRoadTool.isAsString(data.get("key"));
             switch (key){
                 case "modEquipment" -> modEquipmentManage(LHMiracleRoadTool.isAsJsonObject(data.get("data")));
-                case "attributePointsRewards" -> attributePointsRewardsManage(LHMiracleRoadTool.isAsJsonObject(data.get("data")));
-                case "attributeTypes" -> attributeTypesManage(LHMiracleRoadTool.isAsJsonObject(data.get("data")));
-                case "occupation" -> occupationManage(LHMiracleRoadTool.isAsJsonArray(data.get("data")));
-                case "showGuiAttribute" -> showGuiAttributeManage(LHMiracleRoadTool.isAsJsonArray(data.get("data")));
-                case "initItem" -> initItemManage(LHMiracleRoadTool.isAsJsonObject(data.get("data")));
-                case "showAttribute" -> showAttributeManage(LHMiracleRoadTool.isAsJsonObject(data.get("data")));
             }
         });
         context.setPacketHandled(true);
@@ -54,62 +47,4 @@ public record ClientDataMessage(JsonObject data) {
         }
     }
 
-    private void attributePointsRewardsManage(JsonObject attributePointsRewards){
-        if (attributePointsRewards != null) {
-            ClientData.ATTRIBUTE_POINTS_REWARDS.clear();
-            for (Map.Entry<String, JsonElement> jsonElement : attributePointsRewards.entrySet()) {
-                JsonObject attributePointsRewardsObj = DataCompressTool.attributePointsRewardsDataRestore(LHMiracleRoadTool.isAsJsonObject(jsonElement.getValue()));
-                ClientData.ATTRIBUTE_POINTS_REWARDS.put(jsonElement.getKey(), attributePointsRewardsObj);
-            }
-        }
-    }
-
-    private void attributeTypesManage(JsonObject attributeTypes){
-        if (attributeTypes != null) {
-            ClientData.ATTRIBUTE_TYPES.clear();
-            for (Map.Entry<String, JsonElement> jsonElement : attributeTypes.entrySet()) {
-                JsonArray attributeTypesArr = DataCompressTool.attributeTypesDataRestore(LHMiracleRoadTool.isAsJsonArray(jsonElement.getValue()));
-                ClientData.ATTRIBUTE_TYPES.put(jsonElement.getKey(), attributeTypesArr);
-            }
-        }
-    }
-
-    private void occupationManage(JsonArray occupation){
-        if (occupation != null && !occupation.isEmpty()) {
-            ClientData.OCCUPATION.clear();
-            for (JsonElement jsonElement : occupation) {
-                JsonObject object = DataCompressTool.occupationDataRestore(jsonElement.getAsJsonObject());
-                ClientData.OCCUPATION.add(object);
-            }
-        }
-    }
-
-    private void showGuiAttributeManage(JsonArray showGuiAttribute){
-        if (showGuiAttribute != null && !showGuiAttribute.isEmpty()) {
-            ClientData.SHOW_GUI_ATTRIBUTE.clear();
-            for (JsonElement jsonElement : showGuiAttribute) {
-                JsonObject object = DataCompressTool.showGuiAttributeDataRestore(jsonElement.getAsJsonObject());
-                ClientData.SHOW_GUI_ATTRIBUTE.add(object);
-            }
-        }
-    }
-
-    private void initItemManage(JsonObject initItem){
-        if (initItem != null) {
-            ClientData.INIT_ITEM.clear();
-            for (Map.Entry<String, JsonElement> jsonElement : initItem.entrySet()) {
-                JsonArray initItemObj = DataCompressTool.initItemDataRestore(LHMiracleRoadTool.isAsJsonArray(jsonElement.getValue()));
-                ClientData.INIT_ITEM.put(jsonElement.getKey(), initItemObj);
-            }
-        }
-    }
-
-    private void showAttributeManage(JsonObject showAttribute){
-        if (showAttribute != null) {
-            ClientData.SHOW_ATTRIBUTE_VALUE.clear();
-            for (Map.Entry<String, JsonElement> jsonElement : showAttribute.entrySet()) {
-                ClientData.SHOW_ATTRIBUTE_VALUE.put(jsonElement.getKey(), LHMiracleRoadTool.isAsDouble(jsonElement.getValue()));
-            }
-        }
-    }
 }

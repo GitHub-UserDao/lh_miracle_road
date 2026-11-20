@@ -7,7 +7,6 @@ import dev.lhkongyu.lhmiracleroad.abnormal.sync.AbnormalNetwork;
 import dev.lhkongyu.lhmiracleroad.abnormal.sync.SyncAbnormalPacket;
 import dev.lhkongyu.lhmiracleroad.attributes.LHMiracleRoadAttributes;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
-import dev.lhkongyu.lhmiracleroad.packet.ClientDataMessage;
 import dev.lhkongyu.lhmiracleroad.packet.ClientOccupationMessage;
 import dev.lhkongyu.lhmiracleroad.packet.ClientSoulMessage;
 import dev.lhkongyu.lhmiracleroad.packet.PlayerChannel;
@@ -57,18 +56,6 @@ public class SyncTool {
         JsonObject playerOccupationAttributeObject = playerOccupationAttribute.getPlayerOccupationAttribute(playerUUID);
         ClientOccupationMessage message = new ClientOccupationMessage(playerOccupationAttributeObject);
         PlayerChannel.sendToClient(message, player);
-    }
-
-    //同步显示的数据信息
-    public static void synchronizationShowAttribute(ServerPlayer player){
-        //同步显示的数据信息
-        JsonObject showAttributeData = new JsonObject();
-        JsonObject showAttribute = LHMiracleRoadTool.setShowAttribute(player);
-        showAttributeData.addProperty("key","showAttribute");
-        showAttributeData.add("data",showAttribute);
-
-        ClientDataMessage attributeTypesMessage = new ClientDataMessage(showAttributeData);
-        PlayerChannel.sendToClient(attributeTypesMessage, player);
     }
 
     /**

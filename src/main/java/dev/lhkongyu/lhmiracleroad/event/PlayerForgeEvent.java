@@ -1,7 +1,6 @@
 package dev.lhkongyu.lhmiracleroad.event;
 
 import com.google.common.collect.Maps;
-import com.google.gson.JsonObject;
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
 import dev.lhkongyu.lhmiracleroad.abnormal.AbnormalTool;
 import dev.lhkongyu.lhmiracleroad.attributes.AttributeInstanceAccess;
@@ -125,7 +124,6 @@ public class PlayerForgeEvent {
             playerOccupationAttribute.setCurioAttributeLevel(Maps.newHashMap());
             loggedInSyncAttribute(playerOccupationAttribute, (ServerPlayer) player);
             SyncTool.synchronizationClient(playerOccupationAttribute, (ServerPlayer) player);
-            SyncTool.synchronizationShowAttribute((ServerPlayer) player);
             //更新玩家奖惩状态
             LHMiracleRoadTool.playerPunishmentStateUpdate((ServerPlayer) player, playerOccupationAttribute);
         }else {
@@ -174,27 +172,10 @@ public class PlayerForgeEvent {
      * @param player
      */
     private static void loggedInSyncAttribute(PlayerOccupationAttribute playerOccupationAttribute,ServerPlayer player){
-        if (playerOccupationAttribute.getOccupationId() != null) {
-            if (PlayerAttributeTool.restoreConfiguredOccupation(player, playerOccupationAttribute)) return;
-            JsonObject occupation = LHMiracleRoadTool.getOccupation(playerOccupationAttribute.getOccupationId());
-            if (occupation == null){
-                PlayerAttributeTool.resetOccupation(player,playerOccupationAttribute);
-                return;
-            }
-            Map<String,Integer> newAttributeLevel = LHMiracleRoadTool.setInitAttributeLevel(occupation);
-            Map<String,Integer> attributeLevel = playerOccupationAttribute.getOccupationAttributeLevel();
-            for (String key : newAttributeLevel.keySet()){
-                Integer attributeLevelValue = attributeLevel.get(key);
-                if (attributeLevelValue != null) {
-                    Integer actualValue = newAttributeLevel.get(key);
-                    actualValue = Integer.max(attributeLevelValue,actualValue);
-                    newAttributeLevel.put(key,actualValue);
-                }
-            }
-            playerOccupationAttribute.clearAttributeModifier();
-            //重新附上属性值
-            PlayerAttributeTool.calculateAttribute(player,newAttributeLevel,playerOccupationAttribute);
-        }else {
+        String occupationId = playerOccupationAttribute.getOccupationId();
+        if (occupationId != null && !occupationId.isBlank()) {
+            PlayerAttributeTool.restoreConfiguredOccupation(player, playerOccupationAttribute);
+        } else {
             player.sendSystemMessage(Component.translatable("lhmiracleroad.gui.prompt"));
         }
     }

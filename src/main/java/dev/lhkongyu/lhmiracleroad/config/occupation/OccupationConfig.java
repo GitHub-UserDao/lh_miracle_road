@@ -23,6 +23,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 public class OccupationConfig {
@@ -310,6 +311,18 @@ public class OccupationConfig {
 
     public static Occupation getOccupation(String id) {
         return OCCUPATION_BY_ID.get(id);
+    }
+
+    public static List<String> getAttributeTypeIds() {
+        return OCCUPATION_BY_ID.values().stream()
+                .map(Occupation::getOccupationAttributes)
+                .filter(Objects::nonNull)
+                .flatMap(List::stream)
+                .map(OccupationAttribute::getType_id)
+                .filter(id -> id != null && !id.isBlank())
+                .distinct()
+                .sorted()
+                .toList();
     }
 
     public static List<Occupation> getOccupations() {

@@ -1,12 +1,13 @@
 package dev.lhkongyu.lhmiracleroad.data.loot.nbt;
 
 import com.google.gson.*;
-import dev.lhkongyu.lhmiracleroad.data.reloader.AttributeReloadListener;
-import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
+import dev.lhkongyu.lhmiracleroad.config.occupation.OccupationConfig;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class MiraculousTalismanData {
 
@@ -15,11 +16,12 @@ public class MiraculousTalismanData {
     public static final String NBT_MIRACULOUS_ATTRIBUTE = "NBTMiraculousAttribute";
 
     public static void setMiraculousTalismanData(ItemStack stack) {
-        var spellTag = stack.getOrCreateTag();
-        Map<String, JsonArray> attributeTypes = AttributeReloadListener.ATTRIBUTE_TYPES;
-        JsonArray randomKeys = getRandomKey(attributeTypes,3);
-
-        if (randomKeys != null && !randomKeys.isEmpty()) spellTag.putString(NBT_MIRACULOUS_ATTRIBUTE, randomKeys.toString());
+        List<String> ids = new ArrayList<>(OccupationConfig.getAttributeTypeIds());
+        if (ids.isEmpty()) return;
+        Collections.shuffle(ids);
+        JsonArray selected = new JsonArray();
+        ids.subList(0, Math.min(3, ids.size())).forEach(selected::add);
+        stack.getOrCreateTag().putString(NBT_MIRACULOUS_ATTRIBUTE, selected.toString());
     }
 
     public static JsonArray getMiraculousTalismanData(ItemStack stack){
@@ -36,22 +38,4 @@ public class MiraculousTalismanData {
         }
     }
 
-    public static JsonArray getRandomKey(Map<String, JsonArray> attributeTypes,int count) {
-        if (attributeTypes == null || attributeTypes.isEmpty()) {
-            return null;
-        }
-
-        List<String> keyPool = new ArrayList<>(attributeTypes.keySet());
-        int maxPossible = Math.min(count, keyPool.size());
-        JsonArray randomKeys = new JsonArray();
-
-        for (int i = 0; i < maxPossible; i++) {
-            Random random = new Random();
-            int randomIndex = random.nextInt(keyPool.size());
-            randomKeys.add(keyPool.get(randomIndex));
-            keyPool.remove(randomIndex);
-        }
-
-        return randomKeys;
-    }
 }
