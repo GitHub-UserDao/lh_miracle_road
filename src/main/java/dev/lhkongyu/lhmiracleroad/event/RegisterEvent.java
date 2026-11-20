@@ -2,12 +2,12 @@ package dev.lhkongyu.lhmiracleroad.event;
 
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
 import dev.lhkongyu.lhmiracleroad.abnormal.capability.AbnormalProvider;
-import dev.lhkongyu.lhmiracleroad.capability.ItemStackPunishmentAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerCurioProvider;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.command.GetPlayerOccupationLevelCommand;
 import dev.lhkongyu.lhmiracleroad.config.initItem.InitItemConfig;
 import dev.lhkongyu.lhmiracleroad.config.occupation.OccupationConfig;
+import dev.lhkongyu.lhmiracleroad.config.punishment.PunishmentConfig;
 import dev.lhkongyu.lhmiracleroad.config.strengthen.StrengthenConfig;
 import dev.lhkongyu.lhmiracleroad.tool.data.SynchronizationData;
 import dev.lhkongyu.lhmiracleroad.items.trophy.TrophyManager;
@@ -36,7 +36,6 @@ public class RegisterEvent {
     @SubscribeEvent
     public static void registerCapability(RegisterCapabilitiesEvent event){
         event.register(PlayerOccupationAttributeProvider.class);
-        event.register(ItemStackPunishmentAttributeProvider.class);
     }
 
 
@@ -87,6 +86,7 @@ public class RegisterEvent {
             StrengthenConfig.load();
             OccupationConfig.load();
             InitItemConfig.load();
+            PunishmentConfig.load();
         }
     }
 

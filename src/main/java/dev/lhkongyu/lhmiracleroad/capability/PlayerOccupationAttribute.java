@@ -9,7 +9,7 @@ import com.google.gson.JsonParser;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 
 import java.security.Key;
@@ -25,7 +25,7 @@ public class PlayerOccupationAttribute {
 
     private Map<String, AttributeModifier> attributeModifier = Maps.newHashMap();
 
-    private Map<String, AttributeModifier> punishmentAttributeModifier = Maps.newHashMap();
+    private final Map<UUID, Attribute> activeEquipmentPenalties = new HashMap<>();
 
     private String occupationId;
 
@@ -33,15 +33,9 @@ public class PlayerOccupationAttribute {
 
     private Map<String, Integer> curioAttributeLevel = Maps.newHashMap();
 
-    private AttributeModifier heavyAttributeModifier = null;
-
-    private double offhandHeavy;
-
     private String empiricalCalculationFormula;
 
     private int points = 0;
-
-    private int burden = 0;
 
     private int attributeMaxLevel = 0;
 
@@ -123,7 +117,6 @@ public class PlayerOccupationAttribute {
        return this.curioAttributeLevel.get(key) == null ? 0 : this.curioAttributeLevel.get(key);
     }
 
-
     public void addCurioAttributeLevel(String key,Integer value){
         if (this.curioAttributeLevel.get(key) != null){
             Integer originalValue = this.curioAttributeLevel.get(key);
@@ -140,36 +133,8 @@ public class PlayerOccupationAttribute {
         }
     }
 
-    public Map<String, AttributeModifier> getPunishmentAttributeModifier() {
-        return punishmentAttributeModifier;
-    }
-
-    public void setPunishmentAttributeModifier(Map<String, AttributeModifier> punishmentAttributeModifier) {
-        this.punishmentAttributeModifier = punishmentAttributeModifier;
-    }
-
-    public void addPunishmentAttributeModifier(String key,AttributeModifier punishmentAttributeModifier) {
-        this.punishmentAttributeModifier.put(key,punishmentAttributeModifier);
-    }
-
-    public void removePunishmentAttributeModifier(String key){
-        this.punishmentAttributeModifier.remove(key);
-    }
-
-    public AttributeModifier getHeavyAttributeModifier() {
-        return heavyAttributeModifier;
-    }
-
-    public void setHeavyAttributeModifier(AttributeModifier heavyAttributeModifier) {
-        this.heavyAttributeModifier = heavyAttributeModifier;
-    }
-
-    public double getOffhandHeavy() {
-        return offhandHeavy;
-    }
-
-    public void setOffhandHeavy(double offhandHeavy) {
-        this.offhandHeavy = offhandHeavy;
+    public Map<UUID, Attribute> getActiveEquipmentPenalties() {
+        return activeEquipmentPenalties;
     }
 
     public String getEmpiricalCalculationFormula() {
@@ -192,14 +157,6 @@ public class PlayerOccupationAttribute {
         this.points += points;
     }
 
-    public int getBurden() {
-        return burden;
-    }
-
-    public void setBurden(int burden) {
-        this.burden = burden;
-    }
-
     public int getAttributeMaxLevel() {
         return attributeMaxLevel;
     }
@@ -219,9 +176,7 @@ public class PlayerOccupationAttribute {
     public void saveNBTData(CompoundTag compoundTag){
         compoundTag.putInt("occupationLevel",occupationLevel);
         compoundTag.putInt("occupationExperience",occupationExperience);
-        compoundTag.putDouble("offhandHeavy",offhandHeavy);
         compoundTag.putInt("points",points);
-        compoundTag.putInt("burden",burden);
         compoundTag.putInt("attributeMaxLevel",attributeMaxLevel);
         compoundTag.putInt("maxLevel",maxLevel);
         if (attributeModifier != null) {
@@ -230,14 +185,6 @@ public class PlayerOccupationAttribute {
                 attributeModifierTags.put(entry.getKey(), entry.getValue().save());
             }
             compoundTag.put("attributeModifier", attributeModifierTags);
-        }
-
-        if (punishmentAttributeModifier != null) {
-            CompoundTag punishmentAttributeModifierTags = new CompoundTag();
-            for (Map.Entry<String, AttributeModifier> entry : punishmentAttributeModifier.entrySet()) {
-                punishmentAttributeModifierTags.put(entry.getKey(), entry.getValue().save());
-            }
-            compoundTag.put("punishmentAttributeModifier", punishmentAttributeModifierTags);
         }
 
         if (occupationId != null) compoundTag.putString("occupationId", occupationId);
@@ -258,19 +205,13 @@ public class PlayerOccupationAttribute {
             compoundTag.put("curioAttributeLevel", levelTags);
         }
 
-        if (heavyAttributeModifier != null){
-            compoundTag.put("heavyAttributeModifier",heavyAttributeModifier.save());
-        }
-
         if (empiricalCalculationFormula != null) compoundTag.putString("empiricalCalculationFormula", empiricalCalculationFormula);
     }
 
     public void loadNBTData(CompoundTag compoundTag){
         occupationLevel = compoundTag.getInt("occupationLevel");
         occupationExperience = compoundTag.getInt("occupationExperience");
-        offhandHeavy = compoundTag.getDouble("offhandHeavy");
         points = compoundTag.getInt("points");
-        burden = compoundTag.getInt("burden");
         attributeMaxLevel = compoundTag.getInt("attributeMaxLevel");
         maxLevel = compoundTag.getInt("maxLevel");
         if (compoundTag.contains("attributeModifier", Tag.TAG_COMPOUND)) {
@@ -279,15 +220,6 @@ public class PlayerOccupationAttribute {
             for (String key : initAttributeTags.getAllKeys()) {
                 CompoundTag value = initAttributeTags.getCompound(key);
                 attributeModifier.put(key, AttributeModifier.load(value));
-            }
-        }
-
-        if (compoundTag.contains("punishmentAttributeModifier", Tag.TAG_COMPOUND)) {
-            CompoundTag punishmentAttributeModifierTags = compoundTag.getCompound("punishmentAttributeModifier");
-            punishmentAttributeModifier = Maps.newHashMap();
-            for (String key : punishmentAttributeModifierTags.getAllKeys()) {
-                CompoundTag value = punishmentAttributeModifierTags.getCompound(key);
-                punishmentAttributeModifier.put(key, AttributeModifier.load(value));
             }
         }
 
@@ -313,11 +245,6 @@ public class PlayerOccupationAttribute {
             }
         }
 
-        if (compoundTag.contains("heavyAttributeModifier", Tag.TAG_STRING)) {
-            CompoundTag heavyAttributeModifierTags = compoundTag.getCompound("heavyAttributeModifier");
-            heavyAttributeModifier = AttributeModifier.load(heavyAttributeModifierTags);
-        }
-
         if (compoundTag.contains("empiricalCalculationFormula", Tag.TAG_STRING)) {
             empiricalCalculationFormula = compoundTag.getString("empiricalCalculationFormula");
         }
@@ -328,8 +255,6 @@ public class PlayerOccupationAttribute {
         playerOccupationAttributeObject.addProperty("occupationLevel",this.occupationLevel);
         playerOccupationAttributeObject.addProperty("occupationExperience",this.occupationExperience);
         playerOccupationAttributeObject.addProperty("points",this.points);
-        playerOccupationAttributeObject.addProperty("offhandHeavy",this.offhandHeavy);
-        playerOccupationAttributeObject.addProperty("burden",this.burden);
         playerOccupationAttributeObject.addProperty("playerUUID",playerUUID.toString());
         playerOccupationAttributeObject.addProperty("attributeMaxLevel",attributeMaxLevel);
         playerOccupationAttributeObject.addProperty("maxLevel",maxLevel);

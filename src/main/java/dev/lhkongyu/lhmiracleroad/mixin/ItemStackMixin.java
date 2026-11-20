@@ -7,8 +7,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.UUID;
-
 @Mixin(ItemStack.class)
 public abstract class ItemStackMixin {
 //    @Inject(method = "<init>(Lnet/minecraft/world/level/ItemLike;ILnet/minecraft/nbt/CompoundTag;)V", at = @At("TAIL"))
@@ -24,8 +22,8 @@ public abstract class ItemStackMixin {
     )
     private void lh_miracle_road$injectCustomMaxDamage(CallbackInfoReturnable<Integer> cir) {
         ItemStack itemStack = ((ItemStack) (Object) this);
-        CompoundTag tag = itemStack.getOrCreateTag().getCompound("lh_gem");
-        if (tag.contains("max_durability")) {
+        CompoundTag tag = itemStack.getTagElement("lh_gem");
+        if (tag != null && tag.contains("max_durability")) {
             cir.setReturnValue(tag.getInt("max_durability"));
         }
     }

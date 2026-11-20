@@ -11,6 +11,7 @@ import dev.lhkongyu.lhmiracleroad.packet.PlayerAttributePointsMessage;
 import dev.lhkongyu.lhmiracleroad.packet.PlayerAttributeValuesRequest;
 import dev.lhkongyu.lhmiracleroad.packet.PlayerAttributeValuesSnapshot.AttributeValue;
 import dev.lhkongyu.lhmiracleroad.packet.PlayerChannel;
+import dev.lhkongyu.lhmiracleroad.tool.ItemPunishmentTool;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import dev.lhkongyu.lhmiracleroad.tool.PlayerAttributeTool;
 import dev.lhkongyu.lhmiracleroad.tool.ResourceLocationTool;
@@ -165,9 +166,9 @@ public class UpgradeInterfaceScreen extends OccupationTextureScreen {
     @Override
     protected void renderAdditionalContent(GuiGraphics graphics, int mouseX, int mouseY) {
         drawAttributeValues(graphics, mouseX, mouseY);
+        drawBurden(graphics, mouseX, mouseY);
         PlayerOccupationAttribute playerAttributes = playerOccupationAttribute();
         if (playerAttributes == null) return;
-        drawBurden(graphics, mouseX, mouseY, playerAttributes);
 
         for (int i = 0; i < rows.size(); i++) {
             OccupationAttribute attribute = rows.get(i).attribute();
@@ -183,12 +184,14 @@ public class UpgradeInterfaceScreen extends OccupationTextureScreen {
         }
     }
 
-    private void drawBurden(GuiGraphics graphics, int mouseX, int mouseY, PlayerOccupationAttribute attributes) {
+    private void drawBurden(GuiGraphics graphics, int mouseX, int mouseY) {
+        if (minecraft.player == null) return;
         AttributeInstance heavyAttribute = minecraft.player.getAttribute(LHMiracleRoadAttributes.HEAVY);
-        if (heavyAttribute == null) return;
-        int heavy = (int) heavyAttribute.getValue() + (int) attributes.getOffhandHeavy();
-        int burden = attributes.getBurden();
-        Component label = Component.translatable("lhmiracleroad.gui.attribute.text.heavy", heavy, burden);
+        AttributeInstance burdenAttribute = minecraft.player.getAttribute(LHMiracleRoadAttributes.BURDEN);
+        if (heavyAttribute == null || burdenAttribute == null) return;
+        double heavy = heavyAttribute.getValue();
+        double burden = burdenAttribute.getValue();
+        Component label = Component.translatable("lhmiracleroad.gui.attribute.text.heavy", (int) heavy, (int) burden);
         float centerX = screenX(SELECT_X) + basePixels(SELECT_WIDTH) / 2.0F;
         float centerY = screenY(SELECT_Y) + basePixels(SELECT_HEIGHT) / 2.0F;
         int width = font.width(label);
@@ -202,11 +205,7 @@ public class UpgradeInterfaceScreen extends OccupationTextureScreen {
         graphics.pose().popPose();
 
         if (mouseX >= left && mouseX < left + width * scale && mouseY >= top && mouseY < top + font.lineHeight * scale) {
-            String state;
-            if (heavy > burden) state = "overweight";
-            else if (burden > 0 && heavy >= burden * 0.75) state = "biased_weight";
-            else if (burden > 0 && heavy >= burden * 0.40) state = "normal";
-            else state = "light";
+            String state = ItemPunishmentTool.loadState(heavy, burden);
             hoveredText = Component.translatable("lhmiracleroad.gui.attribute.text.details.heavy." + state);
         }
     }

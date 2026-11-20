@@ -4,7 +4,7 @@ import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.lhkongyu.lhmiracleroad.data.reloader.*;
+import dev.lhkongyu.lhmiracleroad.config.punishment.PunishmentConfig;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 
 import java.util.Map;
@@ -17,10 +17,11 @@ public class DataCompressTool {
      */
     public static JsonObject equipmentDataCompress() {
         JsonObject equipment = new JsonObject();
-        for (String key : EquipmentReloadListener.EQUIPMENT.keySet()){
+        for (var entry : PunishmentConfig.getEquipment().entrySet()) {
+            String key = entry.getKey();
             JsonObject equipmentNew = new JsonObject();
 
-            Map<String,JsonObject> equipmentMap = EquipmentReloadListener.EQUIPMENT.get(key);
+            Map<String,JsonObject> equipmentMap = entry.getValue();
             for (String equipmentMapKey :equipmentMap.keySet()) {
                 JsonObject equipmentObjNew = new JsonObject();
                 equipmentObjNew.addProperty("h", LHMiracleRoadTool.isAsInt(equipmentMap.get(equipmentMapKey).get("heavy")));

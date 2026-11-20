@@ -4,10 +4,12 @@ import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.client.screen.occupation.OccupationChooseScreen;
 import dev.lhkongyu.lhmiracleroad.client.screen.occupation.UpgradeInterfaceScreen;
+import dev.lhkongyu.lhmiracleroad.data.ClientData;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -27,6 +29,11 @@ public class ClientEvents {
 
     @Mod.EventBusSubscriber(modid = LHMiracleRoad.MODID, value = Dist.CLIENT)
     private static class InputEvents {
+        @SubscribeEvent
+        public static void onDisconnect(ClientPlayerNetworkEvent.LoggingOut event) {
+            ClientData.resetEquipment(false);
+        }
+
         @SubscribeEvent
         public static void inputEvent(InputEvent.Key event) {
             Minecraft minecraft = Minecraft.getInstance();

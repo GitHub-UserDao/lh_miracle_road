@@ -5,14 +5,12 @@ import dev.lhkongyu.lhmiracleroad.abnormal.AbnormalType;
 import dev.lhkongyu.lhmiracleroad.abnormal.capability.AbnormalProvider;
 import dev.lhkongyu.lhmiracleroad.abnormal.sync.AbnormalNetwork;
 import dev.lhkongyu.lhmiracleroad.abnormal.sync.SyncAbnormalPacket;
-import dev.lhkongyu.lhmiracleroad.attributes.LHMiracleRoadAttributes;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.packet.ClientOccupationMessage;
 import dev.lhkongyu.lhmiracleroad.packet.ClientSoulMessage;
 import dev.lhkongyu.lhmiracleroad.packet.PlayerChannel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraftforge.network.PacketDistributor;
 
 import java.util.UUID;
@@ -46,13 +44,7 @@ public class SyncTool {
      * @param player
      */
     public static void synchronizationClient(PlayerOccupationAttribute playerOccupationAttribute, ServerPlayer player) {
-        AttributeInstance burden = player.getAttribute(LHMiracleRoadAttributes.BURDEN);
-        int burdenValue = 0;
-        if (burden != null) {
-            burdenValue = (int) burden.getValue();
-        }
         UUID playerUUID = player.getUUID();
-        playerOccupationAttribute.setBurden(burdenValue);
         JsonObject playerOccupationAttributeObject = playerOccupationAttribute.getPlayerOccupationAttribute(playerUUID);
         ClientOccupationMessage message = new ClientOccupationMessage(playerOccupationAttributeObject);
         PlayerChannel.sendToClient(message, player);

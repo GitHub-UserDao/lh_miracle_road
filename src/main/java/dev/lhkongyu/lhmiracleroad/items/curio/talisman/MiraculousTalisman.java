@@ -7,7 +7,7 @@ import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.data.loot.nbt.MiraculousTalismanData;
 import dev.lhkongyu.lhmiracleroad.items.curio.MiraculousTalismanItem;
 import dev.lhkongyu.lhmiracleroad.items.curio.TalismanItem;
-import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
+import dev.lhkongyu.lhmiracleroad.tool.ItemPunishmentTool;
 import dev.lhkongyu.lhmiracleroad.tool.PlayerAttributeTool;
 import dev.lhkongyu.lhmiracleroad.tool.SyncTool;
 import net.minecraft.server.level.ServerPlayer;
@@ -48,7 +48,7 @@ public class MiraculousTalisman {
 
                 SyncTool.synchronizationClient(playerOccupationAttribute,serverPlayer);
                 //更新玩家奖惩状态
-                LHMiracleRoadTool.playerPunishmentStateUpdate(serverPlayer, playerOccupationAttribute);
+                ItemPunishmentTool.refreshPenalties(serverPlayer, playerOccupationAttribute);
             }
 
         }

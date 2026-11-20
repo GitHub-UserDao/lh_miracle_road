@@ -5,9 +5,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
 import dev.lhkongyu.lhmiracleroad.attributes.LHMiracleRoadAttributes;
-import dev.lhkongyu.lhmiracleroad.capability.ItemStackPunishmentAttribute;
-import dev.lhkongyu.lhmiracleroad.capability.ItemStackPunishmentAttributeProvider;
-import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.entity.player.PlayerSoulEntity;
 import dev.lhkongyu.lhmiracleroad.generator.SpellDamageTypes;
@@ -24,12 +21,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -336,51 +331,6 @@ public class LHMiracleRoadTool {
      */
     public static double getLuckBonus(double up,double luck) {
         return up * (1 - java.lang.Math.pow(0.5, luck / 10.0));
-    }
-
-    /**
-     * 玩家的奖惩状态更新
-     *
-     * @param player
-     */
-    public static void playerPunishmentStateUpdate(ServerPlayer player, PlayerOccupationAttribute playerOccupationAttribute) {
-        //更新一下重量的奖惩状态
-        AttributeInstance heavyAttributeInstance = player.getAttribute(LHMiracleRoadAttributes.HEAVY);
-        AttributeInstance burdenAttributeInstance = player.getAttribute(LHMiracleRoadAttributes.BURDEN);
-        double heavy = heavyAttributeInstance.getValue();
-        double burden = burdenAttributeInstance.getValue();
-        ItemPunishmentTool.setHeavyAttributeModifier(playerOccupationAttribute, player, heavy, burden);
-
-        customEquipmentUpdate(player, playerOccupationAttribute, EquipmentSlot.HEAD, null);
-        customEquipmentUpdate(player, playerOccupationAttribute, EquipmentSlot.CHEST, null);
-        customEquipmentUpdate(player, playerOccupationAttribute, EquipmentSlot.LEGS, null);
-        customEquipmentUpdate(player, playerOccupationAttribute, EquipmentSlot.FEET, null);
-        customEquipmentUpdate(player, playerOccupationAttribute, null, InteractionHand.MAIN_HAND);
-        customEquipmentUpdate(player, playerOccupationAttribute, null, InteractionHand.OFF_HAND);
-    }
-
-    /**
-     * 自定义某个位置的装备 并对他进行更新操作
-     *
-     * @param player
-     * @param playerOccupationAttribute
-     * @param equipmentSlot
-     */
-    private static void customEquipmentUpdate(ServerPlayer player, PlayerOccupationAttribute playerOccupationAttribute, EquipmentSlot equipmentSlot, InteractionHand interactionHand) {
-        ItemStack stack = null;
-        if (equipmentSlot != null) stack = player.getItemBySlot(equipmentSlot);
-        else if (interactionHand != null) stack = player.getItemInHand(interactionHand);
-        else return;
-
-        if (stack.isEmpty()) return;
-        Optional<ItemStackPunishmentAttribute> itemStackPunishmentAttribute = stack
-                .getCapability(ItemStackPunishmentAttributeProvider.ITEM_STACK_PUNISHMENT_ATTRIBUTE_PROVIDER)
-                .resolve();
-        if (itemStackPunishmentAttribute.isEmpty()) return;
-        //先清空惩罚信息
-        ItemPunishmentTool.cleanItemFromPunishmentAttributeModifier(player, playerOccupationAttribute, itemStackPunishmentAttribute.get());
-        //然后重新计算设置一下惩罚信息
-        ItemPunishmentTool.setItemToPunishmentAttributeModifier(player, playerOccupationAttribute, itemStackPunishmentAttribute.get());
     }
 
     /**

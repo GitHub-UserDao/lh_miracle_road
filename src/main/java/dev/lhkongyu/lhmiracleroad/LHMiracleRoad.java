@@ -6,7 +6,6 @@ import dev.lhkongyu.lhmiracleroad.abnormal.sync.AbnormalNetwork;
 import dev.lhkongyu.lhmiracleroad.attributes.LHMiracleRoadAttributes;
 import dev.lhkongyu.lhmiracleroad.client.screen.weaponPodium.WeaponPodiumScreen;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
-import dev.lhkongyu.lhmiracleroad.data.reloader.*;
 import dev.lhkongyu.lhmiracleroad.generator.RegistryDataGenerator;
 import dev.lhkongyu.lhmiracleroad.registry.*;
 import dev.lhkongyu.lhmiracleroad.packet.PlayerChannel;
@@ -20,10 +19,8 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.event.RegisterShadersEvent;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.data.event.GatherDataEvent;
-import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -47,7 +44,6 @@ public class LHMiracleRoad
     public LHMiracleRoad()
     {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, LHMiracleRoadConfig.COMMON_SPEC);
-        MinecraftForge.EVENT_BUS.addListener(this::reloadListnerEvent);
         PlayerChannel.register();
         AbnormalNetwork.register();
         LHMiracleRoadAttributes.register();
@@ -65,11 +61,6 @@ public class LHMiracleRoad
 
         bus.addListener(this::registerShaders);
         bus.addListener(this::clientSetup);
-    }
-
-    private void reloadListnerEvent(final AddReloadListenerEvent event) {
-        event.addListener(new EquipmentReloadListener());
-        event.addListener(new PunishmentReloadListener());
     }
 
     private void registerShaders(final RegisterShadersEvent e) {

@@ -30,6 +30,7 @@ public record ClientDataMessage(JsonObject data) {
         context.enqueueWork(() -> {
             String key = LHMiracleRoadTool.isAsString(data.get("key"));
             switch (key){
+                case "clearEquipment" -> ClientData.resetEquipment(true);
                 case "modEquipment" -> modEquipmentManage(LHMiracleRoadTool.isAsJsonObject(data.get("data")));
             }
         });
@@ -38,9 +39,6 @@ public record ClientDataMessage(JsonObject data) {
     private void modEquipmentManage(JsonObject equipment){
         if (equipment != null) {
             for (Map.Entry<String, JsonElement> jsonElement : equipment.entrySet()) {
-                if (ClientData.EQUIPMENT.get(jsonElement.getKey()) != null) {
-                    ClientData.EQUIPMENT.remove(jsonElement.getKey());
-                }
                 Map<String, JsonObject> equipmentMap = DataCompressTool.equipmentDataRestore(LHMiracleRoadTool.isAsJsonObject(jsonElement.getValue()));
                 ClientData.EQUIPMENT.put(jsonElement.getKey(), equipmentMap);
             }

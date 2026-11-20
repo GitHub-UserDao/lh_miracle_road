@@ -32,7 +32,7 @@ public class PlayerAttributeTool {
             if (attributes.getOccupationId() != null && !attributes.getOccupationId().isBlank()) return;
             applyConfiguredOccupation(player, configured, attributes, true);
             InitItemConfig.grantToPlayer(player, occupationId);
-            LHMiracleRoadTool.playerPunishmentStateUpdate(player, attributes);
+            ItemPunishmentTool.refreshPenalties(player, attributes);
         });
     }
 
@@ -159,7 +159,7 @@ public class PlayerAttributeTool {
         playerOccupationAttribute.setPoints(payment.remainingPoints());
         playerOccupationAttribute.setOccupationExperience(payment.remainingSouls());
         playerOccupationAttribute.setOccupationLevel(playerOccupationAttribute.getOccupationLevel() + count);
-        LHMiracleRoadTool.playerPunishmentStateUpdate(player, playerOccupationAttribute);
+        ItemPunishmentTool.refreshPenalties(player, playerOccupationAttribute);
     }
 
     public static boolean isWithinAttributeLimit(PlayerOccupationAttribute attributes, int level, int configuredLimit, int count) {
@@ -198,7 +198,7 @@ public class PlayerAttributeTool {
         Occupation configured = OccupationConfig.getOccupation(attributes.getOccupationId());
         if (configured == null) return;
         applyConfiguredOccupation(player, configured, attributes, true);
-        LHMiracleRoadTool.playerPunishmentStateUpdate(player, attributes);
+        ItemPunishmentTool.refreshPenalties(player, attributes);
     }
 
     public static void resetLevelReturnPoints(ServerPlayer player, PlayerOccupationAttribute attributes) {
@@ -218,6 +218,6 @@ public class PlayerAttributeTool {
         clearOccupationModifiers(player, playerOccupationAttribute);
         SyncTool.synchronizationClient(playerOccupationAttribute,player);
         //更新玩家奖惩状态
-        LHMiracleRoadTool.playerPunishmentStateUpdate(player,playerOccupationAttribute);
+        ItemPunishmentTool.refreshPenalties(player,playerOccupationAttribute);
     }
 }

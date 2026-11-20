@@ -1,239 +1,202 @@
 package dev.lhkongyu.lhmiracleroad.tool;
 
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
 import dev.lhkongyu.lhmiracleroad.attributes.LHMiracleRoadAttributes;
-import dev.lhkongyu.lhmiracleroad.capability.ItemStackPunishmentAttribute;
-import dev.lhkongyu.lhmiracleroad.capability.ItemStackPunishmentAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
-import dev.lhkongyu.lhmiracleroad.data.reloader.PunishmentReloadListener;
+import dev.lhkongyu.lhmiracleroad.config.punishment.PunishmentConfig;
+import dev.lhkongyu.lhmiracleroad.data.ClientData;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.AxeItem;
+import net.minecraft.world.item.BowItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ShieldItem;
+import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.item.TridentItem;
 import net.minecraftforge.event.ItemAttributeModifierEvent;
+import net.minecraftforge.fml.util.thread.EffectiveSide;
+import net.minecraftforge.registries.ForgeRegistries;
+import top.theillusivec4.curios.api.CuriosApi;
 
-import javax.annotation.Nullable;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
-public class ItemPunishmentTool {
+public final class ItemPunishmentTool {
+    private static final UUID LOAD_MODIFIER = modifierId("load");
+    private static final EquipmentProfile EMPTY = new EquipmentProfile(0, List.of());
 
-    /**
-     * 物品的属性设置事件触发时，将能力里记录的物品属性直接注册进物品里
-     * @param stack
-     * @param event
-     */
-    public static void itemStackAddPunishmentAttribute(ItemStack stack, ItemAttributeModifierEvent event){
-        stack.getCapability(ItemStackPunishmentAttributeProvider.ITEM_STACK_PUNISHMENT_ATTRIBUTE_PROVIDER).ifPresent(itemStackPunishmentAttribute -> {
-            Map<Attribute, AttributeModifier> attributeModifierMap = itemStackPunishmentAttribute.getAttribute();
-            for (Attribute attribute : attributeModifierMap.keySet()) {
-                event.addModifier(attribute, attributeModifierMap.get(attribute));
+    private ItemPunishmentTool() {}
+
+    public static void addWeight(ItemAttributeModifierEvent event) {
+        EquipmentSlot slot = event.getSlotType();
+        ItemStack stack = event.getItemStack();
+        if (stack.isEmpty()) return;
+        if (slot == EquipmentSlot.OFFHAND && !LHMiracleRoadConfig.COMMON.IS_OFFHAND_CALCULATE_HEAVY.get()) return;
+        if (slot.getType() == EquipmentSlot.Type.ARMOR && LivingEntity.getEquipmentSlotForItem(stack) != slot) return;
+        if (slot == EquipmentSlot.MAINHAND && LHMiracleRoadTool.itemIsArmors(stack)) return;
+
+        double heavy = profile(stack, EffectiveSide.get().isClient()).heavy();
+        if (heavy <= 0) return;
+        event.addModifier(LHMiracleRoadAttributes.HEAVY, new AttributeModifier(
+                modifierId("weight/" + slot.getName()), "Equipment weight", heavy, AttributeModifier.Operation.ADDITION));
+    }
+
+    public static List<Requirement> requirements(ItemStack stack, boolean client) {
+        return profile(stack, client).requirements();
+    }
+
+    private static EquipmentProfile profile(ItemStack stack, boolean client) {
+        if (stack.isEmpty()) return EMPTY;
+        Item item = stack.getItem();
+        Map<String, Map<String, JsonObject>> equipment = client && ClientData.hasEquipmentSnapshot()
+                ? ClientData.EQUIPMENT : PunishmentConfig.getEquipment();
+        JsonObject data = LHMiracleRoadTool.getEquipment(equipment, item.getDescriptionId());
+        if (data != null) {
+            List<Requirement> requirements = new ArrayList<>();
+            for (JsonElement entry : LHMiracleRoadTool.isAsJsonArray(data.get("attribute_need"))) {
+                if (!entry.isJsonObject()) continue;
+                JsonObject need = entry.getAsJsonObject();
+                String type = LHMiracleRoadTool.isAsString(need.get("attribute_id"));
+                if (type == null || type.isBlank()) continue;
+                int level = LHMiracleRoadTool.isAsInt(need.get("need_points"));
+                String preset = LHMiracleRoadTool.isAsString(need.get("punishment_id"));
+                requirements.add(new Requirement(type, level, preset == null || preset.isBlank() ? ResourceLocationTool.DEFAULT : preset));
             }
-        });
+            return new EquipmentProfile(Math.max(0, LHMiracleRoadTool.isAsInt(data.get("heavy"))), requirements);
+        }
+        if (item instanceof ArmorItem armor) {
+            return fallback(item.getDefaultAttributeModifiers(armor.getEquipmentSlot()), Attributes.ARMOR, 2.5);
+        }
+        if (item instanceof SwordItem || item instanceof AxeItem || item instanceof TridentItem) {
+            return fallback(item.getDefaultAttributeModifiers(EquipmentSlot.MAINHAND), Attributes.ATTACK_DAMAGE, 2);
+        }
+        if (item instanceof BowItem || item instanceof ShieldItem) return new EquipmentProfile(12, List.of());
+        return EMPTY;
     }
 
-    /**
-     * 物品惩罚能力注册
-     * @param modifierMultimap
-     * @param itemStackPunishmentAttribute
-     * @param attribute
-     * @param multiplier
-     */
-    public static void injectionItemStackPunishmentAttribute(Multimap<Attribute, AttributeModifier> modifierMultimap, ItemStackPunishmentAttribute itemStackPunishmentAttribute, Attribute attribute,double multiplier){
-        if (modifierMultimap.containsKey(LHMiracleRoadAttributes.BURDEN)) return;
-        modifierMultimap.forEach((key, value) -> {
-            if (key.getDescriptionId().equals(attribute.getDescriptionId())) {
-                itemStackPunishmentAttribute.setHeavy(value.getAmount() * multiplier);
+    private static EquipmentProfile fallback(Multimap<Attribute, AttributeModifier> modifiers, Attribute attribute, double scale) {
+        if (modifiers.containsKey(LHMiracleRoadAttributes.BURDEN)) return EMPTY;
+        double heavy = 0;
+        for (AttributeModifier modifier : modifiers.get(attribute)) heavy = Math.max(0, modifier.getAmount() * scale);
+        List<Requirement> requirements = attribute == Attributes.ATTACK_DAMAGE && heavy > 0
+                ? List.of(new Requirement("power", Math.min((int) (heavy * 1.25), 80), ResourceLocationTool.DEFAULT))
+                : List.of();
+        return new EquipmentProfile(heavy, requirements);
+    }
+
+    public static void refreshPenalties(ServerPlayer player, PlayerOccupationAttribute attributes) {
+        Map<UUID, ActivePenalty> desired = new HashMap<>();
+        if (LHMiracleRoadConfig.COMMON.IS_SKILL_POINTS_RESTRICT.get()) {
+            for (EquipmentSlot slot : EquipmentSlot.values()) {
+                collectPenalties(player.getItemBySlot(slot), attributes, slot.getName(), desired);
             }
-        });
-        JsonArray attributeNeed = null;
-        if (attribute.getDescriptionId().equals(Attributes.ATTACK_DAMAGE.getDescriptionId())) attributeNeed = setAttributeNeed(itemStackPunishmentAttribute.getHeavy());
-        setHeavyAttributeModifier(itemStackPunishmentAttribute,attributeNeed);
-    }
-
-    /**
-     * 给物品注册点数需求
-     * @param itemStackPunishmentAttribute
-     * @param attributeNeed
-     */
-    public static void setHeavyAttributeModifier(ItemStackPunishmentAttribute itemStackPunishmentAttribute,@Nullable JsonArray attributeNeed){
-        AttributeModifier attributeModifier = new AttributeModifier(UUID.randomUUID(), "", itemStackPunishmentAttribute.getHeavy(), AttributeModifier.Operation.ADDITION);
-        Map<String, AttributeModifier> map = Maps.newHashMap();
-        map.put(NameTool.HEAVY,attributeModifier);
-        itemStackPunishmentAttribute.setAttribute(map);
-        itemStackPunishmentAttribute.setAttributeNeed(attributeNeed);
-    }
-
-    /**
-     * 自定义点数需求
-     * @param attackDamageAmount
-     * @return
-     */
-    public static JsonArray setAttributeNeed(double attackDamageAmount){
-        JsonArray jsonArray = new JsonArray();
-        JsonObject attributeNeed = new JsonObject();
-        attributeNeed.addProperty("attribute_id", "power");
-        attributeNeed.addProperty("need_points", Integer.min((int) (attackDamageAmount * 1.25),80));
-        jsonArray.add(attributeNeed);
-
-        return jsonArray;
-    }
-
-    /**
-     * 计算玩家把该物品穿上或拿在手上时的重量，根据重量进行属性上的奖惩
-     * @param itemFrom
-     * @param itemTo
-     * @param itemFromPunishmentAttributeOptional
-     * @param itemToPunishmentAttributeOptional
-     * @param player
-     * @param playerOccupationAttribute
-     * @param slot
-     */
-    public static void heavyPunishmentAttributeModifier(ItemStack itemFrom,ItemStack itemTo,
-                                                         Optional<ItemStackPunishmentAttribute> itemFromPunishmentAttributeOptional,
-                                                         Optional<ItemStackPunishmentAttribute> itemToPunishmentAttributeOptional,
-                                                         ServerPlayer player, PlayerOccupationAttribute playerOccupationAttribute,
-                                                         EquipmentSlot slot){
-        AttributeInstance heavyAttributeInstance = player.getAttribute(LHMiracleRoadAttributes.HEAVY);
-        AttributeInstance burdenAttributeInstance = player.getAttribute(LHMiracleRoadAttributes.BURDEN);
-
-        ItemStackPunishmentAttribute itemFromPunishmentAttribute = null;
-        if (itemFromPunishmentAttributeOptional.isPresent() && !itemFrom.isEmpty()) itemFromPunishmentAttribute = itemFromPunishmentAttributeOptional.get();
-        ItemStackPunishmentAttribute itemToPunishmentAttribute = null;
-        if (itemToPunishmentAttributeOptional.isPresent() && !itemTo.isEmpty()) itemToPunishmentAttribute = itemToPunishmentAttributeOptional.get();
-
-        double itemFromHeavy = itemFromPunishmentAttribute == null ? 0 : itemFromPunishmentAttribute.getHeavy();
-        double itemToHeavy = itemToPunishmentAttribute == null ? 0 : itemToPunishmentAttribute.getHeavy();
-
-        double heavy = heavyAttributeInstance.getValue();
-        double heavyValue = 0;
-        if (slot == EquipmentSlot.OFFHAND && LHMiracleRoadConfig.COMMON.IS_OFFHAND_CALCULATE_HEAVY.get()){
-            heavyValue = heavy + itemToHeavy;
-            playerOccupationAttribute.setOffhandHeavy(itemToHeavy);
-        }
-        else heavyValue = Double.max(heavy - itemFromHeavy,0) + itemToHeavy + playerOccupationAttribute.getOffhandHeavy();
-        double burden = burdenAttributeInstance.getValue();
-
-        setHeavyAttributeModifier(playerOccupationAttribute,player,heavyValue,burden);
-
-    }
-
-    /**
-     * 给玩家设置重量的奖惩信息
-     * @param playerOccupationAttribute
-     * @param player
-     * @param heavy
-     * @param burden
-     */
-    public static void setHeavyAttributeModifier(PlayerOccupationAttribute playerOccupationAttribute, ServerPlayer player,double heavy,double burden){
-        double proportion = (heavy / burden) * 100;
-        AttributeModifier heavyAttributeModifier = playerOccupationAttribute.getHeavyAttributeModifier();
-        if (heavyAttributeModifier != null){
-            player.getAttribute(Attributes.MOVEMENT_SPEED).removeModifier(heavyAttributeModifier);
-            playerOccupationAttribute.setHeavyAttributeModifier(null);
-        }
-        AttributeModifier attributeModifier = null;
-        UUID uuid = UUID.randomUUID();
-        if (proportion > 100){
-            attributeModifier = new AttributeModifier(uuid, "", LHMiracleRoadConfig.COMMON.PUNISHMENT_OVERWEIGHT.get(), AttributeModifier.Operation.MULTIPLY_BASE);
-        }else if (proportion >= 75){
-            attributeModifier = new AttributeModifier(uuid, "",  LHMiracleRoadConfig.COMMON.PUNISHMENT_BIASED_WEIGHT.get(), AttributeModifier.Operation.MULTIPLY_BASE);
-        }else if (proportion >= 40){
-            attributeModifier = new AttributeModifier(uuid, "", LHMiracleRoadConfig.COMMON.PUNISHMENT_NORMAL.get(), AttributeModifier.Operation.MULTIPLY_BASE);
-        }else {
-            attributeModifier = new AttributeModifier(uuid, "", LHMiracleRoadConfig.COMMON.PUNISHMENT_LIGHT.get(), AttributeModifier.Operation.MULTIPLY_BASE);
-        }
-        player.getAttribute(Attributes.MOVEMENT_SPEED).addTransientModifier(attributeModifier);
-        playerOccupationAttribute.setHeavyAttributeModifier(attributeModifier);
-    }
-
-    /**
-     * 清除当前物品记录的惩罚能力和解除对玩家的惩罚
-     * @param player
-     * @param playerOccupationAttribute
-     * @param itemFromPunishmentAttribute
-     */
-    public static void cleanItemFromPunishmentAttributeModifier(ServerPlayer player,PlayerOccupationAttribute playerOccupationAttribute,ItemStackPunishmentAttribute itemFromPunishmentAttribute){
-        //判断是否启用点数限制
-        if (!LHMiracleRoadConfig.COMMON.IS_SKILL_POINTS_RESTRICT.get()) return;
-        Map<String, AttributeModifier> recordPunishmentAttributeModifier = itemFromPunishmentAttribute.getRecordPunishmentAttributeModifier();
-        if (recordPunishmentAttributeModifier == null || recordPunishmentAttributeModifier.isEmpty()) return;
-
-        recordPunishmentAttributeModifier.forEach((key,value)->{
-            AttributeModifier attributeModifier = recordPunishmentAttributeModifier.get(key);
-            Attribute attribute = LHMiracleRoadTool.stringConversionAttribute(key);
-            AttributeInstance attributeInstance = player.getAttribute(attribute);
-            if (attributeInstance != null){
-                attributeInstance.removeModifier(attributeModifier);
-                playerOccupationAttribute.removePunishmentAttributeModifier(attributeModifier.getId().toString());
-            }
-        });
-        itemFromPunishmentAttribute.cleanRecordPunishmentAttributeModifier();
-    }
-
-    /**
-     * 如果该物品存在能力判断玩家是否满足惩罚条件，如果满足就加上惩罚属性
-     * @param player
-     * @param playerOccupationAttribute
-     * @param itemToPunishmentAttribute
-     */
-    public static void setItemToPunishmentAttributeModifier(ServerPlayer player,PlayerOccupationAttribute playerOccupationAttribute,ItemStackPunishmentAttribute itemToPunishmentAttribute){
-        //判断是否启用点数限制
-        if (!LHMiracleRoadConfig.COMMON.IS_SKILL_POINTS_RESTRICT.get()) return;
-        //判断是否启用点数限制
-        Map<String, Integer> occupationAttributeLevel = playerOccupationAttribute.getOccupationAttributeLevel();
-        JsonArray attributeNeed = itemToPunishmentAttribute.getAttributeNeed();
-        if (attributeNeed == null || attributeNeed.isEmpty()) return;
-
-        for (JsonElement jsonElement : attributeNeed) {
-            JsonObject jsonObject = LHMiracleRoadTool.isAsJsonObject(jsonElement);
-            if (jsonObject == null) continue;
-
-            String attributeId = LHMiracleRoadTool.isAsString(jsonObject.get("attribute_id"));
-            int needPoints = LHMiracleRoadTool.isAsInt(jsonObject.get("need_points"));
-            Integer mapOccupationAttributeLevel = occupationAttributeLevel.get(attributeId);
-            int mapCurioAttributeLevel = playerOccupationAttribute.getCurioAttributeLevelValue(attributeId);
-            int attributeLevel = mapOccupationAttributeLevel == null ? 0 : mapOccupationAttributeLevel;
-            attributeLevel += mapCurioAttributeLevel;
-
-            if (attributeLevel < needPoints) {
-                String punishmentId = LHMiracleRoadTool.isAsString(jsonObject.get("punishment_id"));
-                if (punishmentId == null || punishmentId.isEmpty()) punishmentId = ResourceLocationTool.DEFAULT;
-                JsonArray punishments = PunishmentReloadListener.DEFAULT_PUNISHMENT.get(punishmentId);
-                if (punishments == null || punishments.isEmpty()) continue;
-
-                for (JsonElement element : punishments) {
-                    JsonObject punishment = LHMiracleRoadTool.isAsJsonObject(element);
-                    String attributeName = LHMiracleRoadTool.isAsString(punishment.get("attribute"));
-                    if (itemToPunishmentAttribute.getRecordPunishmentAttributeModifier().get(attributeName) != null) continue;
-                    String operationName = LHMiracleRoadTool.isAsString(punishment.get("operation"));
-                    double punishmentValue = LHMiracleRoadTool.isAsDouble(punishment.get("value"));
-                    AttributeModifier.Operation operation = LHMiracleRoadTool.stringConversionOperation(operationName);
-                    if (operation == null) continue;
-                    Attribute attribute = LHMiracleRoadTool.stringConversionAttribute(attributeName);
-                    if (attribute != null) {
-                        UUID uuid = UUID.randomUUID();
-                        AttributeModifier attributeModifier = new AttributeModifier(uuid, "", punishmentValue, operation);
-                        player.getAttribute(attribute).addTransientModifier(attributeModifier);
-                        if (attribute.getDescriptionId().equals(Attributes.MAX_HEALTH.getDescriptionId())) {
-                            player.setHealth((float) player.getAttribute(attribute).getValue());
+            CuriosApi.getCuriosInventory(player).ifPresent(inventory ->
+                    inventory.getCurios().forEach((type, handler) -> {
+                        var slots = handler.getStacks();
+                        for (int index = 0; index < slots.getSlots(); index++) {
+                            collectPenalties(slots.getStackInSlot(index), attributes, "curio/" + type + "/" + index, desired);
                         }
-                        playerOccupationAttribute.addPunishmentAttributeModifier(uuid.toString(), attributeModifier);
-                        itemToPunishmentAttribute.addRecordPunishmentAttributeModifier(attributeName, attributeModifier);
-                    }
-                }
-                //如果有多个属性要求也只执行一次
-                return;
+                    }));
+        }
+
+        Map<UUID, Attribute> applied = attributes.getActiveEquipmentPenalties();
+        applied.forEach((id, attribute) -> {
+            if (desired.containsKey(id)) return;
+            AttributeInstance instance = player.getAttribute(attribute);
+            if (instance != null) instance.removeModifier(id);
+        });
+        applied.clear();
+        desired.forEach((id, penalty) -> {
+            AttributeInstance instance = player.getAttribute(penalty.attribute());
+            if (instance == null) return;
+            applyTransient(instance, penalty.modifier());
+            applied.put(id, penalty.attribute());
+        });
+        if (player.getHealth() > player.getMaxHealth()) player.setHealth(player.getMaxHealth());
+    }
+
+    private static void collectPenalties(ItemStack stack, PlayerOccupationAttribute attributes, String slot,
+                                         Map<UUID, ActivePenalty> desired) {
+        for (Requirement need : requirements(stack, false)) {
+            if (need.isMet(attributes)) continue;
+            var effects = PunishmentConfig.getPunishment(need.preset());
+            if (effects == null || effects.isEmpty()) continue;
+            for (JsonElement effect : effects) {
+                if (!effect.isJsonObject()) continue;
+                JsonObject rule = effect.getAsJsonObject();
+                Attribute attribute = LHMiracleRoadTool.stringConversionAttribute(LHMiracleRoadTool.isAsString(rule.get("attribute")));
+                AttributeModifier.Operation operation = LHMiracleRoadTool.stringConversionOperation(
+                        LHMiracleRoadTool.isAsString(rule.get("operation")));
+                double value = LHMiracleRoadTool.isAsDouble(rule.get("value"));
+                if (attribute == null || operation == null || !Double.isFinite(value) || value == 0) continue;
+                UUID id = modifierId("penalty/" + slot + "/" + ForgeRegistries.ATTRIBUTES.getKey(attribute));
+                desired.putIfAbsent(id, new ActivePenalty(attribute,
+                        new AttributeModifier(id, "Equipment requirement", value, operation)));
             }
+            // A slot uses only the first unmet requirement with a configured penalty.
+            return;
         }
     }
+
+    public static void updateLoad(ServerPlayer player) {
+        AttributeInstance heavy = player.getAttribute(LHMiracleRoadAttributes.HEAVY);
+        AttributeInstance burden = player.getAttribute(LHMiracleRoadAttributes.BURDEN);
+        AttributeInstance speed = player.getAttribute(Attributes.MOVEMENT_SPEED);
+        if (heavy == null || burden == null || speed == null) return;
+
+        LHMiracleRoadConfig.Common config = LHMiracleRoadConfig.COMMON;
+        double amount = switch (loadState(heavy.getValue(), burden.getValue())) {
+            case "overweight" -> config.PUNISHMENT_OVERWEIGHT.get();
+            case "biased_weight" -> config.PUNISHMENT_BIASED_WEIGHT.get();
+            case "normal" -> config.PUNISHMENT_NORMAL.get();
+            default -> config.PUNISHMENT_LIGHT.get();
+        };
+        if (amount == 0) speed.removeModifier(LOAD_MODIFIER);
+        else applyTransient(speed, new AttributeModifier(LOAD_MODIFIER, "Equipment load", amount, AttributeModifier.Operation.MULTIPLY_BASE));
+    }
+
+    public static String loadState(double heavy, double burden) {
+        if (heavy > burden) return "overweight";
+        if (burden > 0 && heavy >= burden * 0.75) return "biased_weight";
+        if (burden > 0 && heavy >= burden * 0.40) return "normal";
+        return "light";
+    }
+
+    private static void applyTransient(AttributeInstance instance, AttributeModifier modifier) {
+        AttributeModifier current = instance.getModifier(modifier.getId());
+        if (current != null) {
+            if (current.getAmount() == modifier.getAmount() && current.getOperation() == modifier.getOperation()) return;
+            instance.removeModifier(current);
+        }
+        instance.addTransientModifier(modifier);
+    }
+
+    private static UUID modifierId(String key) {
+        return UUID.nameUUIDFromBytes((LHMiracleRoad.MODID + "/equipment/" + key).getBytes(StandardCharsets.UTF_8));
+    }
+
+    public record Requirement(String attributeType, int minimumLevel, String preset) {
+        public boolean isMet(PlayerOccupationAttribute attributes) {
+            long baseLevel = attributes.getOccupationAttributeLevel().getOrDefault(attributeType, 0);
+            return baseLevel + attributes.getCurioAttributeLevelValue(attributeType) >= minimumLevel;
+        }
+    }
+
+    private record EquipmentProfile(double heavy, List<Requirement> requirements) {}
+    private record ActivePenalty(Attribute attribute, AttributeModifier modifier) {}
 }

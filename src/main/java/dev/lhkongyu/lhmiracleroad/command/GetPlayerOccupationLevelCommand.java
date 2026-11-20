@@ -10,6 +10,7 @@ import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.config.initItem.InitItemConfig;
 import dev.lhkongyu.lhmiracleroad.config.occupation.Occupation;
 import dev.lhkongyu.lhmiracleroad.config.occupation.OccupationConfig;
+import dev.lhkongyu.lhmiracleroad.config.punishment.PunishmentConfig;
 import dev.lhkongyu.lhmiracleroad.data.loot.nbt.CreedTalismanData;
 import dev.lhkongyu.lhmiracleroad.data.loot.nbt.MiraculousTalismanData;
 import dev.lhkongyu.lhmiracleroad.registry.ItemsRegistry;
@@ -21,12 +22,16 @@ import dev.lhkongyu.lhmiracleroad.tool.SyncTool;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
@@ -36,6 +41,24 @@ import java.util.Optional;
  * 设置指令
  */
 public class GetPlayerOccupationLevelCommand {
+
+    private static int createPunishment(CommandSourceStack source, ResourceLocation itemId) {
+        try {
+            PunishmentConfig.createFromIronSword(itemId);
+        } catch (FileAlreadyExistsException e) {
+            source.sendFailure(Component.translatable("lhmiracleroad.instructions.punishment.exists", itemId.toString()));
+            return 0;
+        } catch (IllegalArgumentException e) {
+            source.sendFailure(Component.translatable("lhmiracleroad.instructions.punishment.invalid_item", itemId.toString()));
+            return 0;
+        } catch (IOException e) {
+            LHMiracleRoad.LOGGER.error("Failed to create punishment config for {}", itemId, e);
+            source.sendFailure(Component.translatable("lhmiracleroad.instructions.punishment.failed", itemId.toString()));
+            return 0;
+        }
+        source.sendSuccess(() -> Component.translatable("lhmiracleroad.instructions.punishment.created", itemId.toString()), false);
+        return 1;
+    }
 
     private static int createOccupation(CommandSourceStack source, String id) {
         Occupation created;
@@ -77,6 +100,13 @@ public class GetPlayerOccupationLevelCommand {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
           dispatcher.register(Commands.literal("lh_miracle_road")
+                  .then(Commands.literal("punishment")
+                          .requires(source -> source.hasPermission(2))
+                          .then(Commands.literal("create")
+                                  .then(Commands.argument("item_id", ResourceLocationArgument.id())
+                                          .suggests((context, builder) -> SharedSuggestionProvider.suggestResource(ForgeRegistries.ITEMS.getKeys(), builder))
+                                          .executes(context -> createPunishment(context.getSource(),
+                                                  ResourceLocationArgument.getId(context, "item_id"))))))
                   .then(Commands.literal("occupation")
                           .requires(source -> source.hasPermission(2))
                           .then(Commands.literal("create")

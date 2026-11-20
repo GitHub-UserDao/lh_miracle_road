@@ -15,6 +15,7 @@
     "RenderBuffersMixin"
   ],
   "client": [
+    "ItemDurabilityBarMixin"
   ],
   "injectors": {
     "defaultRequire": 1

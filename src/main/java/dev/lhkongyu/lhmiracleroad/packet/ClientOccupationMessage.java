@@ -56,10 +56,8 @@ public record ClientOccupationMessage(JsonObject playerOccupationAttributeObject
                 int occupationLevel = LHMiracleRoadTool.isAsInt(playerOccupationAttributeObject.get("occupationLevel"));
                 int occupationExperience = LHMiracleRoadTool.isAsInt(playerOccupationAttributeObject.get("occupationExperience"));
                 int points = LHMiracleRoadTool.isAsInt(playerOccupationAttributeObject.get("points"));
-                int burden = LHMiracleRoadTool.isAsInt(playerOccupationAttributeObject.get("burden"));
                 int attributeMaxLevel = LHMiracleRoadTool.isAsInt(playerOccupationAttributeObject.get("attributeMaxLevel"));
                 int maxLevel = LHMiracleRoadTool.isAsInt(playerOccupationAttributeObject.get("maxLevel"));
-                double offhandHeavy = LHMiracleRoadTool.isAsDouble(playerOccupationAttributeObject.get("offhandHeavy"));
                 String empiricalCalculationFormula = LHMiracleRoadTool.isAsString(playerOccupationAttributeObject.get("empiricalCalculationFormula"));
 
                 JsonObject occupationAttributeLevelObject = LHMiracleRoadTool.isAsJsonObject(playerOccupationAttributeObject.get("occupationAttributeLevel"));
@@ -81,12 +79,10 @@ public record ClientOccupationMessage(JsonObject playerOccupationAttributeObject
                 playerOccupationAttribute.setOccupationLevel(occupationLevel);
                 playerOccupationAttribute.setOccupationExperience(occupationExperience);
                 playerOccupationAttribute.setOccupationId(occupationId);
-                playerOccupationAttribute.setOffhandHeavy(offhandHeavy);
                 playerOccupationAttribute.setOccupationAttributeLevel(occupationAttributeLevelMap);
                 playerOccupationAttribute.setCurioAttributeLevel(curioAttributeLevelMap);
                 playerOccupationAttribute.setEmpiricalCalculationFormula(empiricalCalculationFormula);
                 playerOccupationAttribute.setPoints(points);
-                playerOccupationAttribute.setBurden(burden);
                 playerOccupationAttribute.setAttributeMaxLevel(attributeMaxLevel);
                 playerOccupationAttribute.setMaxLevel(maxLevel);
 

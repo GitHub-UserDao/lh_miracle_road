@@ -15,6 +15,7 @@ import dev.lhkongyu.lhmiracleroad.items.curio.talisman.ConsecratedCombatPlume;
 import dev.lhkongyu.lhmiracleroad.items.curio.talisman.HawkTalisman;
 import dev.lhkongyu.lhmiracleroad.items.curio.talisman.HuntingBowTalisman;
 import dev.lhkongyu.lhmiracleroad.registry.ItemsRegistry;
+import dev.lhkongyu.lhmiracleroad.tool.ItemPunishmentTool;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import dev.lhkongyu.lhmiracleroad.tool.PlayerAttributeTool;
 import dev.lhkongyu.lhmiracleroad.tool.SyncTool;
@@ -67,13 +68,9 @@ public class PlayerForgeEvent {
             playerOccupationAttribute.setOccupationLevel(optional.getOccupationLevel());
             playerOccupationAttribute.setOccupationExperience(optional.getOccupationExperience());
             playerOccupationAttribute.setOccupationId(optional.getOccupationId());
-            playerOccupationAttribute.setOffhandHeavy(optional.getOffhandHeavy());
             playerOccupationAttribute.setAttributeModifier(optional.getAttributeModifier());
-            playerOccupationAttribute.setPunishmentAttributeModifier(optional.getPunishmentAttributeModifier());
             playerOccupationAttribute.setOccupationAttributeLevel(optional.getOccupationAttributeLevel());
-            playerOccupationAttribute.setHeavyAttributeModifier(optional.getHeavyAttributeModifier());
             playerOccupationAttribute.setEmpiricalCalculationFormula(optional.getEmpiricalCalculationFormula());
-            playerOccupationAttribute.setBurden(optional.getBurden());
             playerOccupationAttribute.setAttributeMaxLevel(optional.getAttributeMaxLevel());
             playerOccupationAttribute.setMaxLevel(optional.getMaxLevel());
             playerOccupationAttribute.setPoints(optional.getPoints());
@@ -89,9 +86,10 @@ public class PlayerForgeEvent {
      */
     @SubscribeEvent
     public static void playerRespawnEvent(PlayerEvent.PlayerRespawnEvent event){
-        Player player = event.getEntity();
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
         player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).ifPresent(playerOccupationAttribute -> {
             againAttachAttribute(playerOccupationAttribute,player);
+            ItemPunishmentTool.refreshPenalties(player, playerOccupationAttribute);
             //死亡后的灵魂量
             int soulCount = (int) (playerOccupationAttribute.getOccupationExperience() * LHMiracleRoadConfig.COMMON.SOUL_LOSS_COUNT.get());
 //            int soulCount = 0;
@@ -125,7 +123,7 @@ public class PlayerForgeEvent {
             loggedInSyncAttribute(playerOccupationAttribute, (ServerPlayer) player);
             SyncTool.synchronizationClient(playerOccupationAttribute, (ServerPlayer) player);
             //更新玩家奖惩状态
-            LHMiracleRoadTool.playerPunishmentStateUpdate((ServerPlayer) player, playerOccupationAttribute);
+            ItemPunishmentTool.refreshPenalties((ServerPlayer) player, playerOccupationAttribute);
         }else {
             SyncTool.synchronizationSoul(0, (ServerPlayer) player,0);
         }
