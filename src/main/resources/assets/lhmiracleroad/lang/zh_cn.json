@@ -165,8 +165,8 @@
   "item.lhmiracleroad.forget_water.tooltip.details": "遗忘...或许会变的更强吧...",
   "item.lhmiracleroad.king_soul.tooltip.details": "如此温暖的灵魂，定是一位伟大的英雄在世界上留下了最后的印记...",
   "item.lhmiracleroad.death_soul.tooltip.details.1": "死神的触媒。至少需要10万点灵魂才能使用",
-  "item.lhmiracleroad.death_soul.tooltip.details.2": "使用时获得1技能点，并有50%概率使灵魂翻倍",
-  "item.lhmiracleroad.death_soul.tooltip.details.3": "另外将祭奠你所有的灵魂...",
+  "item.lhmiracleroad.death_soul.tooltip.details.2": "使用时获得 %s 技能点，基础成功率为 50%%，成功时持有灵魂变为 %s 倍",
+  "item.lhmiracleroad.death_soul.tooltip.details.3": "失败时将祭奠你所有的灵魂...",
   "item.lhmiracleroad.death_soul.prompt": "未满足要求",
 
   "item.lhmiracleroad.soon_elapse_soul": "即将逝去的灵魂",

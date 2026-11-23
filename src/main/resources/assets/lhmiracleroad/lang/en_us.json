@@ -165,8 +165,8 @@
   "item.lhmiracleroad.forget_water.tooltip.details": "Forgetting... perhaps it will make us stronger...",
   "item.lhmiracleroad.king_soul.tooltip.details": "Such a warm soul, surely a great hero leaves their final mark on the world...",
   "item.lhmiracleroad.death_soul.tooltip.details.1": "Items related to the Grim Reaper. Requires at least 100,000 souls to use.",
-  "item.lhmiracleroad.death_soul.tooltip.details.2": "Grants 1 skill point upon use, with a 50% chance to double the soul.",
-  "item.lhmiracleroad.death_soul.tooltip.details.3": "Additionally, sacrifice all your souls...",
+  "item.lhmiracleroad.death_soul.tooltip.details.2": "Grants %s skill point(s). The base success chance is 50%%. On success, multiplies your souls by %s.",
+  "item.lhmiracleroad.death_soul.tooltip.details.3": "On failure, all your souls are sacrificed...",
   "item.lhmiracleroad.death_soul.prompt": "Not meeting requirements",
 
   "item.lhmiracleroad.adventurer_large_block_soul": "Adventurer's Large Block Soul",

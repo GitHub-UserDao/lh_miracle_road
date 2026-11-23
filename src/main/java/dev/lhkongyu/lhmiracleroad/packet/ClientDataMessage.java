@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
+import dev.lhkongyu.lhmiracleroad.config.SoulItemConfig;
 import dev.lhkongyu.lhmiracleroad.data.ClientData;
 import dev.lhkongyu.lhmiracleroad.tool.data.DataCompressTool;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
@@ -39,6 +40,7 @@ public record ClientDataMessage(JsonObject data) {
                             equipmentFlag("attributePenaltiesEnabled", config.IS_SKILL_POINTS_RESTRICT.get())));
                 }
                 case "modEquipment" -> modEquipmentManage(LHMiracleRoadTool.isAsJsonObject(data.get("data")));
+                case "soulItems" -> ClientData.setSoulRewards(SoulItemConfig.fromJson(LHMiracleRoadTool.isAsJsonObject(data.get("data"))));
             }
         });
         context.setPacketHandled(true);

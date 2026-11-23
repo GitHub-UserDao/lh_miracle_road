@@ -47,6 +47,9 @@ public record ClientSoulMessage(JsonObject playerOccupationAttributeObject) {
 
                 int occupationExperience = LHMiracleRoadTool.isAsInt(playerOccupationAttributeObject.get("occupationExperience"));
                 playerOccupationAttribute.setOccupationExperience(occupationExperience);
+                if (playerOccupationAttributeObject.has("points")) {
+                    playerOccupationAttribute.setPoints(LHMiracleRoadTool.isAsInt(playerOccupationAttributeObject.get("points")));
+                }
 
                 int soulStart = LHMiracleRoadTool.isAsInt(playerOccupationAttributeObject.get("soulStart"));
 

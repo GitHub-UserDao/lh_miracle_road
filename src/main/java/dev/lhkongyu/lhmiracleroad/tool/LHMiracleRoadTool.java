@@ -6,10 +6,10 @@ import com.google.gson.JsonObject;
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
 import dev.lhkongyu.lhmiracleroad.attributes.LHMiracleRoadAttributes;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
+import dev.lhkongyu.lhmiracleroad.config.strengthen.WeaponTypeConfig;
 import dev.lhkongyu.lhmiracleroad.entity.player.PlayerSoulEntity;
 import dev.lhkongyu.lhmiracleroad.generator.SpellDamageTypes;
 import dev.lhkongyu.lhmiracleroad.items.gem.AttributeGem;
-import dev.lhkongyu.lhmiracleroad.registry.TagsRegistry;
 import dev.lhkongyu.lhmiracleroad.tool.mathcalculator.MathCalculatorUtil;
 import net.minecraft.client.gui.Font;
 import net.minecraft.core.BlockPos;
@@ -20,6 +20,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
@@ -413,18 +414,21 @@ public class LHMiracleRoadTool {
     }
 
     public static boolean itemIsWeapons(ItemStack stack){
-        return stack.is(TagsRegistry.WEAPONS)
-                || stack.getItem() instanceof SwordItem
+        return stack.getItem() instanceof SwordItem
                 || stack.getItem() instanceof AxeItem
-                || stack.getItem() instanceof TridentItem;
+                || stack.getItem() instanceof TridentItem
+                || stack.is(ItemTags.SWORDS)
+                || stack.is(ItemTags.AXES)
+                || WeaponTypeConfig.contains(stack, WeaponTypeConfig.Type.MELEE);
     }
 
     public static boolean itemIsRangedWeapons(ItemStack stack){
-        return stack.is(TagsRegistry.RANGED_WEAPONS) || stack.getItem() instanceof ProjectileWeaponItem;
+        return stack.getItem() instanceof ProjectileWeaponItem
+                || WeaponTypeConfig.contains(stack, WeaponTypeConfig.Type.RANGED);
     }
 
     public static boolean itemIsMagicStaff(ItemStack stack){
-        return stack.is(TagsRegistry.MAGIC_STAFF);
+        return WeaponTypeConfig.contains(stack, WeaponTypeConfig.Type.MAGIC_STAFF);
     }
 
 //    /**

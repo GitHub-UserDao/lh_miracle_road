@@ -2,10 +2,13 @@ package dev.lhkongyu.lhmiracleroad.tool.data;
 
 import com.google.gson.JsonObject;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
+import dev.lhkongyu.lhmiracleroad.config.SoulItemConfig;
+import dev.lhkongyu.lhmiracleroad.config.strengthen.WeaponTypeConfig;
 import dev.lhkongyu.lhmiracleroad.packet.ClientDataMessage;
 import dev.lhkongyu.lhmiracleroad.packet.InitItemPreviewMessage;
 import dev.lhkongyu.lhmiracleroad.packet.OccupationCatalogMessage;
 import dev.lhkongyu.lhmiracleroad.packet.PlayerChannel;
+import dev.lhkongyu.lhmiracleroad.packet.WeaponTypesMessage;
 import net.minecraft.server.level.ServerPlayer;
 
 public class SynchronizationData {
@@ -14,6 +17,11 @@ public class SynchronizationData {
      * 将服务端配置同步至客户端
      */
     public static void synchronization(ServerPlayer player) {
+        PlayerChannel.sendToClient(new WeaponTypesMessage(WeaponTypeConfig.forSide(false)), player);
+        JsonObject soulItems = new JsonObject();
+        soulItems.addProperty("key", "soulItems");
+        soulItems.add("data", SoulItemConfig.toJson(SoulItemConfig.forSide(false)));
+        PlayerChannel.sendToClient(new ClientDataMessage(soulItems), player);
         InitItemPreviewMessage.sendAll(player);
         OccupationCatalogMessage.sendAll(player);
         JsonObject equipment = DataCompressTool.equipmentDataCompress();

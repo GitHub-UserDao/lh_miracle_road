@@ -32,6 +32,8 @@ public class ClientEvents {
         @SubscribeEvent
         public static void onDisconnect(ClientPlayerNetworkEvent.LoggingOut event) {
             ClientData.resetEquipment(null);
+            ClientData.setWeaponTypes(null);
+            ClientData.setSoulRewards(null);
         }
 
         @SubscribeEvent

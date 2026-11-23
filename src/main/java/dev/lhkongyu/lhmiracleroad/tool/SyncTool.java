@@ -57,11 +57,16 @@ public class SyncTool {
      * @param soulStart
      */
     public static void synchronizationSoul(Integer occupationExperience, ServerPlayer player,Integer soulStart) {
+        synchronizationSoul(occupationExperience, player, soulStart, null);
+    }
+
+    public static void synchronizationSoul(Integer occupationExperience, ServerPlayer player, Integer soulStart, Integer points) {
         UUID playerUUID = player.getUUID();
         JsonObject playerOccupationAttributeObject = new JsonObject();
         playerOccupationAttributeObject.addProperty("playerUUID",playerUUID.toString());
         playerOccupationAttributeObject.addProperty("occupationExperience",occupationExperience);
         playerOccupationAttributeObject.addProperty("soulStart",soulStart);
+        if (points != null) playerOccupationAttributeObject.addProperty("points", points);
         ClientSoulMessage message = new ClientSoulMessage(playerOccupationAttributeObject);
         PlayerChannel.sendToClient(message, player);
     }

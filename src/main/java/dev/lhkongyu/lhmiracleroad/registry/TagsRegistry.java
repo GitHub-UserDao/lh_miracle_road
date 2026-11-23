@@ -19,6 +19,7 @@ public class TagsRegistry {
     public static final TagKey<Item> HAMMERS =
             ItemTags.create(LHMiracleRoadTool.resourceLocationId("hammers"));
 
+    // Kept for datapack compatibility; strengthening uses WeaponTypeConfig.
     public static final TagKey<Item> WEAPONS =
             ItemTags.create(LHMiracleRoadTool.resourceLocationId("weapons"));
 

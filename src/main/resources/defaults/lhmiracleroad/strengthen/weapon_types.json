@@ -1,0 +1,20 @@
+{
+  "melee": [
+    "minecraft:trident",
+    "lhmiracleroad:hammer_iron",
+    "lhmiracleroad:hammer_netherite",
+    "lhmiracleroad:hammer_ancient"
+  ],
+  "ranged": [
+    "minecraft:bow",
+    "minecraft:crossbow"
+  ],
+  "magic_staff": [
+    "irons_spellbooks:graybeard_staff",
+    "irons_spellbooks:blood_staff",
+    "irons_spellbooks:ice_staff",
+    "irons_spellbooks:artificer_cane",
+    "irons_spellbooks:lightning_rod",
+    "irons_spellbooks:pyrium_staff"
+  ]
+}

@@ -2,8 +2,10 @@ package dev.lhkongyu.lhmiracleroad.data;
 
 import com.google.common.collect.Maps;
 import com.google.gson.JsonObject;
+import dev.lhkongyu.lhmiracleroad.config.SoulItemConfig.Rewards;
 import dev.lhkongyu.lhmiracleroad.config.occupation.Occupation;
 import dev.lhkongyu.lhmiracleroad.config.initItem.StarterItemPreview;
+import dev.lhkongyu.lhmiracleroad.config.strengthen.WeaponTypeConfig.WeaponTypes;
 
 import java.util.Map;
 import java.util.NavigableMap;
@@ -14,6 +16,8 @@ public class ClientData {
 
     public static final Map<String,Map<String,JsonObject>> EQUIPMENT = new ConcurrentHashMap<>();
     private static volatile EquipmentRules equipmentRules;
+    private static volatile WeaponTypes weaponTypes;
+    private static volatile Rewards soulRewards;
 
     public static final NavigableMap<String, Occupation> OCCUPATION_CATALOG = new TreeMap<>();
 
@@ -30,6 +34,22 @@ public class ClientData {
 
     public static EquipmentRules getEquipmentRules() {
         return equipmentRules;
+    }
+
+    public static WeaponTypes getWeaponTypes() {
+        return weaponTypes;
+    }
+
+    public static void setWeaponTypes(WeaponTypes types) {
+        weaponTypes = types;
+    }
+
+    public static Rewards getSoulRewards() {
+        return soulRewards;
+    }
+
+    public static void setSoulRewards(Rewards rewards) {
+        soulRewards = rewards;
     }
 
     public record EquipmentRules(boolean weightEnabled, boolean offhandWeightEnabled, boolean attributePenaltiesEnabled) {}
