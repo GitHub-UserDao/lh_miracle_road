@@ -3,6 +3,7 @@ package dev.lhkongyu.lhmiracleroad.packet;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.data.ClientData;
 import dev.lhkongyu.lhmiracleroad.tool.data.DataCompressTool;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
@@ -30,12 +31,23 @@ public record ClientDataMessage(JsonObject data) {
         context.enqueueWork(() -> {
             String key = LHMiracleRoadTool.isAsString(data.get("key"));
             switch (key){
-                case "clearEquipment" -> ClientData.resetEquipment(true);
+                case "clearEquipment" -> {
+                    var config = LHMiracleRoadConfig.COMMON;
+                    ClientData.resetEquipment(new ClientData.EquipmentRules(
+                            equipmentFlag("weightEnabled", config.ENABLE_EQUIPMENT_WEIGHT.get()),
+                            equipmentFlag("offhandWeightEnabled", config.IS_OFFHAND_CALCULATE_HEAVY.get()),
+                            equipmentFlag("attributePenaltiesEnabled", config.IS_SKILL_POINTS_RESTRICT.get())));
+                }
                 case "modEquipment" -> modEquipmentManage(LHMiracleRoadTool.isAsJsonObject(data.get("data")));
             }
         });
         context.setPacketHandled(true);
     }
+
+    private boolean equipmentFlag(String key, boolean fallback) {
+        return data.has(key) ? data.get(key).getAsBoolean() : fallback;
+    }
+
     private void modEquipmentManage(JsonObject equipment){
         if (equipment != null) {
             for (Map.Entry<String, JsonElement> jsonElement : equipment.entrySet()) {

@@ -31,7 +31,7 @@ public class ClientEvents {
     private static class InputEvents {
         @SubscribeEvent
         public static void onDisconnect(ClientPlayerNetworkEvent.LoggingOut event) {
-            ClientData.resetEquipment(false);
+            ClientData.resetEquipment(null);
         }
 
         @SubscribeEvent

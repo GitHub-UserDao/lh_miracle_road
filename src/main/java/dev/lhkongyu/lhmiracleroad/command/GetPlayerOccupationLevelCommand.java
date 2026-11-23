@@ -1,6 +1,7 @@
 package dev.lhkongyu.lhmiracleroad.command;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -28,6 +29,7 @@ import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -35,6 +37,8 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -42,12 +46,13 @@ import java.util.Optional;
  */
 public class GetPlayerOccupationLevelCommand {
 
-    private static int createPunishment(CommandSourceStack source, ResourceLocation itemId) {
-        try {
-            PunishmentConfig.createFromIronSword(itemId);
-        } catch (FileAlreadyExistsException e) {
-            source.sendFailure(Component.translatable("lhmiracleroad.instructions.punishment.exists", itemId.toString()));
+    private static int createPunishment(CommandSourceStack source, ResourceLocation itemId, String punishmentId, int heavy) {
+        if (PunishmentConfig.getPunishment(punishmentId) == null) {
+            source.sendFailure(Component.translatable("lhmiracleroad.instructions.punishment.invalid_preset", punishmentId));
             return 0;
+        }
+        try {
+            PunishmentConfig.createFromIronSword(itemId, punishmentId, heavy);
         } catch (IllegalArgumentException e) {
             source.sendFailure(Component.translatable("lhmiracleroad.instructions.punishment.invalid_item", itemId.toString()));
             return 0;
@@ -57,6 +62,34 @@ public class GetPlayerOccupationLevelCommand {
             return 0;
         }
         source.sendSuccess(() -> Component.translatable("lhmiracleroad.instructions.punishment.created", itemId.toString()), false);
+        return 1;
+    }
+
+    private static int addPunishmentPreset(CommandSourceStack source, String id, double value, int needPoints, String attributes) {
+        if (id.isBlank()) {
+            source.sendFailure(Component.translatable("lhmiracleroad.instructions.punishment.empty_preset"));
+            return 0;
+        }
+        Map<Attribute, String> attributesByType = new LinkedHashMap<>();
+        for (String name : attributes.strip().split("\\s+")) {
+            Attribute attribute = LHMiracleRoadTool.stringConversionAttribute(name);
+            if (attribute == null) {
+                source.sendFailure(Component.translatable("lhmiracleroad.instructions.punishment.invalid_attribute", name));
+                return 0;
+            }
+            attributesByType.putIfAbsent(attribute, name);
+        }
+        try {
+            if (!PunishmentConfig.addPreset(id, value, needPoints, attributesByType.values())) {
+                source.sendFailure(Component.translatable("lhmiracleroad.instructions.punishment.preset_exists", id));
+                return 0;
+            }
+        } catch (IOException e) {
+            LHMiracleRoad.LOGGER.error("Failed to add punishment preset {}", id, e);
+            source.sendFailure(Component.translatable("lhmiracleroad.instructions.punishment.preset_failed", id));
+            return 0;
+        }
+        source.sendSuccess(() -> Component.translatable("lhmiracleroad.instructions.punishment.preset_added", id), false);
         return 1;
     }
 
@@ -105,8 +138,27 @@ public class GetPlayerOccupationLevelCommand {
                           .then(Commands.literal("create")
                                   .then(Commands.argument("item_id", ResourceLocationArgument.id())
                                           .suggests((context, builder) -> SharedSuggestionProvider.suggestResource(ForgeRegistries.ITEMS.getKeys(), builder))
-                                          .executes(context -> createPunishment(context.getSource(),
-                                                  ResourceLocationArgument.getId(context, "item_id"))))))
+                                          .then(Commands.argument("punishment_id", StringArgumentType.string())
+                                                  .suggests((context, builder) -> SharedSuggestionProvider.suggest(
+                                                          PunishmentConfig.getPunishmentIds().stream().map(StringArgumentType::escapeIfRequired), builder))
+                                                  .then(Commands.argument("heavy", IntegerArgumentType.integer(0))
+                                                          .executes(context -> createPunishment(context.getSource(),
+                                                                  ResourceLocationArgument.getId(context, "item_id"),
+                                                                  StringArgumentType.getString(context, "punishment_id"),
+                                                                  IntegerArgumentType.getInteger(context, "heavy")))))))
+                          .then(Commands.literal("add")
+                                  .then(Commands.argument("punishment_id", StringArgumentType.string())
+                                          .then(Commands.argument("value", DoubleArgumentType.doubleArg())
+                                                  .then(Commands.argument("need_points", IntegerArgumentType.integer(0))
+                                                          .then(Commands.argument("attributes", StringArgumentType.greedyString())
+                                                                  .suggests((context, builder) -> SharedSuggestionProvider.suggestResource(
+                                                                          ForgeRegistries.ATTRIBUTES.getKeys(), builder.createOffset(
+                                                                                  Math.max(builder.getStart(), builder.getInput().lastIndexOf(' ') + 1))))
+                                                                  .executes(context -> addPunishmentPreset(context.getSource(),
+                                                                          StringArgumentType.getString(context, "punishment_id"),
+                                                                          DoubleArgumentType.getDouble(context, "value"),
+                                                                          IntegerArgumentType.getInteger(context, "need_points"),
+                                                                          StringArgumentType.getString(context, "attributes")))))))))
                   .then(Commands.literal("occupation")
                           .requires(source -> source.hasPermission(2))
                           .then(Commands.literal("create")

@@ -26,6 +26,7 @@ public class PlayerOccupationAttribute {
     private Map<String, AttributeModifier> attributeModifier = Maps.newHashMap();
 
     private final Map<UUID, Attribute> activeEquipmentPenalties = new HashMap<>();
+    private boolean curioPenaltyRefreshPending;
 
     private String occupationId;
 
@@ -135,6 +136,16 @@ public class PlayerOccupationAttribute {
 
     public Map<UUID, Attribute> getActiveEquipmentPenalties() {
         return activeEquipmentPenalties;
+    }
+
+    public void queueCurioPenaltyRefresh() {
+        curioPenaltyRefreshPending = true;
+    }
+
+    public boolean consumeCurioPenaltyRefresh() {
+        boolean pending = curioPenaltyRefreshPending;
+        curioPenaltyRefreshPending = false;
+        return pending;
     }
 
     public String getEmpiricalCalculationFormula() {

@@ -20,6 +20,8 @@ public class LHMiracleRoadConfig {
 
         public final ForgeConfigSpec.IntValue LEVEL_BASE;
 
+        public final ForgeConfigSpec.BooleanValue ENABLE_EQUIPMENT_WEIGHT;
+
         public final ForgeConfigSpec.BooleanValue IS_OFFHAND_CALCULATE_HEAVY;
 
         public final ForgeConfigSpec.DoubleValue PUNISHMENT_LIGHT;
@@ -93,6 +95,8 @@ public class LHMiracleRoadConfig {
             builder.push("base");
             INIT_BURDEN = builder.comment("init burden").defineInRange("init_burden",60,10,1000);
             LEVEL_BASE =  builder.comment("level base").defineInRange("level_base",10,1,100);
+            ENABLE_EQUIPMENT_WEIGHT = builder.comment("Enable equipment weight and load-based movement bonuses and penalties.")
+                    .worldRestart().define("enable_equipment_weight", true);
             IS_OFFHAND_CALCULATE_HEAVY = builder.comment("is open offhand heavy").define("is_offhand_calculate_heavy",true);
             PUNISHMENT_LIGHT = builder.comment("light").defineInRange("punishment_light",0.1,-0.99,1);
             PUNISHMENT_NORMAL = builder.comment("normal").defineInRange("punishment_normal",0.0,-0.99,1);
@@ -102,7 +106,8 @@ public class LHMiracleRoadConfig {
 //            EMPIRICAL_BASE_MULTIPLIER = builder.comment("empirical base multiplier").defineInRange("empirical_base_multiplier",8.0,1.0,100.0);
             EXPERIENCE_ACQUISITION_FORMULA = builder.comment("experience acquisition formula").define("experience_acquisition_formula","(exp / 8 + max(hp,2) * 10) * (1 + atk * 0.15 + arm * 0.1 + atou * 0.15 + buff * 0.05)");
             SOUL_LOSS_COUNT = builder.comment("The percentage amount of soul loss: 1 means no loss, 0 means loss is cleared, and 0.5 means half of the loss.").defineInRange("soul_loss_count",0.0,0,1);
-            IS_SKILL_POINTS_RESTRICT = builder.comment("Enable skill points restrict or not").define("is_skill_points_restrict",true);
+            IS_SKILL_POINTS_RESTRICT = builder.comment("Apply equipment attribute penalties when skill requirements are not met.")
+                    .worldRestart().define("is_skill_points_restrict", true);
             ATTRIBUTE_MAX_LEVEL = builder.comment("Enable skill points restrict or not").defineInRange("attribute_max_level",0,0,Integer.MAX_VALUE);
             MAX_LEVEL = builder.comment("player max level").defineInRange("max_level",Integer.MAX_VALUE,0,Integer.MAX_VALUE);
             DARK_SOUL = builder.comment("When Dark Soul mode is enabled, dying will always erase the soul remnant from your previous death.").define("dark_soul",false);

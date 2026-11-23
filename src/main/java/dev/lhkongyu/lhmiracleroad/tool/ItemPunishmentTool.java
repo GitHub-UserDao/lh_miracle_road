@@ -9,6 +9,7 @@ import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.config.punishment.PunishmentConfig;
 import dev.lhkongyu.lhmiracleroad.data.ClientData;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -24,10 +25,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShieldItem;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.TridentItem;
+import net.minecraftforge.common.ToolActions;
 import net.minecraftforge.event.ItemAttributeModifierEvent;
 import net.minecraftforge.fml.util.thread.EffectiveSide;
 import net.minecraftforge.registries.ForgeRegistries;
 import top.theillusivec4.curios.api.CuriosApi;
+import top.theillusivec4.curios.api.event.CurioAttributeModifierEvent;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -43,17 +46,53 @@ public final class ItemPunishmentTool {
     private ItemPunishmentTool() {}
 
     public static void addWeight(ItemAttributeModifierEvent event) {
+        boolean client = EffectiveSide.get().isClient();
+        if (!equipmentWeightEnabled(client)) return;
         EquipmentSlot slot = event.getSlotType();
         ItemStack stack = event.getItemStack();
         if (stack.isEmpty()) return;
-        if (slot == EquipmentSlot.OFFHAND && !LHMiracleRoadConfig.COMMON.IS_OFFHAND_CALCULATE_HEAVY.get()) return;
+        if (slot == EquipmentSlot.OFFHAND && (!offhandWeightEnabled(client)
+                || !(LHMiracleRoadTool.itemIsShield(stack) || stack.canPerformAction(ToolActions.SHIELD_BLOCK)))) return;
         if (slot.getType() == EquipmentSlot.Type.ARMOR && LivingEntity.getEquipmentSlotForItem(stack) != slot) return;
         if (slot == EquipmentSlot.MAINHAND && LHMiracleRoadTool.itemIsArmors(stack)) return;
 
-        double heavy = profile(stack, EffectiveSide.get().isClient()).heavy();
+        double heavy = profile(stack, client).heavy();
         if (heavy <= 0) return;
-        event.addModifier(LHMiracleRoadAttributes.HEAVY, new AttributeModifier(
-                modifierId("weight/" + slot.getName()), "Equipment weight", heavy, AttributeModifier.Operation.ADDITION));
+        event.addModifier(LHMiracleRoadAttributes.HEAVY, weightModifier(slot.getName(), heavy));
+    }
+
+    public static void addCurioWeight(CurioAttributeModifierEvent event) {
+        boolean client = EffectiveSide.get().isClient();
+        if (!equipmentWeightEnabled(client)) return;
+        var slot = event.getSlotContext();
+        if (slot.cosmetic()) return;
+        double heavy = profile(event.getItemStack(), client).heavy();
+        if (heavy > 0) {
+            event.addModifier(LHMiracleRoadAttributes.HEAVY, weightModifier(curioSlot(slot.identifier(), slot.index()), heavy));
+        }
+    }
+
+    public static boolean equipmentWeightEnabled(boolean client) {
+        var rules = client ? ClientData.getEquipmentRules() : null;
+        return rules == null ? LHMiracleRoadConfig.COMMON.ENABLE_EQUIPMENT_WEIGHT.get() : rules.weightEnabled();
+    }
+
+    private static boolean offhandWeightEnabled(boolean client) {
+        var rules = client ? ClientData.getEquipmentRules() : null;
+        return rules == null ? LHMiracleRoadConfig.COMMON.IS_OFFHAND_CALCULATE_HEAVY.get() : rules.offhandWeightEnabled();
+    }
+
+    public static boolean attributePenaltiesEnabled(boolean client) {
+        var rules = client ? ClientData.getEquipmentRules() : null;
+        return rules == null ? LHMiracleRoadConfig.COMMON.IS_SKILL_POINTS_RESTRICT.get() : rules.attributePenaltiesEnabled();
+    }
+
+    private static AttributeModifier weightModifier(String slot, double heavy) {
+        return new AttributeModifier(modifierId("weight/" + slot), "Equipment weight", heavy, AttributeModifier.Operation.ADDITION);
+    }
+
+    private static String curioSlot(String type, int index) {
+        return "curio/" + type + "/" + index;
     }
 
     public static List<Requirement> requirements(ItemStack stack, boolean client) {
@@ -65,7 +104,8 @@ public final class ItemPunishmentTool {
         Item item = stack.getItem();
         Map<String, Map<String, JsonObject>> equipment = client && ClientData.hasEquipmentSnapshot()
                 ? ClientData.EQUIPMENT : PunishmentConfig.getEquipment();
-        JsonObject data = LHMiracleRoadTool.getEquipment(equipment, item.getDescriptionId());
+        ResourceLocation id = ForgeRegistries.ITEMS.getKey(item);
+        JsonObject data = id == null ? null : equipment.getOrDefault(id.getNamespace(), Map.of()).get(id.getPath());
         if (data != null) {
             List<Requirement> requirements = new ArrayList<>();
             for (JsonElement entry : LHMiracleRoadTool.isAsJsonArray(data.get("attribute_need"))) {
@@ -101,7 +141,7 @@ public final class ItemPunishmentTool {
 
     public static void refreshPenalties(ServerPlayer player, PlayerOccupationAttribute attributes) {
         Map<UUID, ActivePenalty> desired = new HashMap<>();
-        if (LHMiracleRoadConfig.COMMON.IS_SKILL_POINTS_RESTRICT.get()) {
+        if (attributePenaltiesEnabled(false)) {
             for (EquipmentSlot slot : EquipmentSlot.values()) {
                 collectPenalties(player.getItemBySlot(slot), attributes, slot.getName(), desired);
             }
@@ -109,7 +149,7 @@ public final class ItemPunishmentTool {
                     inventory.getCurios().forEach((type, handler) -> {
                         var slots = handler.getStacks();
                         for (int index = 0; index < slots.getSlots(); index++) {
-                            collectPenalties(slots.getStackInSlot(index), attributes, "curio/" + type + "/" + index, desired);
+                            collectPenalties(slots.getStackInSlot(index), attributes, curioSlot(type, index), desired);
                         }
                     }));
         }
@@ -154,10 +194,15 @@ public final class ItemPunishmentTool {
     }
 
     public static void updateLoad(ServerPlayer player) {
+        AttributeInstance speed = player.getAttribute(Attributes.MOVEMENT_SPEED);
+        if (speed == null) return;
+        if (!equipmentWeightEnabled(false)) {
+            speed.removeModifier(LOAD_MODIFIER);
+            return;
+        }
         AttributeInstance heavy = player.getAttribute(LHMiracleRoadAttributes.HEAVY);
         AttributeInstance burden = player.getAttribute(LHMiracleRoadAttributes.BURDEN);
-        AttributeInstance speed = player.getAttribute(Attributes.MOVEMENT_SPEED);
-        if (heavy == null || burden == null || speed == null) return;
+        if (heavy == null || burden == null) return;
 
         LHMiracleRoadConfig.Common config = LHMiracleRoadConfig.COMMON;
         double amount = switch (loadState(heavy.getValue(), burden.getValue())) {

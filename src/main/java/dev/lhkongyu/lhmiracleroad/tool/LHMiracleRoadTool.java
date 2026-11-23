@@ -351,15 +351,6 @@ public class LHMiracleRoadTool {
         );
     }
 
-    public static JsonObject getEquipment(Map<String,Map<String,JsonObject>> equipment,String id){
-        int lastIndex = id.lastIndexOf(".");
-        if (lastIndex == -1) return null;
-        String firstPart = id.substring(0, lastIndex);
-        String secondPart = id.substring(lastIndex + 1);
-        if (equipment.get(firstPart) == null) return null;
-        return equipment.get(firstPart).get(secondPart);
-    }
-
     public static void addItemStack(ServerPlayer player,ItemStack itemStack){
         boolean wasAdded = player.getInventory().add(itemStack);
         if (!wasAdded) {

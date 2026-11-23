@@ -13,18 +13,24 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ClientData {
 
     public static final Map<String,Map<String,JsonObject>> EQUIPMENT = new ConcurrentHashMap<>();
-    private static volatile boolean equipmentSnapshot;
+    private static volatile EquipmentRules equipmentRules;
 
     public static final NavigableMap<String, Occupation> OCCUPATION_CATALOG = new TreeMap<>();
 
     public static final Map<String, StarterItemPreview> STARTER_ITEM_PREVIEWS = Maps.newHashMap();
 
-    public static void resetEquipment(boolean synced) {
+    public static void resetEquipment(EquipmentRules rules) {
         EQUIPMENT.clear();
-        equipmentSnapshot = synced;
+        equipmentRules = rules;
     }
 
     public static boolean hasEquipmentSnapshot() {
-        return equipmentSnapshot;
+        return equipmentRules != null;
     }
+
+    public static EquipmentRules getEquipmentRules() {
+        return equipmentRules;
+    }
+
+    public record EquipmentRules(boolean weightEnabled, boolean offhandWeightEnabled, boolean attributePenaltiesEnabled) {}
 }

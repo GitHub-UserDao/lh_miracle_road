@@ -185,7 +185,7 @@ public class UpgradeInterfaceScreen extends OccupationTextureScreen {
     }
 
     private void drawBurden(GuiGraphics graphics, int mouseX, int mouseY) {
-        if (minecraft.player == null) return;
+        if (minecraft.player == null || !ItemPunishmentTool.equipmentWeightEnabled(true)) return;
         AttributeInstance heavyAttribute = minecraft.player.getAttribute(LHMiracleRoadAttributes.HEAVY);
         AttributeInstance burdenAttribute = minecraft.player.getAttribute(LHMiracleRoadAttributes.BURDEN);
         if (heavyAttribute == null || burdenAttribute == null) return;

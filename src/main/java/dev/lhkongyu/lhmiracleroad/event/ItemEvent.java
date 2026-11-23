@@ -2,7 +2,6 @@ package dev.lhkongyu.lhmiracleroad.event;
 
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
-import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.items.gem.AttributeGem;
 import dev.lhkongyu.lhmiracleroad.items.gem.StrengthenGem;
 import dev.lhkongyu.lhmiracleroad.tool.*;
@@ -23,6 +22,7 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import top.theillusivec4.curios.api.event.CurioChangeEvent;
+import top.theillusivec4.curios.api.event.CurioAttributeModifierEvent;
 import top.theillusivec4.curios.api.event.SlotModifiersUpdatedEvent;
 
 import java.util.List;
@@ -38,7 +38,7 @@ public class ItemEvent {
     public static void onTooltip(ItemTooltipEvent event) {
         ItemStack stack = event.getItemStack();
         Player player = event.getEntity();
-        if (player != null && LHMiracleRoadConfig.COMMON.IS_SKILL_POINTS_RESTRICT.get()) {
+        if (player != null && ItemPunishmentTool.attributePenaltiesEnabled(player.level().isClientSide)) {
             player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).ifPresent(attributes -> {
                 for (ItemPunishmentTool.Requirement need : ItemPunishmentTool.requirements(stack, player.level().isClientSide)) {
                     String key = ResourceLocationTool.ATTRIBUTE_TOOLTIP_DETAILS_PREFIX + need.attributeType();
@@ -124,6 +124,11 @@ public class ItemEvent {
         ItemPunishmentTool.addWeight(event);
     }
 
+    @SubscribeEvent(priority = EventPriority.LOW)
+    public static void onCurioWeightModifiers(CurioAttributeModifierEvent event) {
+        ItemPunishmentTool.addCurioWeight(event);
+    }
+
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onEquipmentChange(LivingEquipmentChangeEvent event) {
         refreshEquipmentPenalties(event.getEntity());
@@ -131,12 +136,19 @@ public class ItemEvent {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onCurioChange(CurioChangeEvent event) {
-        refreshEquipmentPenalties(event.getEntity());
+        queueCurioPenaltyRefresh(event.getEntity());
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onCurioSlotCountChange(SlotModifiersUpdatedEvent event) {
-        refreshEquipmentPenalties(event.getEntity());
+        queueCurioPenaltyRefresh(event.getEntity());
+    }
+
+    private static void queueCurioPenaltyRefresh(LivingEntity entity) {
+        if (entity instanceof ServerPlayer player) {
+            player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER)
+                    .ifPresent(attributes -> attributes.queueCurioPenaltyRefresh());
+        }
     }
 
     private static void refreshEquipmentPenalties(LivingEntity entity) {
@@ -149,6 +161,10 @@ public class ItemEvent {
     @SubscribeEvent
     public static void onLoadTick(TickEvent.PlayerTickEvent event) {
         if (event.phase == TickEvent.Phase.END && event.player instanceof ServerPlayer player) {
+            // Curios fires its change event before applying the new item's equip effects.
+            player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).ifPresent(attributes -> {
+                if (attributes.consumeCurioPenaltyRefresh()) ItemPunishmentTool.refreshPenalties(player, attributes);
+            });
             ItemPunishmentTool.updateLoad(player);
         }
     }

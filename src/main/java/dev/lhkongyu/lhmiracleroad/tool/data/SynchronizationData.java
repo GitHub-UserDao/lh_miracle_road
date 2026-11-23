@@ -1,6 +1,7 @@
 package dev.lhkongyu.lhmiracleroad.tool.data;
 
 import com.google.gson.JsonObject;
+import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.packet.ClientDataMessage;
 import dev.lhkongyu.lhmiracleroad.packet.InitItemPreviewMessage;
 import dev.lhkongyu.lhmiracleroad.packet.OccupationCatalogMessage;
@@ -18,6 +19,10 @@ public class SynchronizationData {
         JsonObject equipment = DataCompressTool.equipmentDataCompress();
         JsonObject clearEquipment = new JsonObject();
         clearEquipment.addProperty("key", "clearEquipment");
+        var config = LHMiracleRoadConfig.COMMON;
+        clearEquipment.addProperty("weightEnabled", config.ENABLE_EQUIPMENT_WEIGHT.get());
+        clearEquipment.addProperty("offhandWeightEnabled", config.IS_OFFHAND_CALCULATE_HEAVY.get());
+        clearEquipment.addProperty("attributePenaltiesEnabled", config.IS_SKILL_POINTS_RESTRICT.get());
         PlayerChannel.sendToClient(new ClientDataMessage(clearEquipment), player);
         for (String key : equipment.keySet()) {
             JsonObject equipmentData = new JsonObject();
