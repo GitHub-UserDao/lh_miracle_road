@@ -17,7 +17,7 @@ public class HolyRing {
 
     public static RingItem addAttributeModifier(){
         ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
-        builder.put(LHMiracleRoadAttributes.HOLY_ATTRIBUTE_DAMAGE, new AttributeModifier(UUID.fromString("0b42dfe2-f7a2-4dec-aba3-4f6e3771fde2"), "", 0.24, AttributeModifier.Operation.MULTIPLY_BASE));
+        builder.put(LHMiracleRoadAttributes.HOLY_ATTRIBUTE_DAMAGE, new AttributeModifier(UUID.fromString("0b42dfe2-f7a2-4dec-aba3-4f6e3771fde2"), "", 3, AttributeModifier.Operation.MULTIPLY_BASE));
         builder.put(LHMiracleRoadAttributes.DAMAGE_REDUCTION, new AttributeModifier(UUID.fromString("d2f26337-9aef-4493-a208-a1287109893d"), "", -.08, AttributeModifier.Operation.MULTIPLY_TOTAL));
         if (LHMiracleRoadTool.isModExist("irons_spellbooks")) {
             String attributeName = "irons_spellbooks:holy_spell_power";
@@ -29,7 +29,7 @@ public class HolyRing {
 
             Attribute instanceAttribute = ForgeRegistries.ATTRIBUTES.getValue(resourceLocation);
             if (instanceAttribute != null) {
-                builder.put(instanceAttribute, new AttributeModifier(UUID.fromString("c51f5e90-3864-4c50-a77a-d113234f3d11"), "", 0.24, AttributeModifier.Operation.MULTIPLY_BASE));
+                builder.put(instanceAttribute, new AttributeModifier(UUID.fromString("c51f5e90-3864-4c50-a77a-d113234f3d11"), "", 3, AttributeModifier.Operation.MULTIPLY_BASE));
             }
         }
         return new RingItem(new Item.Properties().rarity(Rarity.EPIC),builder.build());

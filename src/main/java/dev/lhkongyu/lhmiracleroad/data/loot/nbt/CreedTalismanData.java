@@ -8,7 +8,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class CreedTalismanData {
 
-    public static final int level = 8;
+    public static final int level = 10;
 
     public static final String NBT_CREED_ATTRIBUTE = "NBTCreedAttribute";
 

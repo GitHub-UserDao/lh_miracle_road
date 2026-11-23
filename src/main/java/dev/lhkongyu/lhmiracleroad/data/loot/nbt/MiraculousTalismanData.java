@@ -11,7 +11,7 @@ import java.util.List;
 
 public class MiraculousTalismanData {
 
-    public static final int level = 7;
+    public static final int level = 8;
 
     public static final String NBT_MIRACULOUS_ATTRIBUTE = "NBTMiraculousAttribute";
 

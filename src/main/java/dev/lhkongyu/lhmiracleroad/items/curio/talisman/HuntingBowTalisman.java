@@ -21,7 +21,7 @@ public class HuntingBowTalisman {
 
     public static TalismanItem addAttributeModifier(){
         ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
-        builder.put(LHMiracleRoadAttributes.RANGED_DAMAGE, new AttributeModifier(UUID.fromString("47246aeb-2d2e-ee0e-fa27-113f0624b063"), "", .25, AttributeModifier.Operation.MULTIPLY_BASE));
+        builder.put(LHMiracleRoadAttributes.RANGED_DAMAGE, new AttributeModifier(UUID.fromString("47246aeb-2d2e-ee0e-fa27-113f0624b063"), "", .3, AttributeModifier.Operation.MULTIPLY_BASE));
         return new TalismanItem(new Item.Properties().rarity(Rarity.EPIC),builder.build());
     }
 
@@ -36,10 +36,10 @@ public class HuntingBowTalisman {
         return playerCurioOptional.map(PlayerCurio::isEquipHuntingBowTalisman).orElse(false);
     }
     public static void damageCount(LivingEntity source, LivingEntity target, LivingDamageEvent event){
-        float maxDamageAddition = 25f;
-        int distanceDamageAddition = 10;
+        float maxDamageAddition = 40f;
+        int distanceDamageAddition = 8;
         double distanceSqr = source.distanceToSqr(target.getPosition(0));
-        float damage = (float) (Math.min(distanceSqr / distanceDamageAddition,maxDamageAddition) * 0.01 + 1);
+        float damage = (float) (Math.min(distanceSqr / distanceDamageAddition,maxDamageAddition) * 0.0125 + 1);
         event.setAmount(event.getAmount() * damage);
     }
 

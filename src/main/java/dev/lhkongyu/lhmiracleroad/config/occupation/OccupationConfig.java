@@ -233,8 +233,8 @@ public class OccupationConfig {
     private static List<PointsReward> createPointsRewards(String typeId) {
         return switch (typeId) {
             case "hp" -> List.of(
-                    reward("minecraft", "max_health", 1, 20, -0.5, "addition", 0.25),
-                    reward("lhmiracleroad", "healing", 0.01, 35, -0.5, "multiply_base", 0.005)
+                    reward("minecraft", "max_health", 2, 10, -1, "addition", 0.5),
+                    reward("lhmiracleroad", "healing", 0.02, 20, -0.5, "multiply_base", 0.005)
             );
             case "focus" -> List.of(
                     reward("irons_spellbooks", "max_mana", 10, 0, 0, "addition", 0),
@@ -244,8 +244,8 @@ public class OccupationConfig {
                     reward("irons_spellbooks", "cooldown_reduction", 0.004, 20, -0.001, "multiply_base", 0.001)
             );
             case "power" -> List.of(
-                    reward("minecraft", "attack_damage", 0.01, 20, -0.0025, "multiply_base", 0.005),
-                    reward("lhmiracleroad", "ranged_damage", 0.02, 20, -0.005, "multiply_base", 0.005),
+                    reward("minecraft", "attack_damage", 0.015, 20, -0.005, "multiply_base", 0.005),
+                    reward("lhmiracleroad", "ranged_damage", 0.03, 20, -0.01, "multiply_base", 0.01),
                     reward("lhmiracleroad", "mining_speed", 0.02, 0, 0, "multiply_base", 0)
             );
             case "sturdy" -> List.of(
@@ -272,7 +272,7 @@ public class OccupationConfig {
                     reward("ars_nouveau", "ars_nouveau.perk.spell_damage", 0.5, 30, -0.1, "addition", 0.1)
             );
             case "agile" -> List.of(
-                    reward("minecraft", "attack_damage", 0.1, 10, -0.025, "addition", 0.025),
+                    reward("minecraft", "attack_damage", 0.1, 15, -0.025, "addition", 0.025),
                     reward("minecraft", "attack_speed", 0.01, 30, -0.005, "multiply_base", 0.0025),
                     reward("minecraft", "movement_speed", 0.003, 30, -0.0005, "multiply_base", 0.001),
                     reward("irons_spellbooks", "cast_time_reduction", 0.005, 20, -0.0001, "multiply_base", 0.001)
@@ -282,8 +282,8 @@ public class OccupationConfig {
                     reward("lhmiracleroad", "critical_hit_rate", 2, 8, -0.5, "addition", 1)
             );
             case "reaction" -> List.of(
-                    reward("lhmiracleroad", "abnormal_damage", 0.005, 35, -0.0015, "multiply_base", 0.0015),
-                    reward("lhmiracleroad", "abnormal_buildup", 0.015, 35, -0.0025, "multiply_base", 0.005)
+                    reward("lhmiracleroad", "abnormal_damage", 0.01, 30, -0.0025, "multiply_base", 0.0025),
+                    reward("lhmiracleroad", "abnormal_buildup", 0.02, 30, -0.0025, "multiply_base", 0.005)
             );
             default -> Collections.emptyList();
         };
