@@ -114,6 +114,19 @@ public class GetPlayerOccupationLevelCommand {
         return 1;
     }
 
+    private static int resetDefaultOccupations(CommandSourceStack source) {
+        try {
+            var defaults = OccupationConfig.resetDefaults();
+            OccupationCatalogMessage.broadcastUpdates(defaults);
+            source.sendSuccess(() -> Component.translatable("lhmiracleroad.instructions.occupation.defaults_reset", defaults.size()), false);
+            return defaults.size();
+        } catch (IOException e) {
+            LHMiracleRoad.LOGGER.error("Failed to reset default occupation configs", e);
+            source.sendFailure(Component.translatable("lhmiracleroad.instructions.occupation.defaults_reset_failed"));
+            return 0;
+        }
+    }
+
     private static int saveInitItems(CommandSourceStack source, String occupationId) throws CommandSyntaxException {
         ServerPlayer player = source.getPlayerOrException();
         try {
@@ -164,7 +177,9 @@ public class GetPlayerOccupationLevelCommand {
                           .then(Commands.literal("create")
                                   .then(Commands.argument("occupation_id", StringArgumentType.word())
                                           .executes(context -> createOccupation(context.getSource(),
-                                                  StringArgumentType.getString(context, "occupation_id"))))))
+                                                  StringArgumentType.getString(context, "occupation_id")))))
+                          .then(Commands.literal("reset_defaults")
+                                  .executes(context -> resetDefaultOccupations(context.getSource()))))
                   .then(Commands.literal("points")
                           .requires(e -> e.hasPermission(2))
                           .then(Commands.literal("add")

@@ -24,6 +24,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -212,7 +213,11 @@ public abstract class OccupationTextureScreen extends Screen {
     }
 
     protected final void setAttributeHover(OccupationAttribute attribute, int level) {
-        attributeHover = new AttributeHover(attribute, level);
+        setAttributeHover(attribute, level, null);
+    }
+
+    protected final void setAttributeHover(OccupationAttribute attribute, int level, @Nullable Component header) {
+        attributeHover = new AttributeHover(attribute, level, header);
     }
 
     protected final int screenX(int x) {
@@ -227,11 +232,20 @@ public abstract class OccupationTextureScreen extends Screen {
         return screenY(ATTRIBUTE_START_Y + rowIndex * ATTRIBUTE_ROW_STEP);
     }
 
-    protected final void drawAttributeNameAndLevel(GuiGraphics graphics, Component name, int level, int y) {
-        String levelText = Integer.toString(level);
+    protected final void drawAttributeNameAndLevel(GuiGraphics graphics, Component name, int level, int maxLevel,
+                                                  int y, int mouseX, int mouseY) {
+        String expandedLevel = level + "/" + maxLevel;
+        int expandedWidth = font.width(expandedLevel);
+        int expandedX = attributeLevelLeft(expandedWidth);
+        boolean hovered = isTextHovered(mouseX, mouseY, expandedX, y, expandedWidth);
+        String levelText = hovered ? expandedLevel : Integer.toString(level);
+        int levelX = hovered ? expandedX : attributeLevelLeft(font.width(levelText));
         graphics.drawString(font, name, screenX(ATTRIBUTE_LEFT_X), y, TEXT_COLOR, false);
-        graphics.drawString(font, levelText, screenX(ATTRIBUTE_CENTER_X) - font.width(levelText) / 2, y,
-                TEXT_COLOR, false);
+        graphics.drawString(font, levelText, levelX, y, TEXT_COLOR, false);
+    }
+
+    private int attributeLevelLeft(int width) {
+        return screenX(ATTRIBUTE_CENTER_X) - width / 2;
     }
 
     @Override
@@ -466,10 +480,13 @@ public abstract class OccupationTextureScreen extends Screen {
     }
 
     private void renderAttributeTooltip(GuiGraphics graphics, int mouseX, int mouseY) {
-        if (attributeHover == null || attributeHover.attribute().getPointsRewards() == null) return;
+        if (attributeHover == null) return;
 
         List<Component> tooltip = new ArrayList<>();
-        for (PointsReward reward : attributeHover.attribute().getPointsRewards()) {
+        if (attributeHover.header() != null) tooltip.add(attributeHover.header());
+        List<PointsReward> rewards = attributeHover.attribute().getPointsRewards();
+        if (rewards == null) rewards = List.of();
+        for (PointsReward reward : rewards) {
             if (reward == null || reward.getAttribute_id() == null || reward.getAttribute_id().isBlank()) continue;
 
             AttributeModifier.Operation operation = LHMiracleRoadTool.stringConversionOperation(reward.getOperation());
@@ -518,7 +535,7 @@ public abstract class OccupationTextureScreen extends Screen {
         return Component.literal(id.toString());
     }
 
-    private record AttributeHover(OccupationAttribute attribute, int level) {
+    private record AttributeHover(OccupationAttribute attribute, int level, @Nullable Component header) {
     }
 
     protected record ButtonDefinition(int x, int y, int width, int height, Component message, Button.OnPress onPress,

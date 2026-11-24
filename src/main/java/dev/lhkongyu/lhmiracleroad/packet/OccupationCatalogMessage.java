@@ -38,6 +38,10 @@ public record OccupationCatalogMessage(boolean replaceAll, List<Occupation> occu
     }
 
     public static void broadcastNew(Occupation occupation) {
-        PlayerChannel.channel.send(PacketDistributor.ALL.noArg(), new OccupationCatalogMessage(false, List.of(occupation)));
+        broadcastUpdates(List.of(occupation));
+    }
+
+    public static void broadcastUpdates(List<Occupation> occupations) {
+        PlayerChannel.channel.send(PacketDistributor.ALL.noArg(), new OccupationCatalogMessage(false, occupations));
     }
 }

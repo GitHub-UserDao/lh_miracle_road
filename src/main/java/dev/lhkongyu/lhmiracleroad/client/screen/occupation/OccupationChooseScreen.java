@@ -136,11 +136,13 @@ public class OccupationChooseScreen extends OccupationTextureScreen {
             int y = attributeRowY(rowIndex++);
             Component name = Component.translatable(ResourceLocationTool.ATTRIBUTE_NAME_PREFIX + attribute.getType_id());
             int level = attribute.getInit_lv();
-            drawAttributeNameAndLevel(graphics, name, level, y);
+            int maxLevel = attribute.getMax_lv();
+            drawAttributeNameAndLevel(graphics, name, level, maxLevel, y, mouseX, mouseY);
             graphics.drawString(font, details, detailsX, y, DETAILS_TEXT_COLOR, false);
 
             if (isTextHovered(mouseX, mouseY, detailsX, y, detailsWidth)) {
-                setAttributeHover(attribute, level);
+                setAttributeHover(attribute, level,
+                        Component.translatable("lhmiracleroad.gui.attribute.text.max_level", maxLevel));
             }
         }
     }

@@ -163,8 +163,12 @@ public class PlayerAttributeTool {
     }
 
     public static boolean isWithinAttributeLimit(PlayerOccupationAttribute attributes, int level, int configuredLimit, int count) {
+        return (long) level + count <= attributeLevelLimit(attributes, configuredLimit);
+    }
+
+    public static int attributeLevelLimit(PlayerOccupationAttribute attributes, int configuredLimit) {
         int override = attributes.getAttributeMaxLevel();
-        return (long) level + count <= (override > 0 ? override : configuredLimit);
+        return override > 0 ? override : configuredLimit;
     }
 
     public static boolean canPayForUpgrade(PlayerOccupationAttribute attributes, int count) {
