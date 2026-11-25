@@ -14,7 +14,7 @@ public class RecoveryRing {
 
     public static RingItem addAttributeModifier(){
         ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
-        builder.put(LHMiracleRoadAttributes.HEALING, new AttributeModifier(UUID.fromString("93d5940a-4987-41a4-a5fb-e59c6ab66bb8"), "", 0.75, AttributeModifier.Operation.MULTIPLY_BASE));
+        builder.put(LHMiracleRoadAttributes.HEALING, new AttributeModifier(UUID.fromString("93d5940a-4987-41a4-a5fb-e59c6ab66bb8"), "", 0.5, AttributeModifier.Operation.MULTIPLY_BASE));
         return new RingItem(new Item.Properties().rarity(Rarity.RARE),builder.build());
     }
 }

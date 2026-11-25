@@ -30,7 +30,7 @@ public class BigShieldTalisman extends TalismanItem {
 
     public BigShieldTalisman(Properties properties, Multimap<Attribute, AttributeModifier> defaultModifiers) {
         super(properties, defaultModifiers);
-        attributeModifier = new AttributeModifier(UUID.fromString("5949d5b2-0626-195d-984a-8929510d1a0d"), "", .35, AttributeModifier.Operation.MULTIPLY_TOTAL);
+        attributeModifier = new AttributeModifier(UUID.fromString("5949d5b2-0626-195d-984a-8929510d1a0d"), "", .30, AttributeModifier.Operation.MULTIPLY_TOTAL);
 
     }
 

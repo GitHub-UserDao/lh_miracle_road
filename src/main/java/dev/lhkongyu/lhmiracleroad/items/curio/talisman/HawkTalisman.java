@@ -5,7 +5,7 @@ import net.minecraft.world.entity.LivingEntity;
 
 public class HawkTalisman {
 
-    private static final float AIR_DAMAGE = 1.12f;
+    private static final float AIR_DAMAGE = 1.2f;
 
     public static void equipHawkTalisman(LivingEntity livingEntity, boolean isEquipHawkTalisman){
         livingEntity.getCapability(PlayerCurioProvider.PLAYER_CURIO_PROVIDER).ifPresent(playerCurio -> {

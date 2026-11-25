@@ -36,8 +36,8 @@ public class HuntingBowTalisman {
         return playerCurioOptional.map(PlayerCurio::isEquipHuntingBowTalisman).orElse(false);
     }
     public static void damageCount(LivingEntity source, LivingEntity target, LivingDamageEvent event){
-        float maxDamageAddition = 40f;
-        int distanceDamageAddition = 8;
+        float maxDamageAddition = 35f;
+        int distanceDamageAddition = 9;
         double distanceSqr = source.distanceToSqr(target.getPosition(0));
         float damage = (float) (Math.min(distanceSqr / distanceDamageAddition,maxDamageAddition) * 0.0125 + 1);
         event.setAmount(event.getAmount() * damage);
