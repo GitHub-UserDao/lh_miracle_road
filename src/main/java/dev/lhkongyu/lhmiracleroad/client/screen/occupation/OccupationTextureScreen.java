@@ -18,11 +18,9 @@ import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -521,20 +519,7 @@ public abstract class OccupationTextureScreen extends Screen {
                 ? attributeId : namespace + ":" + attributeId);
         if (id == null) return Component.literal(attributeId);
 
-        Attribute attribute = ForgeRegistries.ATTRIBUTES.getValue(id);
-        // The config also accepts vanilla short IDs such as max_health.
-        if (attribute == null && id.getNamespace().equals("minecraft") && !id.getPath().contains(".")) {
-            attribute = ForgeRegistries.ATTRIBUTES.getValue(new ResourceLocation("minecraft", "generic." + id.getPath()));
-        }
-        if (attribute != null && Language.getInstance().has(attribute.getDescriptionId())) {
-            return Component.translatable(attribute.getDescriptionId());
-        }
-
-        String translationKey = "attribute.name." + id.getNamespace() + "." + id.getPath();
-        if (Language.getInstance().has(translationKey)) {
-            return Component.translatable(translationKey);
-        }
-        return Component.literal(id.toString());
+        return OccupationText.rewardName(id, Component.literal(id.toString()));
     }
 
     private record AttributeHover(OccupationAttribute attribute, int level, @Nullable Component header) {

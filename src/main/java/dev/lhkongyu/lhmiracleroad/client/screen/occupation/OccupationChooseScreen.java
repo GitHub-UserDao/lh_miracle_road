@@ -8,7 +8,6 @@ import dev.lhkongyu.lhmiracleroad.config.occupation.OccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.data.ClientData;
 import dev.lhkongyu.lhmiracleroad.packet.PlayerChannel;
 import dev.lhkongyu.lhmiracleroad.packet.PlayerOccupationMessage;
-import dev.lhkongyu.lhmiracleroad.tool.ResourceLocationTool;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.player.RemotePlayer;
@@ -75,11 +74,7 @@ public class OccupationChooseScreen extends OccupationTextureScreen {
     @Override
     protected Component occupationDescription() {
         Occupation occupation = displayedOccupation();
-        if (occupation == null) return Component.empty();
-        String description = occupation.getDescription();
-        return description == null || description.isBlank()
-                ? Component.translatableWithFallback(ResourceLocationTool.OCCUPATION_DESCRIBE_PREFIX + occupation.getId(), "")
-                : Component.literal(description);
+        return occupation == null ? Component.empty() : OccupationText.description(occupation.getId());
     }
 
     private StarterItemPreview currentPreview() {

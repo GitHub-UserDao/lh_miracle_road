@@ -62,25 +62,31 @@ public class InitItemConfig {
                 files = findJsonFiles();
             }
 
-            INIT_ITEM_BY_OCCUPATION_ID.clear();
-
-            Map<String, OccupationInitItem> canonical = new HashMap<>();
-            for (Path file : files) {
-                for (OccupationInitItem initItem : readFile(file)) {
-                    if (initItem == null || initItem.occupation_id == null || initItem.occupation_id.isBlank()) {
-                        continue;
-                    }
-                    INIT_ITEM_BY_OCCUPATION_ID.put(initItem.occupation_id, initItem);
-                    if (PATH.equals(file.getParent()) && file.getFileName().toString().equals(initItem.occupation_id + ".json")) {
-                        canonical.put(initItem.occupation_id, initItem);
-                    }
-                }
-            }
-            // A saved per-occupation file takes precedence over entries in grouped configs.
-            INIT_ITEM_BY_OCCUPATION_ID.putAll(canonical);
+            replace(readAll(files));
         } catch (Exception e) {
             LHMiracleRoad.LOGGER.error("Failed load init item config", e);
         }
+    }
+
+    private static Map<String, OccupationInitItem> readAll(List<Path> files) throws IOException {
+        Map<String, OccupationInitItem> loaded = new HashMap<>();
+        Map<String, OccupationInitItem> canonical = new HashMap<>();
+        for (Path file : files) {
+            for (OccupationInitItem initItem : readFile(file)) {
+                if (initItem == null || initItem.occupation_id == null || initItem.occupation_id.isBlank()) continue;
+                loaded.put(initItem.occupation_id, initItem);
+                if (PATH.equals(file.getParent()) && file.getFileName().toString().equals(initItem.occupation_id + ".json")) {
+                    canonical.put(initItem.occupation_id, initItem);
+                }
+            }
+        }
+        loaded.putAll(canonical);
+        return loaded;
+    }
+
+    private static void replace(Map<String, OccupationInitItem> loaded) {
+        INIT_ITEM_BY_OCCUPATION_ID.clear();
+        INIT_ITEM_BY_OCCUPATION_ID.putAll(loaded);
     }
 
     private static List<Path> findJsonFiles() throws IOException {
