@@ -7,6 +7,7 @@ import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
 import dev.lhkongyu.lhmiracleroad.attributes.LHMiracleRoadAttributes;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
+import dev.lhkongyu.lhmiracleroad.config.occupation.OccupationConfig;
 import dev.lhkongyu.lhmiracleroad.config.punishment.PunishmentConfig;
 import dev.lhkongyu.lhmiracleroad.data.ClientData;
 import net.minecraft.resources.ResourceLocation;
@@ -119,6 +120,20 @@ public final class ItemPunishmentTool {
             }
             return new EquipmentProfile(Math.max(0, LHMiracleRoadTool.isAsInt(data.get("heavy"))), requirements);
         }
+        return defaultProfile(stack);
+    }
+
+    public static double defaultHeavy(ItemStack stack) {
+        return defaultProfile(stack).heavy();
+    }
+
+    public static List<Requirement> defaultRequirements(ItemStack stack) {
+        return defaultProfile(stack).requirements();
+    }
+
+    private static EquipmentProfile defaultProfile(ItemStack stack) {
+        if (stack.isEmpty()) return EMPTY;
+        Item item = stack.getItem();
         if (item instanceof ArmorItem armor) {
             return fallback(item.getDefaultAttributeModifiers(armor.getEquipmentSlot()), Attributes.ARMOR, 2.5);
         }
@@ -137,6 +152,21 @@ public final class ItemPunishmentTool {
                 ? List.of(new Requirement("power", Math.min((int) (heavy * 1.25), 80), ResourceLocationTool.DEFAULT))
                 : List.of();
         return new EquipmentProfile(heavy, requirements);
+    }
+
+    public static void refreshCurioWeights(ServerPlayer player) {
+        AttributeInstance attribute = player.getAttribute(LHMiracleRoadAttributes.HEAVY);
+        if (attribute == null) return;
+        CuriosApi.getCuriosInventory(player).ifPresent(inventory ->
+                inventory.getCurios().forEach((type, handler) -> {
+                    var slots = handler.getStacks();
+                    for (int index = 0; index < slots.getSlots(); index++) {
+                        String slot = curioSlot(type, index);
+                        attribute.removeModifier(modifierId("weight/" + slot));
+                        double heavy = profile(slots.getStackInSlot(index), false).heavy();
+                        if (heavy > 0 && equipmentWeightEnabled(false)) attribute.addTransientModifier(weightModifier(slot, heavy));
+                    }
+                }));
     }
 
     public static void refreshPenalties(ServerPlayer player, PlayerOccupationAttribute attributes) {
@@ -238,6 +268,13 @@ public final class ItemPunishmentTool {
     public record Requirement(String attributeType, int minimumLevel, String preset) {
         public boolean isMet(PlayerOccupationAttribute attributes) {
             long baseLevel = attributes.getOccupationAttributeLevel().getOrDefault(attributeType, 0);
+            String jobId = attributes.getOccupationId();
+            if (jobId != null) {
+                var job = EffectiveSide.get().isClient() ? ClientData.OCCUPATION_CATALOG.get(jobId)
+                        : OccupationConfig.getOccupation(jobId);
+                if (job != null && job.getOccupationAttributes() != null && job.getOccupationAttributes().stream()
+                        .noneMatch(attribute -> attributeType.equals(attribute.getType_id()))) baseLevel = 0;
+            }
             return baseLevel + attributes.getCurioAttributeLevelValue(attributeType) >= minimumLevel;
         }
     }

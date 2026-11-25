@@ -3,6 +3,7 @@ package dev.lhkongyu.lhmiracleroad.items.trophy;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
 import dev.lhkongyu.lhmiracleroad.items.TrophyItem;
 import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
@@ -23,6 +24,7 @@ import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class TrophyManager {
@@ -31,40 +33,57 @@ public class TrophyManager {
 
     private static final Path PATH = FMLPaths.CONFIGDIR.get().resolve(LHMiracleRoad.MODID).resolve("trophy");
 
-    private static final Map<String, List<TrophyData>> DATA = new HashMap<>();
+    private static final Type GROUPS = new TypeToken<List<TrophyData>>() {}.getType();
+    private static volatile Map<String, List<TrophyData>> data = Map.of();
+    private static final Map<String, List<ItemStack>> DISPLAY_CACHE = new ConcurrentHashMap<>();
+    private static volatile Map<String, List<TrophyData>> clientData;
 
-    private static final Map<String,List<ItemStack>> DISPLAY_CACHE = new HashMap<>();
+    public static JsonObject snapshot() {
+        return GSON.toJsonTree(data).getAsJsonObject();
+    }
+
+    public static void setClientSnapshot(JsonObject json) {
+        if (json == null) {
+            clientData = null;
+        } else {
+            Map<String, List<TrophyData>> replacement = new HashMap<>();
+            json.entrySet().forEach(entry -> replacement.put(entry.getKey(), GSON.fromJson(entry.getValue(), GROUPS)));
+            clientData = Map.copyOf(replacement);
+        }
+        DISPLAY_CACHE.clear();
+    }
 
     public static void load() {
-        DATA.clear();
         try {
-            Files.createDirectories(PATH);
-            loadType(NameTool.COMMON);
-            loadType(NameTool.EXQUISITE);
-            loadType(NameTool.RARE);
-            loadType(NameTool.EPIC);
-            loadType(NameTool.LEGEND);
+            reloadFromEditor();
         } catch (Exception e) {
             LHMiracleRoad.LOGGER.error("Invalid trophy File", e);
         }
     }
 
+    public static void reloadFromEditor() throws IOException {
+        Files.createDirectories(PATH);
+        data = Map.of(NameTool.COMMON, loadType(NameTool.COMMON), NameTool.EXQUISITE, loadType(NameTool.EXQUISITE),
+                    NameTool.RARE, loadType(NameTool.RARE), NameTool.EPIC, loadType(NameTool.EPIC),
+                    NameTool.LEGEND, loadType(NameTool.LEGEND));
+        DISPLAY_CACHE.clear();
+    }
+
     //初始化读取数据
-    private static void loadType(String type) throws IOException {
+    private static List<TrophyData> loadType(String type) throws IOException {
         Path file = PATH.resolve(type + ".json");
         if (!Files.exists(file)) {
             saveDefault(type, file);
         }
         try (Reader reader = Files.newBufferedReader(file)) {
-            Type listType = new TypeToken<List<TrophyData>>() {}.getType();
-            List<TrophyData> data = GSON.fromJson(reader, listType);
+            List<TrophyData> data = GSON.fromJson(reader, GROUPS);
             if (data == null)
                 data = new ArrayList<>();
             for (TrophyData trophyData : data) {
                 if (trophyData.entries == null)
                     trophyData.entries = new ArrayList<>();
             }
-            DATA.put(type, data);
+            return data;
         }
     }
 
@@ -89,7 +108,7 @@ public class TrophyManager {
     //获取物品
     public static List<ItemStack> getRewards(String type, float luck) {
 
-        List<TrophyData> groups = DATA.get(type);
+        List<TrophyData> groups = TrophyManager.data.get(type);
 
         if (groups == null || groups.isEmpty()) return Collections.emptyList();
 
@@ -110,9 +129,8 @@ public class TrophyManager {
                 result.add(stack);
                 // 不允许重复
                 if (!stack.isEmpty() && !data.allowRepeat) {
-                    pool.removeIf(entry ->
-                            entry.item.equals(
-                                    ForgeRegistries.ITEMS.getKey(stack.getItem()).toString()));
+                    ResourceLocation itemId = ForgeRegistries.ITEMS.getKey(stack.getItem());
+                    pool.removeIf(entry -> entry.item != null && itemId.equals(ResourceLocation.tryParse(entry.item)));
                 }
             }
         }
@@ -122,7 +140,7 @@ public class TrophyManager {
 
     //根据权重随机获取组
     private static TrophyData randomGroup(List<TrophyData> groups,float luck){
-        int totalWeight = 0;
+        long totalWeight = 0;
 
         for (TrophyData data : groups) {
             if (data.weight <= 0) continue;
@@ -131,8 +149,8 @@ public class TrophyManager {
 
         if (totalWeight <= 0) return null;
 
-        int random = ThreadLocalRandom.current().nextInt(totalWeight);
-        int current = 0;
+        long random = ThreadLocalRandom.current().nextLong(totalWeight);
+        long current = 0;
 
         for (TrophyData data : groups) {
 
@@ -151,15 +169,15 @@ public class TrophyManager {
         if (entries.isEmpty()) return ItemStack.EMPTY;
 
         // 计算总权重（考虑幸运）
-        int totalWeight = 0;
+        long totalWeight = 0;
         for (TrophyEntry entry : entries) {
             if (entry.weight <= 0) continue;
             totalWeight += entry.getWeight(luck);
         }
 
         if (totalWeight <= 0) return ItemStack.EMPTY;
-        int random = ThreadLocalRandom.current().nextInt(totalWeight);
-        int current = 0;
+        long random = ThreadLocalRandom.current().nextLong(totalWeight);
+        long current = 0;
         for (TrophyEntry entry : entries) {
             if (entry.weight <= 0) continue;
             current += entry.getWeight(luck);
@@ -188,7 +206,7 @@ public class TrophyManager {
             ItemStack stack = new ItemStack(item, count);
 
             // 读取NBT
-            if (!entry.nbt.isBlank()) {
+            if (entry.nbt != null && !entry.nbt.isBlank()) {
                 try {
                     CompoundTag tag = TagParser.parseTag(entry.nbt);
                     stack.setTag(tag);
@@ -220,7 +238,8 @@ public class TrophyManager {
 
     private static List<ItemStack> buildDisplayList(String type) {
         List<ItemStack> result = new ArrayList<>();
-        List<TrophyData> dataList = DATA.get(type);
+        var synced = clientData;
+        List<TrophyData> dataList = (synced == null ? data : synced).get(type);
         if (dataList == null) return result;
 
         for (TrophyData data : dataList) {
@@ -236,7 +255,7 @@ public class TrophyManager {
                 if (item == null) continue;
 
                 ItemStack stack = new ItemStack(item);
-                if (!entry.nbt.isBlank()) {
+                if (entry.nbt != null && !entry.nbt.isBlank()) {
                     try {
                         stack.setTag(TagParser.parseTag(entry.nbt));
                     }

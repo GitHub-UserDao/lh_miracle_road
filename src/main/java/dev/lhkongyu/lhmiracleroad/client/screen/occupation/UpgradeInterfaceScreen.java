@@ -177,7 +177,7 @@ public class UpgradeInterfaceScreen extends OccupationTextureScreen {
                     + playerAttributes.getCurioAttributeLevelValue(typeId);
             int maxLevel = PlayerAttributeTool.attributeLevelLimit(playerAttributes, attribute.getMax_lv());
             int y = attributeRowY(i);
-            Component name = Component.translatable(ResourceLocationTool.ATTRIBUTE_NAME_PREFIX + typeId);
+            Component name = attribute.displayName();
             drawAttributeNameAndLevel(graphics, name, level, maxLevel, y, mouseX, mouseY);
             if (isTextHovered(mouseX, mouseY, screenX(ATTRIBUTE_LEFT_X), y, font.width(name))) {
                 setAttributeHover(attribute, level);

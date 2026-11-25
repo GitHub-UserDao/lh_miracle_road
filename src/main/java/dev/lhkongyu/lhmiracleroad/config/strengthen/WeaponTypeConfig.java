@@ -52,6 +52,14 @@ public final class WeaponTypeConfig {
         }
     }
 
+    public static void reloadFromEditor() throws IOException {
+        Path file = FMLPaths.CONFIGDIR.get().resolve(LHMiracleRoad.MODID).resolve("strengthen").resolve(FILE_NAME);
+        try (Reader reader = Files.notExists(file) ? new InputStreamReader(openDefaults(), StandardCharsets.UTF_8)
+                : Files.newBufferedReader(file)) {
+            localTypes = read(reader);
+        }
+    }
+
     private static InputStream openDefaults() throws IOException {
         InputStream stream = WeaponTypeConfig.class.getResourceAsStream(DEFAULT_RESOURCE);
         if (stream == null) throw new IOException("Missing resource " + DEFAULT_RESOURCE);

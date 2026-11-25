@@ -11,6 +11,7 @@ import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.config.initItem.InitItemConfig;
 import dev.lhkongyu.lhmiracleroad.config.occupation.Occupation;
 import dev.lhkongyu.lhmiracleroad.config.occupation.OccupationConfig;
+import dev.lhkongyu.lhmiracleroad.config.editor.ConfigEditorService;
 import dev.lhkongyu.lhmiracleroad.config.punishment.PunishmentConfig;
 import dev.lhkongyu.lhmiracleroad.data.loot.nbt.CreedTalismanData;
 import dev.lhkongyu.lhmiracleroad.data.loot.nbt.MiraculousTalismanData;
@@ -146,6 +147,8 @@ public class GetPlayerOccupationLevelCommand {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
           dispatcher.register(Commands.literal("lh_miracle_road")
+                  .then(Commands.literal("config").requires(source -> source.hasPermission(2))
+                          .executes(context -> ConfigEditorService.open(context.getSource().getPlayerOrException())))
                   .then(Commands.literal("punishment")
                           .requires(source -> source.hasPermission(2))
                           .then(Commands.literal("create")

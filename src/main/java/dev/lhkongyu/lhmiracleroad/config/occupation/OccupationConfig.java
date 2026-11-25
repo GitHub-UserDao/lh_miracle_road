@@ -55,25 +55,28 @@ public class OccupationConfig {
                     }
                     writeFile(PATH.resolve(occupation.id + ".json"), occupation);
                 }
-                files = findJsonFiles(PATH);
             }
 
-            OCCUPATION_BY_ID.clear();
-            outcastTemplate = null;
-
-            for (Path file : files) {
-                for (Occupation occupation : readFile(file)) {
-                    if (occupation == null || occupation.id == null || occupation.id.isBlank()) {
-                        continue;
-                    }
-                    if ("outcast".equals(occupation.id)) outcastTemplate = GSON.toJsonTree(occupation).getAsJsonObject();
-                    filterUnavailableRewards(occupation);
-                    OCCUPATION_BY_ID.put(occupation.id, occupation);
-                }
-            }
+            reloadFromEditor();
         } catch (Exception e) {
             LHMiracleRoad.LOGGER.error("Failed load occupation config", e);
         }
+    }
+
+    public static void reloadFromEditor() throws IOException {
+        var loaded = new HashMap<String, Occupation>();
+        JsonObject template = null;
+        for (Path file : findJsonFiles(PATH)) {
+            for (Occupation occupation : readFile(file)) {
+                if (occupation == null || occupation.id == null || occupation.id.isBlank()) continue;
+                if ("outcast".equals(occupation.id)) template = GSON.toJsonTree(occupation).getAsJsonObject();
+                filterUnavailableRewards(occupation);
+                loaded.put(occupation.id, occupation);
+            }
+        }
+        OCCUPATION_BY_ID.clear();
+        OCCUPATION_BY_ID.putAll(loaded);
+        outcastTemplate = template;
     }
 
     private static void filterUnavailableRewards(Occupation occupation) {
@@ -82,6 +85,7 @@ public class OccupationConfig {
         ModList mods = ModList.get();
         occupation.occupationAttributes.removeIf(attribute -> {
             if (attribute == null || attribute.pointsRewards == null) return true;
+            if (attribute.pointsRewards.isEmpty()) return false;
 
             attribute.pointsRewards.removeIf(reward -> {
                 if (reward == null) return true;

@@ -127,7 +127,7 @@ public class LHMiracleRoadTool {
     }
 
     public static String isAsString(JsonElement jsonElement) {
-        return jsonElement != null ? jsonElement.getAsString() : null;
+        return jsonElement != null && !jsonElement.isJsonNull() ? jsonElement.getAsString() : null;
     }
 
     public static JsonArray isAsJsonArray(JsonElement jsonElement) {
@@ -156,7 +156,13 @@ public class LHMiracleRoadTool {
      * @return
      */
     public static double calculateTotalIncrease(int level, double value, double levelPromoteValue, int levelPromote,double min) {
-        level = level - LHMiracleRoadConfig.COMMON.LEVEL_BASE.get();
+        return calculateTotalIncrease(level, value, levelPromoteValue, levelPromote, min,
+                LHMiracleRoadConfig.COMMON.LEVEL_BASE.get());
+    }
+
+    public static double calculateTotalIncrease(int level, double value, double levelPromoteValue,
+                                               int levelPromote, double min, int levelBase) {
+        level -= levelBase;
         if (level == 0) return 0.0;
         double returnValue = 0.0;
         BigDecimal dfReturnValue = null;

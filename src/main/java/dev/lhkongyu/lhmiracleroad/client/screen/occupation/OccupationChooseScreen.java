@@ -75,8 +75,11 @@ public class OccupationChooseScreen extends OccupationTextureScreen {
     @Override
     protected Component occupationDescription() {
         Occupation occupation = displayedOccupation();
-        return occupation == null ? Component.empty()
-                : Component.translatableWithFallback(ResourceLocationTool.OCCUPATION_DESCRIBE_PREFIX + occupation.getId(), "");
+        if (occupation == null) return Component.empty();
+        String description = occupation.getDescription();
+        return description == null || description.isBlank()
+                ? Component.translatableWithFallback(ResourceLocationTool.OCCUPATION_DESCRIBE_PREFIX + occupation.getId(), "")
+                : Component.literal(description);
     }
 
     private StarterItemPreview currentPreview() {
@@ -134,7 +137,7 @@ public class OccupationChooseScreen extends OccupationTextureScreen {
             if (attribute == null) continue;
 
             int y = attributeRowY(rowIndex++);
-            Component name = Component.translatable(ResourceLocationTool.ATTRIBUTE_NAME_PREFIX + attribute.getType_id());
+            Component name = attribute.displayName();
             int level = attribute.getInit_lv();
             int maxLevel = attribute.getMax_lv();
             drawAttributeNameAndLevel(graphics, name, level, maxLevel, y, mouseX, mouseY);

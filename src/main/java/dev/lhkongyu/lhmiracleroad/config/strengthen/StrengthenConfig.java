@@ -3,8 +3,10 @@ package dev.lhkongyu.lhmiracleroad.config.strengthen;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
 import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraftforge.fml.util.thread.EffectiveSide;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -17,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
+import java.util.function.ToIntFunction;
 
 public class StrengthenConfig {
 
@@ -24,96 +27,75 @@ public class StrengthenConfig {
 
     private static final Path PATH = FMLPaths.CONFIGDIR.get().resolve(LHMiracleRoad.MODID).resolve("strengthen");
 
-    private static final Map<Integer, ItemWeapons> WEAPONS = new HashMap<>();
-    private static final Map<Integer, ItemTool> TOOLS = new HashMap<>();
-    private static final Map<Integer, ItemRangedWeapons> RANGED_WEAPONS = new HashMap<>();
-    private static final Map<Integer, ItemArmor> ARMORS = new HashMap<>();
-    private static final Map<Integer, ItemMagicStaff> MAGIC_STAFFS = new HashMap<>();
+    private static final Type WEAPONS = new TypeToken<List<ItemWeapons>>(){}.getType();
+    private static final Type TOOLS = new TypeToken<List<ItemTool>>(){}.getType();
+    private static final Type RANGED = new TypeToken<List<ItemRangedWeapons>>(){}.getType();
+    private static final Type ARMOR = new TypeToken<List<ItemArmor>>(){}.getType();
+    private static final Type MAGIC = new TypeToken<List<ItemMagicStaff>>(){}.getType();
+
+    private static volatile Tables server = tables(createWeaponDefaults(), createToolDefaults(), createRangedDefaults(),
+            createArmorDefaults(), createMagicDefaults());
+    private static volatile Tables client;
 
     public static void load() {
         try {
-            Files.createDirectories(PATH);
-
-            loadWeapon();
-            loadTool();
-            loadRangedWeapon();
-            loadArmor();
-            loadMagic();
-
+            reloadFromEditor();
         } catch (Exception e) {
             LHMiracleRoad.LOGGER.error("Failed load strengthen config", e);
         }
     }
 
-    private static void loadWeapon() throws IOException {
-        List<ItemWeapons> list = loadFile(
-                "weapon.json",
-                new TypeToken<List<ItemWeapons>>(){}.getType(),
-                StrengthenConfig::createWeaponDefaults
-        );
-
-        WEAPONS.clear();
-
-        for (ItemWeapons data : list) {
-            WEAPONS.put(data.lv, data);
-        }
+    public static void reloadFromEditor() throws IOException {
+        Files.createDirectories(PATH);
+        server = tables(
+                    loadFile("weapon.json", WEAPONS, StrengthenConfig::createWeaponDefaults),
+                    loadFile("tool.json", TOOLS, StrengthenConfig::createToolDefaults),
+                    loadFile("ranged_weapon.json", RANGED, StrengthenConfig::createRangedDefaults),
+                    loadFile("armor.json", ARMOR, StrengthenConfig::createArmorDefaults),
+                    loadFile("magic_staffs.json", MAGIC, StrengthenConfig::createMagicDefaults));
     }
 
-    private static void loadTool() throws IOException {
-        List<ItemTool> list = loadFile(
-                "tool.json",
-                new TypeToken<List<ItemTool>>(){}.getType(),
-                StrengthenConfig::createToolDefaults
-        );
-
-        TOOLS.clear();
-
-        for (ItemTool data : list) {
-            TOOLS.put(data.lv, data);
-        }
+    public static JsonObject snapshot() {
+        Tables data = server;
+        JsonObject json = new JsonObject();
+        json.add("weapon", GSON.toJsonTree(data.weapons().values()));
+        json.add("tool", GSON.toJsonTree(data.tools().values()));
+        json.add("ranged_weapon", GSON.toJsonTree(data.ranged().values()));
+        json.add("armor", GSON.toJsonTree(data.armor().values()));
+        json.add("magic_staffs", GSON.toJsonTree(data.magic().values()));
+        return json;
     }
 
-    private static void loadRangedWeapon() throws IOException {
-        List<ItemRangedWeapons> list = loadFile(
-                "ranged_weapon.json",
-                new TypeToken<List<ItemRangedWeapons>>(){}.getType(),
-                StrengthenConfig::createRangedDefaults
-        );
-
-        RANGED_WEAPONS.clear();
-
-        for (ItemRangedWeapons data : list) {
-            RANGED_WEAPONS.put(data.lv, data);
-        }
+    public static void setClientSnapshot(JsonObject json) {
+        client = json == null ? null : tables(
+                GSON.fromJson(json.get("weapon"), WEAPONS),
+                GSON.fromJson(json.get("tool"), TOOLS),
+                GSON.fromJson(json.get("ranged_weapon"), RANGED),
+                GSON.fromJson(json.get("armor"), ARMOR),
+                GSON.fromJson(json.get("magic_staffs"), MAGIC));
     }
 
-    private static void loadArmor() throws IOException {
-        List<ItemArmor> list = loadFile(
-                "armor.json",
-                new TypeToken<List<ItemArmor>>(){}.getType(),
-                StrengthenConfig::createArmorDefaults
-        );
-
-        ARMORS.clear();
-
-        for (ItemArmor data : list) {
-            ARMORS.put(data.lv, data);
-        }
+    private static Tables current() {
+        Tables synced = client;
+        return EffectiveSide.get().isClient() && synced != null ? synced : server;
     }
 
-    private static void loadMagic() throws IOException {
-        List<ItemMagicStaff> list = loadFile(
-                "magic_staffs.json",
-                new TypeToken<List<ItemMagicStaff>>(){}.getType(),
-                StrengthenConfig::createMagicDefaults
-        );
-
-        MAGIC_STAFFS.clear();
-
-        for (ItemMagicStaff data : list) {
-            MAGIC_STAFFS.put(data.lv, data);
-        }
+    private static Tables tables(List<ItemWeapons> weapons, List<ItemTool> tools, List<ItemRangedWeapons> ranged,
+                                 List<ItemArmor> armor, List<ItemMagicStaff> magic) {
+        return new Tables(index(weapons, ItemWeapons::getLv), index(tools, ItemTool::getLv),
+                index(ranged, ItemRangedWeapons::getLv), index(armor, ItemArmor::getLv),
+                index(magic, ItemMagicStaff::getLv));
     }
+
+    private static <T> Map<Integer, T> index(List<T> entries, ToIntFunction<T> level) {
+        Map<Integer, T> result = new HashMap<>();
+        for (T entry : entries) result.put(level.applyAsInt(entry), entry);
+        return Map.copyOf(result);
+    }
+
+    private record Tables(Map<Integer, ItemWeapons> weapons, Map<Integer, ItemTool> tools,
+                          Map<Integer, ItemRangedWeapons> ranged, Map<Integer, ItemArmor> armor,
+                          Map<Integer, ItemMagicStaff> magic) {}
 
     private static <T> List<T> loadFile(String fileName, Type type, Supplier<List<T>> defaultSupplier) throws IOException {
         Path file = PATH.resolve(fileName);
@@ -316,22 +298,26 @@ public class StrengthenConfig {
     }
 
     public static ItemWeapons getWeapon(int lv) {
-        return WEAPONS.getOrDefault(lv, WEAPONS.get(1));
+        return atLevel(current().weapons(), lv);
     }
 
     public static ItemTool getTool(int lv) {
-        return TOOLS.getOrDefault(lv, TOOLS.get(1));
+        return atLevel(current().tools(), lv);
     }
 
     public static ItemRangedWeapons getRangedWeapon(int lv) {
-        return RANGED_WEAPONS.getOrDefault(lv, RANGED_WEAPONS.get(1));
+        return atLevel(current().ranged(), lv);
     }
 
     public static ItemArmor getArmor(int lv) {
-        return ARMORS.getOrDefault(lv, ARMORS.get(1));
+        return atLevel(current().armor(), lv);
     }
 
     public static ItemMagicStaff getMagicStaff(int lv) {
-        return MAGIC_STAFFS.getOrDefault(lv, MAGIC_STAFFS.get(1));
+        return atLevel(current().magic(), lv);
+    }
+
+    private static <T> T atLevel(Map<Integer, T> table, int level) {
+        return table.getOrDefault(level, table.get(1));
     }
 }

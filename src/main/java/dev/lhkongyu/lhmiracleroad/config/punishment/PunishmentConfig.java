@@ -115,7 +115,7 @@ public final class PunishmentConfig {
             if (Files.notExists(presetsFile)) Files.copy(defaults.resolve(PRESETS_FILE), presetsFile);
 
             List<Path> files = equipmentFiles(PATH);
-            if (files.isEmpty()) {
+            if (files.isEmpty() && !Files.exists(PATH.resolve(".editor-managed"))) {
                 for (Path source : equipmentFiles(defaults)) {
                     Path target = PATH.resolve(defaults.relativize(source).toString());
                     Files.createDirectories(target.getParent());
@@ -131,6 +131,15 @@ public final class PunishmentConfig {
         } catch (IOException ex) {
             LHMiracleRoad.LOGGER.error("Failed to initialize punishment config at {}", PATH, ex);
         }
+    }
+
+    public static void reloadFromEditor() throws IOException {
+        Path presetsFile = PATH.resolve(PRESETS_FILE);
+        var loadedPresets = indexPresets(readPresets(Files.exists(presetsFile) ? presetsFile : defaultsPath().resolve(PRESETS_FILE)));
+        Map<String, Map<String, JsonObject>> loadedEquipment = new HashMap<>();
+        for (Path file : equipmentFiles(PATH)) loadEquipment(file, loadedEquipment);
+        equipment = Map.copyOf(loadedEquipment);
+        presets = loadedPresets;
     }
 
     private static Path defaultsPath() {

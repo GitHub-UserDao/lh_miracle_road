@@ -5,6 +5,8 @@ import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.client.screen.occupation.OccupationChooseScreen;
 import dev.lhkongyu.lhmiracleroad.client.screen.occupation.UpgradeInterfaceScreen;
 import dev.lhkongyu.lhmiracleroad.data.ClientData;
+import dev.lhkongyu.lhmiracleroad.config.strengthen.StrengthenConfig;
+import dev.lhkongyu.lhmiracleroad.items.trophy.TrophyManager;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
@@ -34,6 +36,9 @@ public class ClientEvents {
             ClientData.resetEquipment(null);
             ClientData.setWeaponTypes(null);
             ClientData.setSoulRewards(null);
+            ClientData.setOccupationLevelBase(null);
+            StrengthenConfig.setClientSnapshot(null);
+            TrophyManager.setClientSnapshot(null);
         }
 
         @SubscribeEvent

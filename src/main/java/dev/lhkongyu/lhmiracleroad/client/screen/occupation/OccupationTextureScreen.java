@@ -358,9 +358,11 @@ public abstract class OccupationTextureScreen extends Screen {
 
     private Component occupationTitle() {
         Occupation occupation = displayedOccupation();
-        return occupation == null ? Component.empty()
-                : Component.translatableWithFallback(ResourceLocationTool.OCCUPATION_NAME_PREFIX + occupation.getId(),
-                        occupation.getName() == null ? occupation.getId() : occupation.getName());
+        if (occupation == null) return Component.empty();
+        String name = occupation.getName();
+        return name == null || name.isBlank() || name.equals(occupation.getId())
+                ? Component.translatableWithFallback(ResourceLocationTool.OCCUPATION_NAME_PREFIX + occupation.getId(), occupation.getId())
+                : Component.literal(name);
     }
 
     private void drawOccupationDescription(GuiGraphics graphics) {

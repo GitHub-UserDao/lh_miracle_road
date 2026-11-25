@@ -1,6 +1,7 @@
 package dev.lhkongyu.lhmiracleroad.packet;
 
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
+import dev.lhkongyu.lhmiracleroad.config.editor.ConfigEditorPackets;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkDirection;
@@ -10,7 +11,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 
 public class PlayerChannel {
 
-    private static final String PROTOCOL_VERSION = "6";
+    private static final String PROTOCOL_VERSION = "7";
 
     public static final SimpleChannel channel = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(LHMiracleRoad.MODID, "lh_miracle_road_player_attribute"),
@@ -91,6 +92,8 @@ public class PlayerChannel {
                 .encoder(WeaponTypesMessage::encode)
                 .consumerMainThread(WeaponTypesMessage::handle)
                 .add();
+
+        ConfigEditorPackets.register(channel);
     }
 
     public static <MSG> void sendToServer(MSG msg) {

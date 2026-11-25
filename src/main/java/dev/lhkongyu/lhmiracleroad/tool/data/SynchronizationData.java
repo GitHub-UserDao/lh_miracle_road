@@ -2,6 +2,10 @@ package dev.lhkongyu.lhmiracleroad.tool.data;
 
 import com.google.gson.JsonObject;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
+import dev.lhkongyu.lhmiracleroad.config.editor.ConfigEditorPackets;
+import dev.lhkongyu.lhmiracleroad.config.editor.ConfigSection;
+import dev.lhkongyu.lhmiracleroad.config.strengthen.StrengthenConfig;
+import dev.lhkongyu.lhmiracleroad.items.trophy.TrophyManager;
 import dev.lhkongyu.lhmiracleroad.config.SoulItemConfig;
 import dev.lhkongyu.lhmiracleroad.config.strengthen.WeaponTypeConfig;
 import dev.lhkongyu.lhmiracleroad.packet.ClientDataMessage;
@@ -18,28 +22,21 @@ public class SynchronizationData {
      */
     public static void synchronization(ServerPlayer player) {
         PlayerChannel.sendToClient(new WeaponTypesMessage(WeaponTypeConfig.forSide(false)), player);
+        ConfigEditorPackets.syncGameplay(player, ConfigSection.STRENGTHEN, StrengthenConfig.snapshot());
+        ConfigEditorPackets.syncGameplay(player, ConfigSection.TROPHY, TrophyManager.snapshot());
         JsonObject soulItems = new JsonObject();
         soulItems.addProperty("key", "soulItems");
         soulItems.add("data", SoulItemConfig.toJson(SoulItemConfig.forSide(false)));
         PlayerChannel.sendToClient(new ClientDataMessage(soulItems), player);
         InitItemPreviewMessage.sendAll(player);
         OccupationCatalogMessage.sendAll(player);
-        JsonObject equipment = DataCompressTool.equipmentDataCompress();
-        JsonObject clearEquipment = new JsonObject();
-        clearEquipment.addProperty("key", "clearEquipment");
+        JsonObject equipment = new JsonObject();
+        equipment.add("data", DataCompressTool.equipmentDataCompress());
         var config = LHMiracleRoadConfig.COMMON;
-        clearEquipment.addProperty("weightEnabled", config.ENABLE_EQUIPMENT_WEIGHT.get());
-        clearEquipment.addProperty("offhandWeightEnabled", config.IS_OFFHAND_CALCULATE_HEAVY.get());
-        clearEquipment.addProperty("attributePenaltiesEnabled", config.IS_SKILL_POINTS_RESTRICT.get());
-        PlayerChannel.sendToClient(new ClientDataMessage(clearEquipment), player);
-        for (String key : equipment.keySet()) {
-            JsonObject equipmentData = new JsonObject();
-            JsonObject data = new JsonObject();
-            data.add(key,equipment.get(key));
-            equipmentData.addProperty("key", "modEquipment");
-            equipmentData.add("data", data);
-            ClientDataMessage equipmentMessage = new ClientDataMessage(equipmentData);
-            PlayerChannel.sendToClient(equipmentMessage, player);
-        }
+        equipment.addProperty("occupationLevelBase", config.LEVEL_BASE.get());
+        equipment.addProperty("weightEnabled", config.ENABLE_EQUIPMENT_WEIGHT.get());
+        equipment.addProperty("offhandWeightEnabled", config.IS_OFFHAND_CALCULATE_HEAVY.get());
+        equipment.addProperty("attributePenaltiesEnabled", config.IS_SKILL_POINTS_RESTRICT.get());
+        ConfigEditorPackets.syncGameplay(player, ConfigSection.EQUIPMENT, equipment);
     }
 }

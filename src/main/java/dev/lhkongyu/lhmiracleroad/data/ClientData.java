@@ -2,6 +2,7 @@ package dev.lhkongyu.lhmiracleroad.data;
 
 import com.google.common.collect.Maps;
 import com.google.gson.JsonObject;
+import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.config.SoulItemConfig.Rewards;
 import dev.lhkongyu.lhmiracleroad.config.occupation.Occupation;
 import dev.lhkongyu.lhmiracleroad.config.initItem.StarterItemPreview;
@@ -18,6 +19,7 @@ public class ClientData {
     private static volatile EquipmentRules equipmentRules;
     private static volatile WeaponTypes weaponTypes;
     private static volatile Rewards soulRewards;
+    private static Integer occupationLevelBase;
 
     public static final NavigableMap<String, Occupation> OCCUPATION_CATALOG = new TreeMap<>();
 
@@ -50,6 +52,14 @@ public class ClientData {
 
     public static void setSoulRewards(Rewards rewards) {
         soulRewards = rewards;
+    }
+
+    public static int occupationLevelBase() {
+        return occupationLevelBase == null ? LHMiracleRoadConfig.COMMON.LEVEL_BASE.get() : occupationLevelBase;
+    }
+
+    public static void setOccupationLevelBase(Integer value) {
+        occupationLevelBase = value;
     }
 
     public record EquipmentRules(boolean weightEnabled, boolean offhandWeightEnabled, boolean attributePenaltiesEnabled) {}

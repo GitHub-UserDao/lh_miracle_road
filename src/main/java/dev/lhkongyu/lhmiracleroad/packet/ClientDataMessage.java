@@ -1,6 +1,5 @@
 package dev.lhkongyu.lhmiracleroad.packet;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
@@ -11,6 +10,7 @@ import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -32,31 +32,28 @@ public record ClientDataMessage(JsonObject data) {
         context.enqueueWork(() -> {
             String key = LHMiracleRoadTool.isAsString(data.get("key"));
             switch (key){
-                case "clearEquipment" -> {
-                    var config = LHMiracleRoadConfig.COMMON;
-                    ClientData.resetEquipment(new ClientData.EquipmentRules(
-                            equipmentFlag("weightEnabled", config.ENABLE_EQUIPMENT_WEIGHT.get()),
-                            equipmentFlag("offhandWeightEnabled", config.IS_OFFHAND_CALCULATE_HEAVY.get()),
-                            equipmentFlag("attributePenaltiesEnabled", config.IS_SKILL_POINTS_RESTRICT.get())));
-                }
-                case "modEquipment" -> modEquipmentManage(LHMiracleRoadTool.isAsJsonObject(data.get("data")));
                 case "soulItems" -> ClientData.setSoulRewards(SoulItemConfig.fromJson(LHMiracleRoadTool.isAsJsonObject(data.get("data"))));
             }
         });
         context.setPacketHandled(true);
     }
 
-    private boolean equipmentFlag(String key, boolean fallback) {
-        return data.has(key) ? data.get(key).getAsBoolean() : fallback;
+    public static void installEquipmentSnapshot(JsonObject snapshot) {
+        Map<String, Map<String, JsonObject>> profiles = new HashMap<>();
+        for (var entry : snapshot.getAsJsonObject("data").entrySet()) {
+            profiles.put(entry.getKey(), DataCompressTool.equipmentDataRestore(entry.getValue().getAsJsonObject()));
+        }
+        var config = LHMiracleRoadConfig.COMMON;
+        ClientData.setOccupationLevelBase(snapshot.get("occupationLevelBase").getAsInt());
+        ClientData.resetEquipment(new ClientData.EquipmentRules(
+                equipmentFlag(snapshot, "weightEnabled", config.ENABLE_EQUIPMENT_WEIGHT.get()),
+                equipmentFlag(snapshot, "offhandWeightEnabled", config.IS_OFFHAND_CALCULATE_HEAVY.get()),
+                equipmentFlag(snapshot, "attributePenaltiesEnabled", config.IS_SKILL_POINTS_RESTRICT.get())));
+        ClientData.EQUIPMENT.putAll(profiles);
     }
 
-    private void modEquipmentManage(JsonObject equipment){
-        if (equipment != null) {
-            for (Map.Entry<String, JsonElement> jsonElement : equipment.entrySet()) {
-                Map<String, JsonObject> equipmentMap = DataCompressTool.equipmentDataRestore(LHMiracleRoadTool.isAsJsonObject(jsonElement.getValue()));
-                ClientData.EQUIPMENT.put(jsonElement.getKey(), equipmentMap);
-            }
-        }
+    private static boolean equipmentFlag(JsonObject snapshot, String key, boolean fallback) {
+        return snapshot.has(key) ? snapshot.get(key).getAsBoolean() : fallback;
     }
 
 }

@@ -30,7 +30,7 @@ public class PlayerAttributeTool {
 
         player.getCapability(PlayerOccupationAttributeProvider.PLAYER_OCCUPATION_ATTRIBUTE_PROVIDER).ifPresent(attributes -> {
             if (attributes.getOccupationId() != null && !attributes.getOccupationId().isBlank()) return;
-            applyConfiguredOccupation(player, configured, attributes, true);
+            applyConfiguredOccupation(player, configured, attributes, true, true);
             InitItemConfig.grantToPlayer(player, occupationId);
             ItemPunishmentTool.refreshPenalties(player, attributes);
         });
@@ -38,11 +38,16 @@ public class PlayerAttributeTool {
 
     public static void restoreConfiguredOccupation(ServerPlayer player, PlayerOccupationAttribute attributes) {
         Occupation occupation = OccupationConfig.getOccupation(attributes.getOccupationId());
-        if (occupation != null) applyConfiguredOccupation(player, occupation, attributes, false);
+        if (occupation != null) applyConfiguredOccupation(player, occupation, attributes, false, true);
+    }
+
+    public static void refreshConfiguredOccupation(ServerPlayer player, PlayerOccupationAttribute attributes) {
+        Occupation occupation = OccupationConfig.getOccupation(attributes.getOccupationId());
+        if (occupation != null) applyConfiguredOccupation(player, occupation, attributes, false, false);
     }
 
     private static void applyConfiguredOccupation(ServerPlayer player, Occupation occupation,
-                                                  PlayerOccupationAttribute attributes, boolean resetLevels) {
+                                                  PlayerOccupationAttribute attributes, boolean resetLevels, boolean recoverHealth) {
         clearOccupationModifiers(player, attributes);
         player.getAttribute(LHMiracleRoadAttributes.BURDEN).setBaseValue(LHMiracleRoadConfig.COMMON.INIT_BURDEN.get());
 
@@ -52,7 +57,7 @@ public class PlayerAttributeTool {
                 String id = type.getType_id();
                 if (id == null || id.isBlank()) continue;
                 int level = levels.computeIfAbsent(id, key -> type.getInit_lv());
-                applyConfiguredRewards(player, attributes, type, level, true);
+                applyConfiguredRewards(player, attributes, type, level, recoverHealth);
             }
         }
 
@@ -201,7 +206,7 @@ public class PlayerAttributeTool {
     public static void resetLevel(ServerPlayer player, PlayerOccupationAttribute attributes) {
         Occupation configured = OccupationConfig.getOccupation(attributes.getOccupationId());
         if (configured == null) return;
-        applyConfiguredOccupation(player, configured, attributes, true);
+        applyConfiguredOccupation(player, configured, attributes, true, true);
         ItemPunishmentTool.refreshPenalties(player, attributes);
     }
 
