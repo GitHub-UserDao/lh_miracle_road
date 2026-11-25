@@ -61,6 +61,7 @@ public class PlayerAttributeTool {
             }
         }
 
+        if (!recoverHealth && player.getHealth() > player.getMaxHealth()) player.setHealth(player.getMaxHealth());
         attributes.setOccupationId(occupation.getId());
         attributes.setOccupationAttributeLevel(levels);
         if (resetLevels) {
@@ -115,9 +116,7 @@ public class PlayerAttributeTool {
                 instance.addTransientModifier(modifier);
                 attributes.addAttributeModifier(key, modifier);
             }
-            if (attribute == Attributes.MAX_HEALTH) {
-                player.setHealth(recoverHealth ? player.getMaxHealth() : Math.min(player.getHealth(), player.getMaxHealth()));
-            }
+            if (recoverHealth && attribute == Attributes.MAX_HEALTH) player.setHealth(player.getMaxHealth());
         }
     }
 
@@ -135,7 +134,10 @@ public class PlayerAttributeTool {
         Occupation occupation = OccupationConfig.getOccupation(attributes.getOccupationId());
         if (occupation == null) return;
         OccupationAttribute type = configuredAttribute(occupation, typeId);
-        if (type != null) applyConfiguredRewards(player, attributes, type, level, false);
+        if (type != null) {
+            applyConfiguredRewards(player, attributes, type, level, false);
+            if (player.getHealth() > player.getMaxHealth()) player.setHealth(player.getMaxHealth());
+        }
     }
 
     public static void points(ServerPlayer player, String attributeTypeName, int count) {
@@ -192,7 +194,7 @@ public class PlayerAttributeTool {
                 points--;
             } else {
                 if (formula == null || formula.isBlank()) return null;
-                int cost = Math.max(0, LHMiracleRoadTool.evaluateFormula(formula, level + i));
+                int cost = Math.max(0, LHMiracleRoadTool.evaluateUpgradeSoulCost(formula, level + i));
                 if (souls < cost) return null;
                 souls -= cost;
             }

@@ -7,7 +7,6 @@ import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttribute;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.client.particle.common.PhotonParticleOption;
 import dev.lhkongyu.lhmiracleroad.client.particle.soul.SoulParticleOption;
-import dev.lhkongyu.lhmiracleroad.config.LHMiracleRoadConfig;
 import dev.lhkongyu.lhmiracleroad.generator.SpellDamageTypes;
 import dev.lhkongyu.lhmiracleroad.registry.ItemsRegistry;
 import dev.lhkongyu.lhmiracleroad.registry.ParticleRegistry;
@@ -342,7 +341,7 @@ public class AttributeGem {
                 int buff = (int) target.getActiveEffects().stream().map(MobEffectInstance::getEffect).filter(MobEffect::isBeneficial).count();
                 int entityDroppedXp = target.getExperienceReward();
                 entityDroppedXp = Math.max(entityDroppedXp,15);
-                int expValue = LHMiracleRoadTool.evaluateFormula(LHMiracleRoadConfig.COMMON.EXPERIENCE_ACQUISITION_FORMULA.get(),entityDroppedXp,hp,atk,arm,atou,buff);
+                int expValue = LHMiracleRoadTool.evaluateSoulReward(entityDroppedXp, hp, atk, arm, atou, buff);
                 amount += amount * Math.min(expValue * 0.000005f,100);
             }
         }else if (damageSource.is(SpellDamageTypes.LIGHTNING_MAGIC)){

@@ -118,7 +118,7 @@ public abstract class LivingEntityMixin {
 				entityDroppedXp = Math.max(entityDroppedXp,15);
 //				int occupationExperience = (int) (entityDroppedXp * LHMiracleRoadConfig.COMMON.EMPIRICAL_BASE_MULTIPLIER.get());
 
-				int expValue = LHMiracleRoadTool.evaluateFormula(LHMiracleRoadConfig.COMMON.EXPERIENCE_ACQUISITION_FORMULA.get(),entityDroppedXp,hp,atk,arm,atou,buff);
+				int expValue = LHMiracleRoadTool.evaluateSoulReward(entityDroppedXp, hp, atk, arm, atou, buff);
 				AttributeInstance attributeInstance = killer.getAttribute(LHMiracleRoadAttributes.SOUL_INCREASE);
 				if (attributeInstance != null) {
 					expValue = (int) (expValue * attributeInstance.getValue());

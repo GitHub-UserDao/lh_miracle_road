@@ -4,6 +4,7 @@
   "lhmiracleroad.config_editor.section.weapon_types": "Workbench Recognition",
   "lhmiracleroad.config_editor.section.equipment": "Requirements and Weight",
   "lhmiracleroad.config_editor.section.trophy": "Loot Bags",
+  "lhmiracleroad.config_editor.section.common": "Common",
   "key.categories.lhmiracleroad": "Miracle Road",
   "key.display_miracle_road": "Miracle Road Open",
   "lhmiracleroad.gui.text.select": "Yes",

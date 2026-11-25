@@ -324,7 +324,7 @@ public class UpgradeInterfaceScreen extends OccupationTextureScreen {
             heldSoul = occupationAttribute.getOccupationExperience();
             String formula = occupationAttribute.getEmpiricalCalculationFormula();
             if (formula != null && !formula.isBlank()) {
-                requiredSoul = LHMiracleRoadTool.evaluateFormula(formula, occupationAttribute.getOccupationLevel());
+                requiredSoul = LHMiracleRoadTool.evaluateUpgradeSoulCost(formula, occupationAttribute.getOccupationLevel());
             }
         }
 

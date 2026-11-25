@@ -305,6 +305,23 @@ public class LHMiracleRoadTool {
         return MathCalculatorUtil.getCalculatorInt(formula);
     }
 
+    public static int evaluateUpgradeSoulCost(String formula, int level) {
+        try {
+            return evaluateFormula(formula, level);
+        } catch (RuntimeException | StackOverflowError invalid) {
+            return evaluateFormula(LHMiracleRoadConfig.COMMON.EMPIRICAL_CALCULATION_FORMULA.getDefault(), level);
+        }
+    }
+
+    public static int evaluateSoulReward(int exp, int hp, int atk, int arm, int atou, int buff) {
+        var formula = LHMiracleRoadConfig.COMMON.EXPERIENCE_ACQUISITION_FORMULA;
+        try {
+            return evaluateFormula(formula.get(), exp, hp, atk, arm, atou, buff);
+        } catch (RuntimeException | StackOverflowError invalid) {
+            return evaluateFormula(formula.getDefault(), exp, hp, atk, arm, atou, buff);
+        }
+    }
+
     /**
      * 概率计算
      *

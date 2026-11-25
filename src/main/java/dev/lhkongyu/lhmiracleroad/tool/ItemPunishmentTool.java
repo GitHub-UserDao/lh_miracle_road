@@ -154,6 +154,18 @@ public final class ItemPunishmentTool {
         return new EquipmentProfile(heavy, requirements);
     }
 
+    public static void refreshEquipmentWeights(ServerPlayer player) {
+        AttributeInstance attribute = player.getAttribute(LHMiracleRoadAttributes.HEAVY);
+        if (attribute == null) return;
+        for (EquipmentSlot slot : EquipmentSlot.values()) {
+            UUID id = modifierId("weight/" + slot.getName());
+            attribute.removeModifier(id);
+            for (AttributeModifier modifier : player.getItemBySlot(slot).getAttributeModifiers(slot).get(LHMiracleRoadAttributes.HEAVY)) {
+                if (id.equals(modifier.getId())) attribute.addTransientModifier(modifier);
+            }
+        }
+    }
+
     public static void refreshCurioWeights(ServerPlayer player) {
         AttributeInstance attribute = player.getAttribute(LHMiracleRoadAttributes.HEAVY);
         if (attribute == null) return;
