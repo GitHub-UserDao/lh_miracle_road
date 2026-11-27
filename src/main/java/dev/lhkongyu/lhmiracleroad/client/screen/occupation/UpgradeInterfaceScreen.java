@@ -24,8 +24,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -254,10 +252,10 @@ public class UpgradeInterfaceScreen extends OccupationTextureScreen {
         graphics.pose().translate(left, top, 0);
         graphics.pose().scale(VALUE_LIST_SCALE, VALUE_LIST_SCALE, 1.0F);
         for (int i = start; i < end; i++) {
-            AttributeValue attribute = valueAttributes.get(valueAttributes.size() - 1 - i);
+            AttributeValue attribute = valueAttributes.get(i);
             String name = attributeValueName(attribute.id());
             String visibleName = font.plainSubstrByWidth(name, nameWidth);
-            String value = formatAttributeValue(attribute.value());
+            String value = attribute.value();
             boolean clippedValue = font.width(value) > valueWidth;
             String visibleValue = clippedValue
                     ? "..." + font.plainSubstrByWidth(value, valueWidth - font.width("..."), true) : value;
@@ -289,13 +287,6 @@ public class UpgradeInterfaceScreen extends OccupationTextureScreen {
             return Component.translatable(attribute.getDescriptionId()).getString();
         }
         return id.toString();
-    }
-
-    private static String formatAttributeValue(double value) {
-        if (!Double.isFinite(value)) return Double.toString(value);
-        BigDecimal rounded = BigDecimal.valueOf(value).setScale(2, RoundingMode.HALF_UP);
-        BigDecimal trimmed = rounded.stripTrailingZeros();
-        return (trimmed.scale() <= 0 ? trimmed : rounded).toPlainString();
     }
 
     private OccupationImageButton addUpgradeButton(OccupationAttribute attribute, ResourceLocation texture,

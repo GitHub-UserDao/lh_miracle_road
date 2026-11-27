@@ -5,6 +5,7 @@ import dev.lhkongyu.lhmiracleroad.abnormal.capability.AbnormalProvider;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerCurioProvider;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.command.GetPlayerOccupationLevelCommand;
+import dev.lhkongyu.lhmiracleroad.config.ShowGuiAttributeConfig;
 import dev.lhkongyu.lhmiracleroad.config.SoulItemConfig;
 import dev.lhkongyu.lhmiracleroad.config.initItem.InitItemConfig;
 import dev.lhkongyu.lhmiracleroad.config.occupation.OccupationConfig;
@@ -88,6 +89,7 @@ public class RegisterEvent {
             StrengthenConfig.load();
             WeaponTypeConfig.load();
             SoulItemConfig.load();
+            ShowGuiAttributeConfig.load();
             OccupationConfig.load();
             InitItemConfig.load();
             PunishmentConfig.load();

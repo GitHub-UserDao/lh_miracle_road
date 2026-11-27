@@ -1,22 +1,28 @@
 package dev.lhkongyu.lhmiracleroad.packet;
 
 import dev.lhkongyu.lhmiracleroad.client.screen.occupation.UpgradeInterfaceScreen;
+import dev.lhkongyu.lhmiracleroad.config.ShowGuiAttributeConfig;
+import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.DefaultAttributes;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 
 public record PlayerAttributeValuesSnapshot(List<AttributeValue> values) {
@@ -28,7 +34,7 @@ public record PlayerAttributeValuesSnapshot(List<AttributeValue> values) {
     public void encode(FriendlyByteBuf buffer) {
         buffer.writeCollection(values, (buf, attribute) -> {
             buf.writeResourceLocation(attribute.id());
-            buf.writeDouble(attribute.value());
+            buf.writeUtf(attribute.value());
         });
     }
 
@@ -39,15 +45,32 @@ public record PlayerAttributeValuesSnapshot(List<AttributeValue> values) {
 
     public static void send(ServerPlayer player) {
         AttributeMap attributes = player.getAttributes();
+        AttributeSupplier defaults = DefaultAttributes.getSupplier(EntityType.PLAYER);
+        Set<ResourceLocation> shownIds = new HashSet<>();
         List<AttributeValue> values = new ArrayList<>();
-        for (var entry : ForgeRegistries.ATTRIBUTES.getEntries()) {
-            Attribute attribute = entry.getValue();
-            if (attributes.hasAttribute(attribute)) {
-                values.add(new AttributeValue(entry.getKey().location(), displayValue(attributes, attribute)));
-            }
+        for (ShowGuiAttributeConfig.Entry entry : ShowGuiAttributeConfig.entries()) {
+            Attribute attribute = resolveAttribute(entry.attribute());
+            if (attribute == null || !attributes.hasAttribute(attribute)) continue;
+
+            ResourceLocation id = ForgeRegistries.ATTRIBUTES.getKey(attribute);
+            if (id == null || !shownIds.add(id)) continue;
+
+            double defaultValue = defaults != null && defaults.hasAttribute(attribute)
+                    ? defaults.getBaseValue(attribute) : attribute.getDefaultValue();
+            values.add(new AttributeValue(id, entry.valueType().format(displayValue(attributes, attribute), defaultValue)));
         }
-        values.sort(Comparator.comparing(attribute -> attribute.id().toString()));
         PlayerChannel.sendToClient(new PlayerAttributeValuesSnapshot(values), player);
+    }
+
+    private static Attribute resolveAttribute(String name) {
+        Attribute attribute = LHMiracleRoadTool.stringConversionAttribute(name);
+        if (attribute != null) return attribute;
+
+        ResourceLocation id = ResourceLocation.tryParse(name);
+        if (id != null && id.getNamespace().equals("minecraft") && !id.getPath().contains(".")) {
+            return ForgeRegistries.ATTRIBUTES.getValue(new ResourceLocation("minecraft", "generic." + id.getPath()));
+        }
+        return null;
     }
 
     private static double displayValue(AttributeMap attributes, Attribute attribute) {
@@ -74,9 +97,9 @@ public record PlayerAttributeValuesSnapshot(List<AttributeValue> values) {
         return bonus;
     }
 
-    public record AttributeValue(ResourceLocation id, double value) {
+    public record AttributeValue(ResourceLocation id, String value) {
         private AttributeValue(FriendlyByteBuf buffer) {
-            this(buffer.readResourceLocation(), buffer.readDouble());
+            this(buffer.readResourceLocation(), buffer.readUtf());
         }
     }
 

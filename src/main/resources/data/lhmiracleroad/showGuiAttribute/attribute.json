@@ -1,0 +1,218 @@
+[
+  {
+    "attribute":  "max_health",
+    "show_value_type":  "base"
+  },
+  {
+    "attribute":  "healing",
+    "show_value_type":  "base_percentage"
+  },
+  {
+    "attribute":  "irons_spellbooks:max_mana",
+    "show_value_type":  "base"
+  },
+  {
+    "attribute":  "ars_nouveau:ars_nouveau.perk.max_mana",
+    "show_value_type":  "base"
+  },
+  {
+    "attribute":  "irons_spellbooks:mana_regen",
+    "show_value_type":  "base"
+  },
+  {
+    "attribute":  "ars_nouveau:ars_nouveau.perk.mana_regen",
+    "show_value_type":  "base"
+  },
+  {
+    "attribute":  "irons_spellbooks:spell_power",
+    "show_value_type":  "base_percentage"
+  },
+  {
+    "attribute":  "damage_addition",
+    "show_value_type":  "extra_percentage"
+  },
+  {
+    "attribute":  "attack_damage",
+    "show_value_type":  "base"
+  },
+  {
+    "attribute":  "ranged_damage",
+    "show_value_type":  "base_percentage"
+  },
+  {
+    "attribute":  "armor_penetration",
+    "show_value_type":  "base_percentage"
+  },
+  {
+    "attribute":  "critical_hit_rate",
+    "show_value_type":  "base_percentage"
+  },
+  {
+    "attribute":  "critical_hit_damage",
+    "show_value_type":  "base_percentage"
+  },
+  {
+    "attribute":  "hunger",
+    "show_value_type":  "extra_percentage"
+  },
+  {
+    "attribute":  "epicfight:staminar",
+    "show_value_type":  "base"
+  },
+  {
+    "attribute":  "damage_reduction",
+    "show_value_type":  "extra_percentage"
+  },
+  {
+    "attribute":  "armor",
+    "show_value_type":  "base"
+  },
+  {
+    "attribute":  "armor_toughness",
+    "show_value_type":  "base"
+  },
+  {
+    "attribute":  "ars_nouveau:ars_nouveau.perk.spell_damage",
+    "show_value_type":  "extra_base"
+  },
+  {
+    "attribute":  "attack_speed",
+    "show_value_type":  "base"
+  },
+  {
+    "attribute":  "movement_speed",
+    "show_value_type":  "extra_percentage"
+  },
+  {
+    "attribute":  "irons_spellbooks:cast_time_reduction",
+    "show_value_type":  "extra_percentage"
+  },
+  {
+    "attribute":  "irons_spellbooks:cooldown_reduction",
+    "show_value_type":  "extra_percentage"
+  },
+  {
+    "attribute":  "luck",
+    "show_value_type":  "base"
+  },
+  {
+    "attribute":  "magic_damage_addition",
+    "show_value_type":  "extra_percentage"
+  },
+  {
+    "attribute":  "mining_speed",
+    "show_value_type":  "extra_percentage"
+  },
+  {
+    "attribute":  "magic_attribute_damage",
+    "show_value_type":  "base"
+  },
+  {
+    "attribute":  "flame_attribute_damage",
+    "show_value_type":  "base"
+  },
+  {
+    "attribute":  "lightning_attribute_damage",
+    "show_value_type":  "base"
+  },
+  {
+    "attribute":  "dark_attribute_damage",
+    "show_value_type":  "base"
+  },
+  {
+    "attribute":  "holy_attribute_damage",
+    "show_value_type":  "base"
+  },
+  {
+    "attribute":  "soul_attribute_damage",
+    "show_value_type":  "base"
+  },
+  {
+    "attribute":  "abnormal_bleed_buildup",
+    "show_value_type":  "extra_base "
+  },
+  {
+    "attribute":  "abnormal_frost_buildup",
+    "show_value_type":  "extra_base "
+  },
+  {
+    "attribute":  "abnormal_poison_buildup",
+    "show_value_type":  "extra_base "
+  },
+  {
+    "attribute":  "abnormal_burn_buildup",
+    "show_value_type":  "extra_percentage "
+  },
+  {
+    "attribute":  "abnormal_damage",
+    "show_value_type":  "extra_percentage"
+  },
+  {
+    "attribute":  "abnormal_buildup",
+    "show_value_type":  "extra_percentage"
+  },
+  {
+    "attribute":  "abnormal_bleed_damage",
+    "show_value_type":  "extra_percentage"
+  },
+  {
+    "attribute":  "abnormal_frost_damage",
+    "show_value_type":  "extra_percentage"
+  },
+  {
+    "attribute":  "abnormal_poison_damage",
+    "show_value_type":  "extra_percentage"
+  },
+  {
+    "attribute":  "abnormal_burn_damage",
+    "show_value_type":  "extra_percentage"
+  },
+  {
+    "attribute":  "irons_spellbooks:blood_spell_power",
+    "show_value_type":  "base_percentage"
+  },
+  {
+    "attribute":  "irons_spellbooks:ender_spell_power",
+    "show_value_type":  "base_percentage"
+  },
+  {
+    "attribute":  "irons_spellbooks:fire_spell_power",
+    "show_value_type":  "base_percentage"
+  },
+  {
+    "attribute":  "irons_spellbooks:ice_spell_power",
+    "show_value_type":  "base_percentage"
+  },
+  {
+    "attribute":  "irons_spellbooks:lightning_spell_power",
+    "show_value_type":  "base_percentage"
+  },
+  {
+    "attribute":  "irons_spellbooks:holy_spell_power",
+    "show_value_type":  "base_percentage"
+  },
+  {
+    "attribute":  "irons_spellbooks:eldritch_spell_power",
+    "show_value_type":  "base_percentage"
+  },
+  {
+    "attribute":  "traveloptics:aqua_spell_power",
+    "show_value_type":  "base_percentage"
+  },
+  {
+    "attribute":  "cataclysm_spellbooks:technomancy_spell_power",
+    "show_value_type":  "base_percentage"
+  },
+  {
+    "attribute":  "cataclysm_spellbooks:abyssal_spell_power",
+    "show_value_type":  "base_percentage"
+  },
+  {
+    "attribute":  "irons_spellbooks:evocation_spell_power",
+    "show_value_type":  "base_percentage"
+  },
+  {
+    "attribute":  "irons_spellbooks:nature_spell_power",
+    "show_value_type":  "base_percentage"
+  }
+]
