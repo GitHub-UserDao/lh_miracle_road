@@ -3,6 +3,8 @@ package dev.lhkongyu.lhmiracleroad.config.editor;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dev.lhkongyu.lhmiracleroad.config.ShowGuiAttributeConfig;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashSet;
 import java.util.List;
@@ -33,11 +35,55 @@ final class ConfigEditorValidation {
     static void validate(ConfigSection section, JsonObject original, JsonObject edited, Rules rules) {
         switch (section) {
             case OCCUPATION -> occupations(original, edited, rules);
+            case SHOW_GUI_ATTRIBUTE -> displayedAttributes(original, edited);
             case STRENGTHEN -> strengthen(original, edited);
             case WEAPON_TYPES -> weaponTypes(original, edited, rules);
             case EQUIPMENT -> equipment(original, edited, rules);
             case TROPHY -> trophies(original, edited, rules);
             case COMMON -> CommonConfigEditor.validate(edited);
+            case SOUL -> soul(original, edited);
+        }
+    }
+
+    private static void soul(JsonObject original, JsonObject edited) {
+        require(edited.keySet().equals(original.keySet()), "Missing or unknown soul configuration section");
+        JsonObject items = object(edited.get("soul_items"), "Soul items");
+        require(items.keySet().equals(original.getAsJsonObject("soul_items").keySet()), "Missing or unknown soul item");
+        for (String id : items.keySet()) soulInteger(items, id);
+
+        JsonObject deathSoul = object(edited.get("death_soul"), "Death soul");
+        require(deathSoul.keySet().equals(original.getAsJsonObject("death_soul").keySet()), "Missing or unknown death soul setting");
+        number(deathSoul, "soul_multiplier", 0, Double.MAX_VALUE);
+        soulInteger(deathSoul, "skill_points");
+    }
+
+    private static void soulInteger(JsonObject record, String field) {
+        number(record, field, 0, Integer.MAX_VALUE);
+        try {
+            record.get(field).getAsBigDecimal().intValueExact();
+        } catch (ArithmeticException invalid) {
+            throw new IllegalArgumentException(field + " must be an integer");
+        }
+    }
+
+    private static void displayedAttributes(JsonObject original, JsonObject edited) {
+        Set<JsonElement> previous = new HashSet<>();
+        for (JsonElement entry : array(original, ShowGuiAttributeConfig.KEY)) previous.add(entry);
+        JsonArray rows = array(edited, ShowGuiAttributeConfig.KEY);
+        for (int index = 0; index < rows.size(); index++) {
+            JsonElement entry = rows.get(index);
+            if (previous.contains(entry)) continue;
+            String label = "GUI attribute #" + (index + 1);
+            JsonObject row = object(entry, label);
+            String attribute = text(row, "attribute").trim();
+            ResourceLocation id = ResourceLocation.tryParse(attribute);
+            require(id != null && !id.getPath().isEmpty(), label + ": invalid attribute ID " + attribute);
+            String valueType = text(row, "show_value_type");
+            try {
+                ShowGuiAttributeConfig.ValueType.fromConfig(valueType);
+            } catch (IllegalArgumentException invalid) {
+                throw new IllegalArgumentException(label + ": invalid value type " + valueType);
+            }
         }
     }
 

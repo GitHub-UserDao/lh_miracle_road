@@ -47,6 +47,7 @@ public final class OccupationEditorScreen extends Screen {
 
     private final ConfigEditorScreen editor;
     private final ConfigEditorDraft draft = new ConfigEditorDraft();
+    private final GuiAttributeEditorScreen guiAttributes = new GuiAttributeEditorScreen(this);
     private final Map<JsonObject, Set<String>> invalidNumbers = new IdentityHashMap<>();
     private final Set<JsonObject> expanded = Collections.newSetFromMap(new IdentityHashMap<>());
     private final Pane jobPane = new Pane();
@@ -69,6 +70,7 @@ public final class OccupationEditorScreen extends Screen {
     private int left;
     private int right;
     private int divider;
+    private int displayTop;
     private int panelBottom;
     private Pane draggingPane;
 
@@ -78,16 +80,25 @@ public final class OccupationEditorScreen extends Screen {
     }
 
     boolean hasDraft() {
-        return draft.dirty();
+        return draft.dirty() || guiAttributes.hasDraft();
     }
 
     boolean hasPendingWrite() {
-        return pending == Operation.SAVE || pending == Operation.RESTORE;
+        return pending == Operation.SAVE || pending == Operation.RESTORE || guiAttributes.isSaving();
     }
 
     void receiveSnapshot(String revision, String json, String status) {
         applySnapshot(revision, json, status);
         if (minecraft != null && minecraft.screen == this) refresh();
+    }
+
+    void loadDisplayConfigIfNeeded() {
+        guiAttributes.loadIfNeeded();
+    }
+
+    void receiveDisplaySnapshot(String revision, String json, String status) {
+        guiAttributes.receiveSnapshot(revision, json, status);
+        if (minecraft != null && minecraft.screen == this) updateActions();
     }
 
     private void applySnapshot(String revision, String json, String status) {
@@ -130,7 +141,14 @@ public final class OccupationEditorScreen extends Screen {
         panelBottom = height - 52;
         draggingPane = null;
         editor.addSectionTabs(width, font, SECTION, this::addRenderableWidget);
-        jobPane.layout(left + 5, divider - 7, TOP + 26, panelBottom - 5);
+        int jobRows = height >= 235 ? 2 : 1;
+        displayTop = TOP + 28 + jobRows * ROW;
+        jobPane.layout(left + 5, divider - 7, TOP + 26, displayTop - 2);
+        button(words("Edit", "编辑"), words("Edit GUI attributes", "编辑界面属性"),
+                left + 5, displayTop + 20, divider - left - 12, 19, () -> {
+                    minecraft.setScreen(guiAttributes);
+                    guiAttributes.loadIfNeeded();
+                });
         attributePane.layout(divider + 9, right - 5, TOP + 26, panelBottom - 5);
         Component create = words("+ Job", "新增职业");
         int createWidth = Math.max(54, font.width(create) + 12);
@@ -148,8 +166,8 @@ public final class OccupationEditorScreen extends Screen {
         int footerX = left + 5;
         int footerY = height - 29;
         int stride = (panelWidth - 7) / 5;
-        reload = footer(words("Reload", "读取"), words("Read the latest server version", "读取服务器当前版本"),
-                footerX, footerY, stride, () -> request(Operation.LOAD));
+        reload = footer(words("Reload", "读取"), words("Read occupations and GUI attributes from the server", "从服务器读取职业与界面属性"),
+                footerX, footerY, stride, this::reloadConfigs);
         discard = footer(words("Discard", "丢弃"), words("Discard the draft and load the last server version", "丢弃草稿并载入最近读取的服务器版本"),
                 footerX + stride, footerY, stride, this::discard);
         restore = footer(words("Restore", "恢复上一版"), words("Restore the previous version on the server", "在服务器上恢复上一版"),
@@ -223,7 +241,7 @@ public final class OccupationEditorScreen extends Screen {
         Component choice = selectedId == null ? words("Select occupation", "选择职业")
                 : occupationLabel(selectedId, selectedOccupation());
         selectJob.setMessage(fit(Component.literal(choice.getString() + "  ▾"), selectJob.getWidth() - 8));
-        selectJob.setTooltip(Tooltip.create(choice));
+        selectJob.setTooltip(Tooltip.create(selectedId == null ? choice : withValue(choice, selectedId)));
     }
 
     private JsonObject selectedOccupation() {
@@ -234,10 +252,12 @@ public final class OccupationEditorScreen extends Screen {
         jobPane.rows.clear();
         JsonObject occupation = selectedOccupation();
         if (occupation != null) {
-            jobPane.add(occupation, DETAIL_ROW, (x, y, w) -> {
-                jobPane.line(words("Occupation ID", "职业 ID"), x, y + 1, w, MUTED);
-                jobPane.line(Component.literal(selectedId), x, y + 13, w, 0xFFFFFF);
-            });
+            if (jobPane.capacity() > 1) {
+                jobPane.add(occupation, DETAIL_ROW, (x, y, w) -> {
+                    jobPane.line(words("Occupation ID", "职业 ID"), x, y + 1, w, MUTED);
+                    jobPane.line(Component.literal(selectedId), x, y + 13, w, 0xFFFFFF);
+                });
+            }
             jobPane.add(occupation, NORMAL_ROW, (x, y, w) -> {
                 int label = Math.min(w / 3, 70);
                 jobPane.line(words("Name", "名称"), x, y + 9, label, MUTED);
@@ -246,6 +266,21 @@ public final class OccupationEditorScreen extends Screen {
             });
         }
         jobPane.showRows();
+    }
+
+    private void reloadConfigs() {
+        if (guiAttributes.hasDraft()) {
+            confirm(words("Reload configuration?", "重新读取配置？"),
+                    words("After loading, the GUI attribute draft will be discarded.", "读取成功后会丢弃界面属性草稿。"),
+                    this::requestReload);
+        } else {
+            requestReload();
+        }
+    }
+
+    private void requestReload() {
+        request(Operation.LOAD);
+        guiAttributes.reload();
     }
 
     private Component addTypeLabel() {
@@ -584,7 +619,7 @@ public final class OccupationEditorScreen extends Screen {
         selectJob.active = ready && selectedId != null;
         createJob.active = ready && loaded;
         attributeAction.active = ready && selectedId != null;
-        reload.active = ready;
+        reload.active = ready && !guiAttributes.isBusy();
         discard.active = ready && dirty;
         restore.active = ready && loaded && !conflicted;
         save.active = ready && dirty && invalidNumbers.isEmpty() && !conflicted;
@@ -677,17 +712,20 @@ public final class OccupationEditorScreen extends Screen {
         int headerLeft = (width - headerWidth) / 2;
         int headerRight = headerLeft + headerWidth;
         ConfigEditorScreen.panel(graphics, headerLeft, headerRight, 8, ConfigEditorScreen.HEADER_BOTTOM);
-        ConfigEditorScreen.panel(graphics, left, divider - 2, TOP, panelBottom);
+        ConfigEditorScreen.panel(graphics, left, divider - 2, TOP, displayTop - 2);
+        ConfigEditorScreen.panel(graphics, left, divider - 2, displayTop, displayTop + 44);
         ConfigEditorScreen.panel(graphics, divider + 3, right, TOP, panelBottom);
         ConfigEditorScreen.panel(graphics, left, right, panelBottom + 4, height - 5);
         graphics.drawString(font, title, headerLeft + 10, 17, GOLD, false);
-        if (dirty) {
+        if (hasDraft()) {
             Component draftLabel = words("Unsaved", "未保存");
             graphics.drawString(font, draftLabel, headerRight - 10 - font.width(draftLabel), 17, WARNING, false);
         }
         Component attributes = rewardEdit == null ? words("Types and rewards", "属性类型与奖励")
                 : words("Edit reward", "编辑属性奖励");
         graphics.drawString(font, fit(attributes, attributeAction.getX() - divider - 12), divider + 9, TOP + 10, GOLD, false);
+        graphics.drawString(font, fit(words("GUI attributes", "界面属性"), divider - left - 12),
+                left + 6, displayTop + 7, GOLD, false);
         jobPane.render(graphics);
         attributePane.render(graphics);
         Component status = status();
@@ -744,6 +782,7 @@ public final class OccupationEditorScreen extends Screen {
         int top;
         int bottom;
         int offset;
+        boolean ready;
         double dragGrab;
         EditBox retainedInput;
         Binding retainedBinding;
@@ -800,7 +839,7 @@ public final class OccupationEditorScreen extends Screen {
             if (offset == clamped) return;
             offset = clamped;
             showRows();
-            setReady(pending == Operation.NONE);
+            setReady(ready);
         }
 
         void reveal(JsonObject owner) {
@@ -855,6 +894,7 @@ public final class OccupationEditorScreen extends Screen {
         }
 
         void setReady(boolean ready) {
+            this.ready = ready;
             for (AbstractWidget widget : widgets) widget.active = ready;
             for (Map.Entry<EditBox, Binding> entry : inputs.entrySet()) {
                 EditBox edit = entry.getKey();

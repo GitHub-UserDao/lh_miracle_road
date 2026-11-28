@@ -7,6 +7,8 @@ import com.google.common.collect.Multimap;
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
 import dev.lhkongyu.lhmiracleroad.capability.PlayerOccupationAttributeProvider;
 import dev.lhkongyu.lhmiracleroad.client.screen.weaponPodium.WeaponPodiumMenu;
+import dev.lhkongyu.lhmiracleroad.config.ShowGuiAttributeConfig;
+import dev.lhkongyu.lhmiracleroad.config.SoulItemConfig;
 import dev.lhkongyu.lhmiracleroad.config.occupation.OccupationConfig;
 import dev.lhkongyu.lhmiracleroad.config.punishment.PunishmentConfig;
 import dev.lhkongyu.lhmiracleroad.config.strengthen.StrengthenConfig;
@@ -273,11 +275,13 @@ public final class ConfigEditorService {
     private static void reloadConfig(ConfigSection section) throws IOException {
         switch (section) {
             case OCCUPATION -> OccupationConfig.reloadFromEditor();
+            case SHOW_GUI_ATTRIBUTE -> ShowGuiAttributeConfig.reloadFromEditor();
             case STRENGTHEN -> StrengthenConfig.reloadFromEditor();
             case WEAPON_TYPES -> WeaponTypeConfig.reloadFromEditor();
             case EQUIPMENT -> PunishmentConfig.reloadFromEditor();
             case TROPHY -> TrophyManager.reloadFromEditor();
             case COMMON -> CommonConfigEditor.reload();
+            case SOUL -> SoulItemConfig.reloadFromEditor();
         }
     }
 
@@ -295,6 +299,14 @@ public final class ConfigEditorService {
 
     private static void refreshPlayer(ConfigSection section, ServerPlayer player,
                                       Map<ModifierKey, AttributeModifier> previousModifiers) {
+        if (section == ConfigSection.SOUL) {
+            SynchronizationData.syncSoulRewards(player);
+            return;
+        }
+        if (section == ConfigSection.SHOW_GUI_ATTRIBUTE) {
+            PlayerAttributeValuesSnapshot.send(player);
+            return;
+        }
         if (capturesEquipment(section)) refreshEquipment(player, previousModifiers);
         if (section == ConfigSection.COMMON) ItemPunishmentTool.refreshEquipmentWeights(player);
         if (section == ConfigSection.EQUIPMENT || section == ConfigSection.COMMON) ItemPunishmentTool.refreshCurioWeights(player);

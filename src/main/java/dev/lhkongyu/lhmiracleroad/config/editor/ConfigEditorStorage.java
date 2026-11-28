@@ -7,6 +7,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import dev.lhkongyu.lhmiracleroad.config.ShowGuiAttributeConfig;
+import dev.lhkongyu.lhmiracleroad.config.SoulItemConfig;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -39,6 +41,8 @@ final class ConfigEditorStorage {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
     private static final System.Logger LOGGER = System.getLogger(ConfigEditorStorage.class.getName());
     private static final Path OCCUPATIONS = Path.of("Occupation");
+    private static final Path SHOW_GUI_ATTRIBUTE = Path.of(ShowGuiAttributeConfig.FILE_NAME);
+    private static final Path SOUL = Path.of(SoulItemConfig.FILE_NAME);
     private static final Path STRENGTHEN = Path.of("strengthen");
     private static final Path WEAPON_TYPES = STRENGTHEN.resolve("weapon_types.json");
     private static final Path EQUIPMENT = Path.of("punishment");
@@ -111,6 +115,7 @@ final class ConfigEditorStorage {
         JsonObject document = new JsonObject();
         switch (section) {
             case OCCUPATION -> indexOccupations(document, parseOccupationFiles(files));
+            case SHOW_GUI_ATTRIBUTE -> document.add(ShowGuiAttributeConfig.KEY, displayedAttributes(files));
             case STRENGTHEN -> readArrays(document, files, STRENGTHEN, STRENGTHEN_KEYS);
             case WEAPON_TYPES -> {
                 JsonObject data = readObject(files, WEAPON_TYPES);
@@ -126,6 +131,7 @@ final class ConfigEditorStorage {
             }
             case TROPHY -> readArrays(document, files, TROPHIES, TROPHY_KEYS);
             case COMMON -> { return new Snapshot(revision(files), CommonConfigEditor.snapshot(files.get(COMMON))); }
+            case SOUL -> { return new Snapshot(revision(files), SoulItemConfig.toJson(SoulItemConfig.fromJson(readSoul(files)))); }
         }
         return new Snapshot(revision(files), document);
     }
@@ -134,6 +140,8 @@ final class ConfigEditorStorage {
         Map<Path, byte[]> desired = new TreeMap<>(current);
         switch (section) {
             case OCCUPATION -> writeOccupations(current, desired, document);
+            case SHOW_GUI_ATTRIBUTE -> replaceJson(desired, SHOW_GUI_ATTRIBUTE, displayedAttributes(current),
+                    array(document.get(ShowGuiAttributeConfig.KEY), SHOW_GUI_ATTRIBUTE));
             case STRENGTHEN -> writeArrays(current, desired, document, STRENGTHEN, STRENGTHEN_KEYS);
             case WEAPON_TYPES -> {
                 JsonObject original = readObject(current, WEAPON_TYPES);
@@ -160,8 +168,44 @@ final class ConfigEditorStorage {
             }
             case TROPHY -> writeArrays(current, desired, document, TROPHIES, TROPHY_KEYS);
             case COMMON -> desired.put(COMMON, CommonConfigEditor.write(current.get(COMMON), document));
+            case SOUL -> writeSoul(current, desired, document);
         }
         return desired;
+    }
+
+    private static JsonObject readSoul(Map<Path, byte[]> files) throws IOException {
+        JsonElement root = parse(files, SOUL);
+        if (root == null) return new JsonObject();
+        if (root instanceof JsonObject object) return object;
+        throw new IOException("Expected a JSON object in " + SOUL);
+    }
+
+    private static void writeSoul(Map<Path, byte[]> current, Map<Path, byte[]> desired,
+                                  JsonObject document) throws IOException {
+        JsonObject original = readSoul(current);
+        JsonObject snapshot = SoulItemConfig.toJson(SoulItemConfig.fromJson(original));
+        JsonObject updated = original.deepCopy();
+        for (String key : snapshot.keySet()) {
+            JsonObject before = snapshot.getAsJsonObject(key);
+            JsonObject after = document.getAsJsonObject(key);
+            if (before.equals(after)) continue;
+
+            JsonObject section = updated.get(key) instanceof JsonObject existing ? existing : new JsonObject();
+            for (var field : after.entrySet()) {
+                if (!field.getValue().equals(before.get(field.getKey()))) {
+                    section.add(field.getKey(), field.getValue());
+                }
+            }
+            updated.add(key, section);
+        }
+        replaceJson(desired, SOUL, original, updated);
+    }
+
+    private static JsonArray displayedAttributes(Map<Path, byte[]> files) throws IOException {
+        if (!files.containsKey(SHOW_GUI_ATTRIBUTE)) return ShowGuiAttributeConfig.defaultDocument();
+        JsonElement root = parse(files, SHOW_GUI_ATTRIBUTE);
+        if (!root.isJsonArray()) throw new IOException("Expected an array in " + SHOW_GUI_ATTRIBUTE);
+        return root.getAsJsonArray();
     }
 
     private static void readArrays(JsonObject document, Map<Path, byte[]> files, Path directory, List<String> keys) throws IOException {
@@ -311,11 +355,13 @@ final class ConfigEditorStorage {
         Map<Path, byte[]> files = new TreeMap<>();
         switch (section) {
             case OCCUPATION -> readDirectory(section, OCCUPATIONS, files);
+            case SHOW_GUI_ATTRIBUTE -> readInto(files, SHOW_GUI_ATTRIBUTE);
             case STRENGTHEN -> readKnownFiles(files, STRENGTHEN, STRENGTHEN_KEYS);
             case WEAPON_TYPES -> readInto(files, WEAPON_TYPES);
             case EQUIPMENT -> readDirectory(section, EQUIPMENT, files);
             case TROPHY -> readKnownFiles(files, TROPHIES, TROPHY_KEYS);
             case COMMON -> readInto(files, COMMON);
+            case SOUL -> readInto(files, SOUL);
         }
         return files;
     }
@@ -349,10 +395,12 @@ final class ConfigEditorStorage {
         if (!name.endsWith(".json")) return false;
         return switch (section) {
             case OCCUPATION -> file.startsWith(OCCUPATIONS) && file.getNameCount() > 1;
+            case SHOW_GUI_ATTRIBUTE -> file.equals(SHOW_GUI_ATTRIBUTE);
             case STRENGTHEN -> STRENGTHEN.equals(file.getParent()) && STRENGTHEN_KEYS.contains(name.substring(0, name.length() - 5));
             case WEAPON_TYPES -> file.equals(WEAPON_TYPES);
             case EQUIPMENT -> file.equals(PRESETS) || isEquipmentFile(file);
             case TROPHY -> TROPHIES.equals(file.getParent()) && TROPHY_KEYS.contains(name.substring(0, name.length() - 5));
+            case SOUL -> file.equals(SOUL);
             case COMMON -> false;
         };
     }

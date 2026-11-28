@@ -2,7 +2,6 @@ package dev.lhkongyu.lhmiracleroad.packet;
 
 import dev.lhkongyu.lhmiracleroad.client.screen.occupation.UpgradeInterfaceScreen;
 import dev.lhkongyu.lhmiracleroad.config.ShowGuiAttributeConfig;
-import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -49,7 +48,7 @@ public record PlayerAttributeValuesSnapshot(List<AttributeValue> values) {
         Set<ResourceLocation> shownIds = new HashSet<>();
         List<AttributeValue> values = new ArrayList<>();
         for (ShowGuiAttributeConfig.Entry entry : ShowGuiAttributeConfig.entries()) {
-            Attribute attribute = resolveAttribute(entry.attribute());
+            Attribute attribute = ShowGuiAttributeConfig.resolveAttribute(entry.attribute());
             if (attribute == null || !attributes.hasAttribute(attribute)) continue;
 
             ResourceLocation id = ForgeRegistries.ATTRIBUTES.getKey(attribute);
@@ -60,17 +59,6 @@ public record PlayerAttributeValuesSnapshot(List<AttributeValue> values) {
             values.add(new AttributeValue(id, entry.valueType().format(displayValue(attributes, attribute), defaultValue)));
         }
         PlayerChannel.sendToClient(new PlayerAttributeValuesSnapshot(values), player);
-    }
-
-    private static Attribute resolveAttribute(String name) {
-        Attribute attribute = LHMiracleRoadTool.stringConversionAttribute(name);
-        if (attribute != null) return attribute;
-
-        ResourceLocation id = ResourceLocation.tryParse(name);
-        if (id != null && id.getNamespace().equals("minecraft") && !id.getPath().contains(".")) {
-            return ForgeRegistries.ATTRIBUTES.getValue(new ResourceLocation("minecraft", "generic." + id.getPath()));
-        }
-        return null;
     }
 
     private static double displayValue(AttributeMap attributes, Attribute attribute) {

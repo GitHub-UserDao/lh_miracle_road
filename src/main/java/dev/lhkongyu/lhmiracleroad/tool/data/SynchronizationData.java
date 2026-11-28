@@ -24,10 +24,7 @@ public class SynchronizationData {
         PlayerChannel.sendToClient(new WeaponTypesMessage(WeaponTypeConfig.forSide(false)), player);
         ConfigEditorPackets.syncGameplay(player, ConfigSection.STRENGTHEN, StrengthenConfig.snapshot());
         ConfigEditorPackets.syncGameplay(player, ConfigSection.TROPHY, TrophyManager.snapshot());
-        JsonObject soulItems = new JsonObject();
-        soulItems.addProperty("key", "soulItems");
-        soulItems.add("data", SoulItemConfig.toJson(SoulItemConfig.forSide(false)));
-        PlayerChannel.sendToClient(new ClientDataMessage(soulItems), player);
+        syncSoulRewards(player);
         InitItemPreviewMessage.sendAll(player);
         OccupationCatalogMessage.sendAll(player);
         JsonObject equipment = new JsonObject();
@@ -38,5 +35,12 @@ public class SynchronizationData {
         equipment.addProperty("offhandWeightEnabled", config.IS_OFFHAND_CALCULATE_HEAVY.get());
         equipment.addProperty("attributePenaltiesEnabled", config.IS_SKILL_POINTS_RESTRICT.get());
         ConfigEditorPackets.syncGameplay(player, ConfigSection.EQUIPMENT, equipment);
+    }
+
+    public static void syncSoulRewards(ServerPlayer player) {
+        JsonObject soulItems = new JsonObject();
+        soulItems.addProperty("key", "soulItems");
+        soulItems.add("data", SoulItemConfig.toJson(SoulItemConfig.forSide(false)));
+        PlayerChannel.sendToClient(new ClientDataMessage(soulItems), player);
     }
 }

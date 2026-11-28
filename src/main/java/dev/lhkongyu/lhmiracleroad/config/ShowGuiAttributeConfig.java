@@ -1,12 +1,16 @@
 package dev.lhkongyu.lhmiracleroad.config;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import dev.lhkongyu.lhmiracleroad.LHMiracleRoad;
+import dev.lhkongyu.lhmiracleroad.tool.LHMiracleRoadTool;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,13 +26,15 @@ import java.util.List;
 import java.util.Locale;
 
 public final class ShowGuiAttributeConfig {
+    public static final String KEY = "show_gui_attribute";
+    public static final String FILE_NAME = KEY + ".json";
     private static final String DEFAULT_RESOURCE = "/data/lhmiracleroad/showGuiAttribute/attribute.json";
     private static volatile List<Entry> entries = List.of();
 
     private ShowGuiAttributeConfig() {}
 
     public static void load() {
-        Path file = FMLPaths.CONFIGDIR.get().resolve("lhmiracleroad").resolve("show_gui_attribute.json");
+        Path file = configFile();
         try {
             if (Files.notExists(file)) {
                 Files.createDirectories(file.getParent());
@@ -36,9 +42,7 @@ public final class ShowGuiAttributeConfig {
                     Files.copy(defaults, file);
                 }
             }
-            try (Reader reader = Files.newBufferedReader(file)) {
-                entries = parse(reader, file.toString());
-            }
+            reloadFromEditor();
         } catch (IOException | JsonParseException ex) {
             LHMiracleRoad.LOGGER.warn("Could not read GUI attribute config {}. Using bundled defaults.", file, ex);
             try (Reader reader = new InputStreamReader(openDefaults(), StandardCharsets.UTF_8)) {
@@ -50,8 +54,45 @@ public final class ShowGuiAttributeConfig {
         }
     }
 
+    private static Path configFile() {
+        return FMLPaths.CONFIGDIR.get().resolve(LHMiracleRoad.MODID).resolve(FILE_NAME);
+    }
+
+    public static void reloadFromEditor() throws IOException {
+        Path file = configFile();
+        if (Files.notExists(file)) {
+            entries = parse(defaultDocument(), DEFAULT_RESOURCE);
+        } else {
+            try (Reader reader = Files.newBufferedReader(file)) {
+                entries = parse(reader, file.toString());
+            }
+        }
+    }
+
+    public static JsonArray defaultDocument() throws IOException {
+        try (Reader reader = new InputStreamReader(openDefaults(), StandardCharsets.UTF_8)) {
+            return readArray(reader);
+        }
+    }
+
     public static List<Entry> entries() {
         return entries;
+    }
+
+    public static Attribute resolveAttribute(String name) {
+        ResourceLocation id = ResourceLocation.tryParse(name);
+        if (id == null || id.getPath().isEmpty()) return null;
+        if (name.contains(":")) {
+            Attribute registered = ForgeRegistries.ATTRIBUTES.getValue(id);
+            if (registered != null) return registered;
+        } else {
+            Attribute legacy = LHMiracleRoadTool.stringConversionAttribute(name);
+            if (legacy != null) return legacy;
+        }
+        if ("minecraft".equals(id.getNamespace()) && !id.getPath().contains(".")) {
+            return ForgeRegistries.ATTRIBUTES.getValue(new ResourceLocation("minecraft", "generic." + id.getPath()));
+        }
+        return null;
     }
 
     private static InputStream openDefaults() throws IOException {
@@ -60,13 +101,20 @@ public final class ShowGuiAttributeConfig {
         return stream;
     }
 
-    static List<Entry> parse(Reader reader, String source) {
+    private static JsonArray readArray(Reader reader) {
         JsonElement root = JsonParser.parseReader(reader);
         if (!root.isJsonArray()) throw new JsonParseException("Expected an array of GUI attributes");
+        return root.getAsJsonArray();
+    }
 
+    static List<Entry> parse(Reader reader, String source) {
+        return parse(readArray(reader), source);
+    }
+
+    private static List<Entry> parse(JsonArray document, String source) {
         List<Entry> result = new ArrayList<>();
         int index = 0;
-        for (JsonElement element : root.getAsJsonArray()) {
+        for (JsonElement element : document) {
             index++;
             if (!element.isJsonObject()) {
                 LHMiracleRoad.LOGGER.warn("Ignoring non-object GUI attribute entry {} in {}", index, source);
@@ -81,7 +129,7 @@ public final class ShowGuiAttributeConfig {
             }
             String mode = readString(object, "show_value_type");
             try {
-                ValueType type = ValueType.valueOf(mode.toUpperCase(Locale.ROOT));
+                ValueType type = ValueType.fromConfig(mode);
                 result.add(new Entry(name, type));
             } catch (IllegalArgumentException ex) {
                 LHMiracleRoad.LOGGER.warn("Ignoring invalid GUI attribute display type '{}' in entry {} in {}", mode, index, source);
@@ -110,6 +158,14 @@ public final class ShowGuiAttributeConfig {
         ValueType(boolean subtractDefault, boolean percentage) {
             this.subtractDefault = subtractDefault;
             this.percentage = percentage;
+        }
+
+        public String configName() {
+            return name().toLowerCase(Locale.ROOT);
+        }
+
+        public static ValueType fromConfig(String value) {
+            return valueOf(value.trim().toUpperCase(Locale.ROOT));
         }
 
         public String format(double total, double defaultValue) {

@@ -37,10 +37,11 @@ final class ConfigEditorPages {
 
     record Field(Component label, Kind kind, List<String> choices) {}
 
-    record PreviewInput(String id, Component label, String initialValue) {}
-
     static Field field(ConfigSection section, List<String> path, JsonElement value) {
         String key = last(path);
+        if (section == ConfigSection.SOUL && path.size() == 2 && "soul_items".equals(path.get(0))) {
+            return new Field(itemLabel(key), Kind.DEFAULT, List.of());
+        }
         if (section == ConfigSection.COMMON && path.size() == 3 && isMobList(path.subList(0, 2))) {
             return new Field(local("实体路径", "Entity path"), Kind.RESOURCE, entityPaths());
         }
@@ -81,7 +82,7 @@ final class ConfigEditorPages {
     static boolean canAddEntry(ConfigSection section, List<String> path) {
         String key = last(path);
         return switch (section) {
-            case OCCUPATION, STRENGTHEN -> false;
+            case OCCUPATION, STRENGTHEN, SHOW_GUI_ATTRIBUTE, SOUL -> false;
             case WEAPON_TYPES -> path.size() == 1 && WEAPON_LISTS.contains(key);
             case EQUIPMENT -> Set.of("items", "presets", "attribute_need", "punishments").contains(key);
             case TROPHY -> path.size() == 1 || "entries".equals(key);
@@ -97,7 +98,7 @@ final class ConfigEditorPages {
 
     static Map<String, JsonElement> optionalFields(ConfigSection section, List<String> objectPath) {
         return switch (section) {
-            case OCCUPATION, STRENGTHEN, WEAPON_TYPES, COMMON -> Map.of();
+            case OCCUPATION, STRENGTHEN, WEAPON_TYPES, COMMON, SHOW_GUI_ATTRIBUTE, SOUL -> Map.of();
             case EQUIPMENT -> {
                 if (objectPath.size() == 2 && "items".equals(objectPath.get(0))) {
                     yield Map.of("attribute_need", new JsonArray());
@@ -138,7 +139,7 @@ final class ConfigEditorPages {
                     ? object("item", "minecraft:iron_ingot", "weight", 1, "min", 1, "max", 1, "nbt", "", "luckWeight", 0.0)
                     : object("name", nextName(array, "name", "group_"), "weight", 1, "luckWeight", 0.0,
                     "roll_count_min", 1, "roll_count_max", 1, "allowRepeat", true, "entries", new JsonArray());
-            case OCCUPATION, STRENGTHEN -> null;
+            case OCCUPATION, STRENGTHEN, SHOW_GUI_ATTRIBUTE, SOUL -> null;
             case COMMON -> newMobEntry(key, array);
         };
     }
@@ -208,7 +209,7 @@ final class ConfigEditorPages {
 
     private static boolean containsText(JsonArray values, String key, String target) {
         for (JsonElement value : values) {
-            if (value instanceof JsonObject object && target.equals(ConfigEditorPagePreview.string(object, key, ""))) return true;
+            if (value instanceof JsonObject object && target.equals(string(object, key, ""))) return true;
         }
         return false;
     }
@@ -232,13 +233,13 @@ final class ConfigEditorPages {
         if (section == ConfigSection.WEAPON_TYPES && path.size() == 2 && value.isJsonPrimitive()) return itemLabel(value.getAsString());
         if (!(value instanceof JsonObject object)) return null;
         if (section == ConfigSection.STRENGTHEN && path.size() == 2) {
-            return Component.literal("+" + ConfigEditorPagePreview.string(object, "lv", key));
+            return Component.literal("+" + string(object, "lv", key));
         }
         if (section == ConfigSection.TROPHY && path.size() == 4) {
-            return itemLabel(ConfigEditorPagePreview.string(object, "item", ""));
+            return itemLabel(string(object, "item", ""));
         }
         for (String field : List.of("name", "type_id", "id", "attribute_id", "attribute")) {
-            String name = ConfigEditorPagePreview.string(object, field, "");
+            String name = string(object, field, "");
             if (!name.isBlank()) return Component.literal(name);
         }
         return null;
@@ -251,25 +252,9 @@ final class ConfigEditorPages {
         return Component.translatable(item.getDescriptionId()).append(" · ").append(id);
     }
 
-    static List<PreviewInput> previewInputs(ConfigSection section) {
-        return switch (section) {
-            case STRENGTHEN -> List.of(input("durability", "+0 耐久（留空读取主手）", "+0 durability (blank reads held item)", ""));
-            case WEAPON_TYPES -> List.of(input("item", "物品 ID（留空读取主手）", "Item ID (blank reads held item)", ""));
-            case EQUIPMENT -> List.of(input("base", "基础等级 · 数字或 power=10,agile=12", "Base levels · number or power=10,agile=12", ""),
-                    input("curio", "饰品加成 · 同上", "Curio bonuses · same format", ""));
-            case TROPHY -> List.of(input("luck", "幸运（留空使用当前玩家）", "Luck (blank uses current player)", ""),
-                    input("seed", "试抽随机种子", "Sample seed", "42"));
-            case OCCUPATION, COMMON -> List.of();
-        };
-    }
-
-    private static PreviewInput input(String id, String chinese, String english, String initialValue) {
-        return new PreviewInput(id, local(chinese, english), initialValue);
-    }
-
-    static List<Component> preview(ConfigSection section, JsonObject document, List<String> path, Minecraft minecraft,
-                                   Map<ConfigSection, JsonObject> documents, Map<String, String> inputs) {
-        return ConfigEditorPagePreview.preview(section, document, path, minecraft, documents, inputs);
+    private static String string(JsonObject object, String key, String fallback) {
+        JsonElement field = object.get(key);
+        return field != null && field.isJsonPrimitive() ? field.getAsString() : fallback;
     }
 
     static Component label(String key) {
@@ -316,6 +301,10 @@ final class ConfigEditorPages {
             case "entries" -> local("组内奖励", "Group rewards");
             case "nbt" -> local("物品 NBT（SNBT 格式）", "Item NBT (SNBT format)");
             case "base" -> local("基础设置", "Base settings");
+            case "soul_items" -> local("灵魂物品奖励", "Soul item rewards");
+            case "death_soul" -> local("死亡灵魂", "Death Soul");
+            case "soul_multiplier" -> local("灵魂倍率", "Soul multiplier");
+            case "skill_points" -> local("技能点", "Skill points");
             case "items loot probability" -> local("宝箱掉落概率", "Chest loot probabilities");
             case "mob loot" -> local("生物掉落", "Mob loot");
             case "init_burden" -> local("初始负重上限", "Initial carrying capacity");

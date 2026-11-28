@@ -25,6 +25,7 @@ import net.minecraft.world.item.Items;
 import java.lang.ref.WeakReference;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.IdentityHashMap;
@@ -41,7 +42,9 @@ public final class ConfigEditorScreen extends Screen {
     static final int MUTED = 0xB3AF9F;
     private static final int TEXT = 0xF2ECE0;
     private static final int WARNING = 0xFAC476;
-    private static final ConfigSection[] SECTIONS = ConfigSection.values();
+    private static final ConfigSection[] TOP_LEVEL_SECTIONS = Arrays.stream(ConfigSection.values())
+            .filter(section -> section != ConfigSection.SHOW_GUI_ATTRIBUTE && topLevelSection(section) == section)
+            .toArray(ConfigSection[]::new);
     static final int HEADER_BOTTOM = 55;
     private static final int ROW_HEIGHT = 24;
     private static final Pattern NUMBER = Pattern.compile("-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?");
@@ -57,7 +60,6 @@ public final class ConfigEditorScreen extends Screen {
     private EditBox search;
     private Button addButton;
     private Button reloadButton;
-    private Button previewButton;
     private Button changesButton;
     private Button discardButton;
     private Button restoreButton;
@@ -67,14 +69,15 @@ public final class ConfigEditorScreen extends Screen {
     private Button copyHeldButton;
     private int left;
     private int right;
+    private int navigationY;
     private int contentTop;
     private int contentBottom;
     private int rowCount;
 
     private ConfigEditorScreen() {
         super(Component.translatableWithFallback("lhmiracleroad.config_editor.title", "Config editor"));
-        for (ConfigSection value : SECTIONS) {
-            if (value != ConfigSection.OCCUPATION) pages.put(value, new Page());
+        for (ConfigSection value : ConfigSection.values()) {
+            if (value != ConfigSection.OCCUPATION && value != ConfigSection.SHOW_GUI_ATTRIBUTE) pages.put(value, new Page());
         }
     }
 
@@ -90,6 +93,8 @@ public final class ConfigEditorScreen extends Screen {
 
         if (section == ConfigSection.OCCUPATION) {
             editor.occupationEditor.receiveSnapshot(revision, json, status);
+        } else if (section == ConfigSection.SHOW_GUI_ATTRIBUTE) {
+            editor.occupationEditor.receiveDisplaySnapshot(revision, json, status);
         } else {
             editor.receiveSnapshot(section, revision, json, status);
         }
@@ -144,24 +149,28 @@ public final class ConfigEditorScreen extends Screen {
         int panelWidth = headerWidth(width);
         left = (width - panelWidth) / 2;
         right = left + panelWidth;
-        contentTop = 99;
+        ConfigSection group = topLevelSection(section);
+        navigationY = group == ConfigSection.COMMON || group == ConfigSection.STRENGTHEN ? 79 : 57;
+        contentTop = navigationY + 42;
         contentBottom = height - 56;
         inputs.clear();
         body.clear();
 
         addSectionTabs(width, font, section, this::addRenderableWidget);
+        if (group == ConfigSection.STRENGTHEN) addSubsectionTabs(ConfigSection.STRENGTHEN, ConfigSection.WEAPON_TYPES);
+        if (group == ConfigSection.COMMON) addSubsectionTabs(ConfigSection.COMMON, ConfigSection.SOUL);
 
         Page page = page();
         copyHeldButton = button(words("Copy held ID", "复制主手 ID"), right - 96, 12, 86, this::copyHeldId);
         copyHeldButton.setTooltip(Tooltip.create(words("Copy main-hand item ID to clipboard", "复制主手物品 ID 到剪贴板")));
-        Button back = button(words("Up", "上一级"), left + 9, 57, 56, this::goUp);
+        Button back = button(words("Up", "上一级"), left + 9, navigationY, 56, this::goUp);
         back.active = mode != Mode.EDIT || !page.path.isEmpty();
-        previousButton = button(Component.literal("▲"), right - 66, 57, 26, () -> scroll(-rowsPerPage()));
+        previousButton = button(Component.literal("▲"), right - 66, navigationY, 26, () -> scroll(-rowsPerPage()));
         previousButton.setTooltip(Tooltip.create(words("Previous rows", "向上翻页")));
-        nextButton = button(Component.literal("▼"), right - 36, 57, 26, () -> scroll(rowsPerPage()));
+        nextButton = button(Component.literal("▼"), right - 36, navigationY, 26, () -> scroll(rowsPerPage()));
         nextButton.setTooltip(Tooltip.create(words("Next rows", "向下翻页")));
 
-        search = addRenderableWidget(new EditBox(font, left + 9, 79, panelWidth - 18 - 130, 18,
+        search = addRenderableWidget(new EditBox(font, left + 9, navigationY + 22, panelWidth - 18 - 130, 18,
                 words("Search configuration", "搜索配置")));
         search.setMaxLength(256);
         search.setValue(page.search);
@@ -172,20 +181,18 @@ public final class ConfigEditorScreen extends Screen {
             refreshRows();
         });
         search.active = mode == Mode.EDIT;
-        addButton = button(words("Add", "添加"), right - 135, 78, 59, this::addEntry);
-        reloadButton = button(words("Reload", "重新读取"), right - 72, 78, 62, () -> request(section));
+        addButton = button(words("Add", "添加"), right - 135, navigationY + 21, 59, this::addEntry);
+        reloadButton = button(words("Reload", "重新读取"), right - 72, navigationY + 21, 62, () -> request(section));
 
-        int footerWidth = (panelWidth - 18) / 5;
+        int footerWidth = (panelWidth - 18) / 4;
         int footerY = height - 31;
-        previewButton = button(words("Preview", "预览"), left + 9, footerY, footerWidth - 3,
-                () -> show(Mode.PREVIEW));
-        changesButton = button(words("Changes", "变更"), left + 9 + footerWidth, footerY, footerWidth - 3,
+        changesButton = button(words("Changes", "变更"), left + 9, footerY, footerWidth - 3,
                 () -> show(Mode.CHANGES));
-        discardButton = button(words("Discard", "丢弃"), left + 9 + footerWidth * 2, footerY, footerWidth - 3,
+        discardButton = button(words("Discard", "丢弃"), left + 9 + footerWidth, footerY, footerWidth - 3,
                 this::discard);
-        restoreButton = button(words("Restore", "恢复"), left + 9 + footerWidth * 3, footerY, footerWidth - 3,
+        restoreButton = button(words("Restore", "恢复"), left + 9 + footerWidth * 2, footerY, footerWidth - 3,
                 this::restore);
-        saveButton = button(words("Save", "保存"), left + 9 + footerWidth * 4, footerY, footerWidth - 3, this::save);
+        saveButton = button(words("Save", "保存"), left + 9 + footerWidth * 3, footerY, footerWidth - 3, this::save);
         refreshRows();
     }
 
@@ -196,22 +203,48 @@ public final class ConfigEditorScreen extends Screen {
     void addSectionTabs(int width, Font font, ConfigSection selected, Consumer<Button> add) {
         int panelWidth = headerWidth(width);
         int left = (width - panelWidth) / 2;
-        int stride = (panelWidth - 18) / SECTIONS.length;
-        for (int index = 0; index < SECTIONS.length; index++) {
-            ConfigSection target = SECTIONS[index];
+        ConfigSection active = topLevelSection(selected);
+        int stride = (panelWidth - 18) / TOP_LEVEL_SECTIONS.length;
+        for (int index = 0; index < TOP_LEVEL_SECTIONS.length; index++) {
+            ConfigSection target = TOP_LEVEL_SECTIONS[index];
             Component label = target.label();
             Button tab = Button.builder(fit(font, label, stride - 9), press -> switchTo(target))
                     .bounds(left + 9 + index * stride, 34, stride - 3, 19)
                     .tooltip(Tooltip.create(label)).build();
-            tab.active = target != selected;
+            tab.active = target != active;
             add.accept(tab);
         }
+    }
+
+    private static ConfigSection topLevelSection(ConfigSection section) {
+        return switch (section) {
+            case WEAPON_TYPES -> ConfigSection.STRENGTHEN;
+            case SOUL -> ConfigSection.COMMON;
+            default -> section;
+        };
+    }
+
+    private void addSubsectionTabs(ConfigSection first, ConfigSection second) {
+        int stride = (right - left - 18) / 2;
+        Button firstTab = button(subsectionLabel(first), left + 9, 57, stride - 3, () -> switchTo(first));
+        Button secondTab = button(subsectionLabel(second), left + 9 + stride, 57, stride - 3, () -> switchTo(second));
+        firstTab.active = section != first;
+        secondTab.active = section != second;
+    }
+
+    private static Component subsectionLabel(ConfigSection section) {
+        return switch (section) {
+            case STRENGTHEN -> Component.translatable("lhmiracleroad.config_editor.subsection.strengthen_attributes");
+            case COMMON -> Component.translatable("lhmiracleroad.config_editor.subsection.common_options");
+            default -> section.label();
+        };
     }
 
     private void switchTo(ConfigSection target) {
         Minecraft minecraft = Minecraft.getInstance();
         if (target == ConfigSection.OCCUPATION) {
             if (minecraft.screen != occupationEditor) minecraft.setScreen(occupationEditor);
+            occupationEditor.loadDisplayConfigIfNeeded();
             return;
         }
 
@@ -270,8 +303,6 @@ public final class ConfigEditorScreen extends Screen {
             rowCount = 0;
             lines.add(new Line(words("Waiting for a server snapshot.", "等待服务器配置快照。"), left + 12,
                     contentTop + 8, MUTED, 0, null));
-        } else if (mode == Mode.PREVIEW) {
-            renderPreviewRows(page);
         } else if (mode == Mode.CHANGES) {
             renderChangeRows(page);
         } else {
@@ -569,40 +600,6 @@ public final class ConfigEditorScreen extends Screen {
         minecraft.setScreen(new ConfigEditorPickerScreen(this, title, choices, false, setter));
     }
 
-    private void renderPreviewRows(Page page) {
-        List<ConfigEditorPages.PreviewInput> previewInputs = ConfigEditorPages.previewInputs(section);
-        EnumMap<ConfigSection, JsonObject> documents = new EnumMap<>(ConfigSection.class);
-        pages.forEach((key, value) -> {
-            if (value.draft.document != null) {
-                documents.put(key, value.draft.document);
-            }
-        });
-        List<Component> output;
-        try {
-            output = ConfigEditorPages.preview(section, page.draft.document, page.path, minecraft,
-                    documents, page.previewValues);
-        } catch (RuntimeException exception) {
-            output = List.of(words("Check the draft values to calculate the preview.", "请检查草稿中的数值后再预览。"));
-        }
-        setRowCount(previewInputs.size() + output.size());
-        for (int index = page.offset; index < Math.min(rowCount, page.offset + rowsPerPage()); index++) {
-            int y = contentTop + (index - page.offset) * ROW_HEIGHT;
-            if (index >= previewInputs.size()) {
-                lines.add(new Line(output.get(index - previewInputs.size()), left + 12, y + 6, TEXT,
-                        right - left - 24, null));
-            } else {
-                ConfigEditorPages.PreviewInput input = previewInputs.get(index);
-                int editX = left + (right - left) * 2 / 5;
-                lines.add(new Line(input.label(), left + 12, y + 6, MUTED, editX - left - 18, null));
-                EditBox edit = bodyInput(input.label(), page.previewValues.getOrDefault(input.id(),
-                        input.initialValue()), editX, y, right - editX - 60, true, 256);
-                edit.setResponder(text -> page.previewValues.put(input.id(), text));
-                bodyButton(words("Run", "计算"), words("Update preview", "更新预览"), right - 61, y, 50, true,
-                        this::refreshRows);
-            }
-        }
-    }
-
     private void renderChangeRows(Page page) {
         List<ConfigEditorDraft.Change> changes = ConfigEditorDraft.differences(page.draft.baseline, page.draft.document);
         setRowCount(changes.size());
@@ -689,7 +686,6 @@ public final class ConfigEditorScreen extends Screen {
                 && (ConfigEditorPages.canAddEntry(section, page.path)
                 || node.isJsonObject() && !missingFields(node.getAsJsonObject()).isEmpty());
         reloadButton.active = mode == Mode.EDIT && page.pending == Operation.NONE;
-        previewButton.active = loaded && mode != Mode.PREVIEW;
         changesButton.active = loaded && mode != Mode.CHANGES;
         discardButton.active = ready && page.dirty;
         restoreButton.active = ready && !page.conflicted;
@@ -794,10 +790,9 @@ public final class ConfigEditorScreen extends Screen {
         }
         Component heading = switch (mode) {
             case EDIT -> breadcrumb();
-            case PREVIEW -> words("Preview", "预览");
             case CHANGES -> words("Review changes", "核对变更");
         };
-        graphics.drawString(font, fit(heading, right - left - 150), left + 72, 63, TEXT, false);
+        graphics.drawString(font, fit(heading, right - left - 150), left + 72, navigationY + 6, TEXT, false);
         int shown = Math.min(rowsPerPage(), rowCount - page.offset);
         for (int row = 0; row < shown; row++) {
             int y = contentTop + row * ROW_HEIGHT;
@@ -849,7 +844,7 @@ public final class ConfigEditorScreen extends Screen {
     }
 
     private Component breadcrumb() {
-        StringBuilder result = new StringBuilder(section.label().getString());
+        StringBuilder result = new StringBuilder(subsectionLabel(section).getString());
         JsonElement node = page().draft.document;
         List<String> prefix = List.of();
         for (String key : page().path) {
@@ -905,7 +900,8 @@ public final class ConfigEditorScreen extends Screen {
         if (row.field.kind() == ConfigEditorPages.Kind.ITEM && row.value.isJsonPrimitive()) {
             return item(row.value.getAsString());
         }
-        if (section == ConfigSection.EQUIPMENT && page().path.equals(List.of("items"))) {
+        if ((section == ConfigSection.EQUIPMENT && page().path.equals(List.of("items")))
+                || (section == ConfigSection.SOUL && page().path.equals(List.of("soul_items")))) {
             return item(row.key);
         }
         return ItemStack.EMPTY;
@@ -994,14 +990,13 @@ public final class ConfigEditorScreen extends Screen {
         return null;
     }
 
-    private enum Mode { EDIT, PREVIEW, CHANGES }
+    private enum Mode { EDIT, CHANGES }
 
     private enum Operation { NONE, LOAD, SAVE, RESTORE }
 
     private static final class Page {
         final ConfigEditorDraft draft = new ConfigEditorDraft();
         final Set<JsonElement> invalidNumbers = Collections.newSetFromMap(new IdentityHashMap<>());
-        final Map<String, String> previewValues = new LinkedHashMap<>();
         List<String> path = List.of();
         String search = "";
         int offset;

@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public final class SoulItemConfig {
+    public static final String FILE_NAME = "soul.json";
     public static final ResourceLocation DEATH_SOUL_ID = new ResourceLocation(LHMiracleRoad.MODID, "death_soul");
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -29,21 +30,34 @@ public final class SoulItemConfig {
     private SoulItemConfig() {}
 
     public static void load() {
-        Path file = FMLPaths.CONFIGDIR.get().resolve(LHMiracleRoad.MODID).resolve("soul.json");
+        Path file = configFile();
         try {
             Files.createDirectories(file.getParent());
             if (Files.notExists(file)) {
                 Files.writeString(file, GSON.toJson(toJson(DEFAULTS)) + "\n",
                         StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
             }
-            try (Reader reader = Files.newBufferedReader(file)) {
-                JsonObject json = GSON.fromJson(reader, JsonObject.class);
-                if (json == null) throw new JsonParseException("Expected an object of soul item rewards");
-                localRewards = fromJson(json);
-            }
+            reloadFromEditor();
         } catch (IOException | JsonParseException ex) {
             LHMiracleRoad.LOGGER.warn("Could not read soul item config {}. Using defaults.", file, ex);
             localRewards = DEFAULTS;
+        }
+    }
+
+    private static Path configFile() {
+        return FMLPaths.CONFIGDIR.get().resolve(LHMiracleRoad.MODID).resolve(FILE_NAME);
+    }
+
+    public static void reloadFromEditor() throws IOException {
+        Path file = configFile();
+        if (Files.notExists(file)) {
+            localRewards = DEFAULTS;
+            return;
+        }
+        try (Reader reader = Files.newBufferedReader(file)) {
+            JsonObject json = GSON.fromJson(reader, JsonObject.class);
+            if (json == null) throw new JsonParseException("Expected an object of soul item rewards");
+            localRewards = fromJson(json);
         }
     }
 

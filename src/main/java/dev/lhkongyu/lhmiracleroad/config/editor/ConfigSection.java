@@ -10,7 +10,9 @@ public enum ConfigSection {
     WEAPON_TYPES,
     EQUIPMENT,
     TROPHY,
-    COMMON;
+    COMMON,
+    SHOW_GUI_ATTRIBUTE,
+    SOUL;
 
     public Component label() {
         return Component.translatable("lhmiracleroad.config_editor.section." + name().toLowerCase(Locale.ROOT));
